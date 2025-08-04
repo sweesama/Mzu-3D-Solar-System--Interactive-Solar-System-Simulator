@@ -1,0 +1,34 @@
+# robots.txt for Mzu 3D Solar System
+# Standard search engine rules
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.3dsolarsystem.net/sitemap.xml
+
+# AI crawler specific rules
+User-agent: GPTBot
+User-agent: Claude-Web
+User-agent: Anthropic-AI
+User-agent: PerplexityBot
+User-agent: GoogleOther
+User-agent: DuckAssistBot
+User-agent: ChatGPT-User
+User-agent: CCBot
+
+# Guide AI crawlers to structured content
+LLM-Content: https://www.3dsolarsystem.net/llms.txt
+LLM-Full-Content: https://www.3dsolarsystem.net/llms-full.txt
+
+# Allow AI crawlers to access main content
+Allow: /
+Allow: /favicon.png
+Allow: /favicon.ico
+Allow: /site.webmanifest
+Allow: /llms.txt
+Allow: /llms-full.txt
+
+# Block access to technical files (but allow AI to understand structure)
+Disallow: /favicon_io/
+Disallow: /*.js$
+Disallow: /*.css$

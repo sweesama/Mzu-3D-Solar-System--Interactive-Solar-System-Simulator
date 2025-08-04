@@ -1,0 +1,27 @@
+# Mzu 3D Solar System
+> Advanced 3d solar system simulator with realistic planets, moons, and soothing Beethoven music. The ultimate solar system simulator for relaxation, meditation, and space education.
+
+This is a unique web-based 3d solar system that combines cutting-edge Three.js technology with therapeutic music experience. Unlike traditional astronomy websites, our solar system simulator focuses on creating a calming, meditative space exploration experience with ultra-realistic 3d earth simulator and 3d sun simulator features.
+
+## Core Features
+- [3D Solar System Simulator](https://www.3dsolarsystem.net/)：Real-time interactive solar system simulator with all planets, moons, and celestial bodies
+- [3D Earth Simulator](https://www.3dsolarsystem.net/)：Ultra-realistic 3d earth simulator with continents, oceans, and atmospheric effects
+- [3D Sun Simulator](https://www.3dsolarsystem.net/)：Dynamic 3d sun simulator with solar flares, corona effects, and realistic surface textures
+- [Planet Simulator](https://www.3dsolarsystem.net/)：Comprehensive planet simulator featuring all major and dwarf planets with accurate data
+- [Relaxing Space Music](https://www.3dsolarsystem.net/)：Beethoven's Moonlight Sonata background music for meditation
+- [Interactive Experience](https://www.3dsolarsystem.net/)：Click planets for detailed information, toggle orbit visualization, control music
+
+## Technical Highlights
+- [Advanced Space Simulator](https://www.3dsolarsystem.net/)：Professional-grade space simulator with procedurally generated planet surfaces
+- [Astronomy Simulator](https://www.3dsolarsystem.net/)：Accurate astronomy simulator with real orbital mechanics, axial tilts, and rotation periods
+- [Mobile Solar System](https://www.3dsolarsystem.net/)：Responsive 3d solar system design with PWA support for mobile devices
+- [Hardware Accelerated](https://www.3dsolarsystem.net/)：WebGL-powered planet simulator for smooth 60fps performance
+
+## Use Cases
+- [Space Meditation](https://www.3dsolarsystem.net/)：Therapeutic solar system website for stress relief and mindfulness
+- [Astronomy Education](https://www.3dsolarsystem.net/)：Educational 3d solar system website for students and space enthusiasts
+- [Background Ambience](https://www.3dsolarsystem.net/)：Peaceful space visualization website for work or study
+- [Digital Art](https://www.3dsolarsystem.net/)：Beautiful 3d earth simulator website for artistic inspiration
+
+## Unique Value
+Unlike NASA's technical simulations or Google's static models, our 3d solar system is specifically designed for wellness and relaxation while maintaining scientific accuracy. This advanced solar system simulator combines realistic 3d earth simulator graphics, 3d sun simulator effects, classical music, and therapeutic user experience to create a unique niche in the space simulator market.
