@@ -9,7 +9,7 @@
 
 **Language / 语言**: [English](#english) | [中文](#中文)
 
-![Solar System Preview](https://via.placeholder.com/800x400/1a1a2e/ffffff?text=Mzu+Solar+System)
+![Solar System Preview]https://www.3dsolarsystem.net/
 
 ---
 
