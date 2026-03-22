@@ -1,0 +1,130 @@
+html { overflow: hidden; }
+body { margin: 0; overflow: hidden; background-color: #000000; font-family: 'Inter', sans-serif; color: white; overscroll-behavior: none; font-size: 0; }
+        canvas { display: block; touch-action: none; }
+        #info-panel {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 280px; /* Slightly wider for more data */
+            padding: 15px;
+            background-color: rgba(20, 20, 30, 0.85);
+            border: 1px solid #445;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 13px; /* Slightly smaller for more data */
+            display: none; /* Initially hidden */
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+        #info-panel h3 {
+            margin-top: 0;
+            color: #ffa500; /* Orange title */
+            font-size: 17px;
+            border-bottom: 1px solid #556;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        #info-panel p {
+            margin: 4px 0;
+        }
+        #info-panel .close-button {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        #info-panel .close-button:hover {
+            color: white;
+        }
+        
+        /* Mobile responsive styles */
+        @media (max-width: 768px) {
+            #music-control, #orbit-glow-toggle {
+                top: 10px;
+            }
+            #music-control {
+                left: 10px;
+            }
+            #orbit-glow-toggle {
+                right: 10px;
+            }
+            #music-button, #orbit-glow-button {
+                padding: 6px 10px !important;
+                font-size: 12px !important;
+                min-width: 90px !important;
+            }
+            #info-panel {
+                width: calc(100vw - 40px) !important;
+                max-width: 280px;
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+                margin: 0 auto;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #music-control, #orbit-glow-toggle {
+                top: 8px;
+            }
+            #music-control {
+                left: 8px;
+            }
+            #orbit-glow-toggle {
+                right: 8px;
+            }
+            #music-button, #orbit-glow-button {
+                padding: 5px 8px !important;
+                font-size: 11px !important;
+                min-width: 80px !important;
+            }
+        }
+        
+        /* Loading Screen Styles */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease-out;
+        }
+        #loading-screen.fade-out {
+            opacity: 0;
+        }
+        #loading-title {
+            color: #fff;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        #loading-progress-container {
+            width: 300px;
+            height: 4px;
+            background-color: #333;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        #loading-progress-bar {
+            width: 0%;
+            height: 100%;
+            background-color: #ffa500; /* Orange to match UI */
+            transition: width 0.3s ease;
+        }
+        #loading-text {
+            color: #aaa;
+            font-size: 14px;
+            min-height: 20px;
+        }
+        

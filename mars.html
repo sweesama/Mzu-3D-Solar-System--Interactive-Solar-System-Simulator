@@ -12,7 +12,7 @@
 </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mzu 3D Solar System | Interactive Space Simulator</title>
+    <title>Mars - 3D Solar System Simulator</title>\n    <meta name="keywords" content="mars, planet mars, red planet, phobos, deimos, 3d solar system">\n    <meta name="description" content="Experience Mars in 3D. Learn about the Red Planet, its moons Phobos and Deimos, and its rusty surface.">
     
     <!-- SEO Meta Tags -->
     <meta name="description" content="Explore the ultimate 3D solar system simulation with realistic planets, moons, and soothing music. Perfect for relaxation and space education.">
@@ -62,8 +62,16 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="stylesheet" href="style.css">
+    <script>window.INITIAL_PLANET = 'Mars';</script>
 </head>
 <body>
+    <!-- SEO Content for Crawlers -->
+    <div style="display:none;" id="seo-content">
+        <h1>About Planet Mars</h1>
+        <p>Mars is the fourth planet from the Sun and the second-smallest planet in the Solar System, being larger than only Mercury. In English, Mars carries the name of the Roman god of war.</p>
+        <p>Mars is a terrestrial planet with a thin atmosphere, and has a crust primarily composed of elements similar to Earth's crust, as well as a core made of iron and nickel.</p>
+        <a href="index.html">Back to Full Solar System</a>
+    </div>
     <!-- Loading Screen -->
     <div id="loading-screen">
         <div id="loading-title">Mzu 3D Solar System</div>
@@ -112,7 +120,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/objects/Lensflare.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
     <script src="main.js"></script>
     

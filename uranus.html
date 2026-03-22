@@ -12,7 +12,7 @@
 </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mzu 3D Solar System | Interactive Space Simulator</title>
+    <title>Uranus - 3D Solar System Simulator</title>\n    <meta name="keywords" content="uranus, planet uranus, ice giant, tilted planet, 3d solar system">\n    <meta name="description" content="Explore Uranus, the icy giant that rotates on its side. View its faint ring system and moons in true 3D.">
     
     <!-- SEO Meta Tags -->
     <meta name="description" content="Explore the ultimate 3D solar system simulation with realistic planets, moons, and soothing music. Perfect for relaxation and space education.">
@@ -62,8 +62,16 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="stylesheet" href="style.css">
+    <script>window.INITIAL_PLANET = 'Uranus';</script>
 </head>
 <body>
+    <!-- SEO Content for Crawlers -->
+    <div style="display:none;" id="seo-content">
+        <h1>About Planet Uranus</h1>
+        <p>Uranus is the seventh planet from the Sun. Its name is a reference to the Greek god of the sky, Uranus. It has the third-largest planetary radius and fourth-largest planetary mass in the Solar System.</p>
+        <p>Uranus has a unique configuration among the planets because its axis of rotation is tilted sideways, nearly into the plane of its solar orbit.</p>
+        <a href="index.html">Back to Full Solar System</a>
+    </div>
     <!-- Loading Screen -->
     <div id="loading-screen">
         <div id="loading-title">Mzu 3D Solar System</div>
@@ -112,7 +120,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/objects/Lensflare.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
     <script src="main.js"></script>
     
