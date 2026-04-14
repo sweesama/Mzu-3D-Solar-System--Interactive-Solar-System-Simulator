@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-783407FTTB"></script>
@@ -12,27 +12,27 @@
 </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Venus - 3D Solar System Simulator</title>\n    <meta name="keywords" content="venus, planet venus, greenhouse effect, 3d solar system, space exploration">\n    <meta name="description" content="Discover Venus, the second planet from the Sun. Experience its thick, toxic atmosphere in our interactive 3D simulation.">
+    <title>Venus - 3D Solar System Simulator</title>
     
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Explore the ultimate 3D solar system simulation with realistic planets, moons, and soothing music. Perfect for relaxation and space education.">
-    <meta name="keywords" content="3d solar system, space simulator, astronomy education, space meditation, relaxing space">
+    <meta name="description" content="Discover Venus, the second planet from the Sun. Experience its thick, toxic atmosphere in our interactive 3D simulation.">
+    <meta name="keywords" content="venus, planet venus, greenhouse effect, 3d solar system, space exploration">
     <meta name="author" content="Mzu">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://www.3dsolarsystem.net/">
+    <link rel="canonical" href="https://www.3dsolarsystem.net/venus.html">
     
     <!-- Open Graph Tags for Social Media -->
-    <meta property="og:title" content="Mzu 3D Solar System - Interactive Space Exploration">
-    <meta property="og:description" content="Experience the ultimate 3D solar system simulation with realistic planets, moons, and soothing Beethoven music. Perfect for relaxation and space education.">
+    <meta property="og:title" content="Venus - 3D Solar System Simulator">
+    <meta property="og:description" content="Discover Venus, the second planet from the Sun. Experience its thick, toxic atmosphere in our interactive 3D simulation.">
     <meta property="og:image" content="https://www.3dsolarsystem.net/favicon.png">
-    <meta property="og:url" content="https://www.3dsolarsystem.net/">
+    <meta property="og:url" content="https://www.3dsolarsystem.net/venus.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Mzu 3D Solar System">
     
     <!-- Twitter Card Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Mzu 3D Solar System - Interactive Space Exploration">
-    <meta name="twitter:description" content="Experience the ultimate 3D solar system simulation with realistic planets, moons, and soothing Beethoven music.">
+    <meta name="twitter:title" content="Venus - 3D Solar System Simulator">
+    <meta name="twitter:description" content="Discover Venus, the second planet from the Sun. Experience its thick, toxic atmosphere in our interactive 3D simulation.">
     <meta name="twitter:image" content="https://www.3dsolarsystem.net/favicon.png">
     
     <!-- Structured Data for Search Engines -->
@@ -104,15 +104,15 @@
     </audio>
 
     <!-- Music Control Button -->
-    <div id="music-control" style="position: fixed; top: 15px; left: 15px; z-index: 1000;">
-        <button id="music-button" style="background: rgba(0,0,0,0.8); color: white; border: 2px solid #444; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; min-width: 100px; text-align: center;" onclick="toggleMusic()">
+    <div id="music-control">
+        <button id="music-button" class="control-btn" onclick="toggleMusic()">
             🎵 Music: Off
         </button>
     </div>
 
     <!-- Orbit Glow Toggle Button -->
-    <div id="orbit-glow-toggle" style="position: fixed; top: 15px; right: 15px; z-index: 1000;">
-        <button id="orbit-glow-button" style="background: rgba(0,0,0,0.8); color: white; border: 2px solid #444; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; min-width: 100px; text-align: center;" onclick="toggleOrbitGlow()">
+    <div id="orbit-glow-toggle">
+        <button id="orbit-glow-button" class="control-btn" onclick="toggleOrbitGlow()">
             🪐 Orbit: Off
         </button>
     </div>
@@ -142,4 +142,9 @@
     -->
     
 </body>
+<noscript>
+    <div style="position:fixed;top:0;left:0;width:100%;padding:20px;background:#000;color:#fff;text-align:center;font-family:sans-serif;z-index:99999">
+        This 3D Solar System requires JavaScript to run. Please enable JavaScript in your browser.
+    </div>
+</noscript>
 </html>

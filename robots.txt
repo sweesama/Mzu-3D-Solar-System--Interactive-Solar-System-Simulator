@@ -8,116 +8,80 @@ Sitemap: https://www.3dsolarsystem.net/sitemap.xml
 User-agent: *
 Allow: /
 Disallow: /favicon_io/
-Disallow: /*.js$
-Disallow: /*.css$
 
 # Google Bots
 User-agent: Googlebot
 Allow: /
 Disallow: /favicon_io/
-Disallow: /*.js$
-Disallow: /*.css$
 
 User-agent: Googlebot-Image
 Allow: /
 Disallow: /favicon_io/
-Disallow: /*.js$
-Disallow: /*.css$
 
 User-agent: GoogleOther
 Allow: /
 Disallow: /favicon_io/
-Disallow: /*.js$
-Disallow: /*.css$
 
 # Bing Bots
 User-agent: Bingbot
 Allow: /
 Disallow: /favicon_io/
-Disallow: /*.js$
-Disallow: /*.css$
 
 # Yahoo Bots
 User-agent: Slurp
 Allow: /
 Disallow: /favicon_io/
-Disallow: /*.js$
-Disallow: /*.css$
 
 # Baidu Bots
 User-agent: Baiduspider
 Allow: /
 Disallow: /favicon_io/
-Disallow: /*.js$
-Disallow: /*.css$
 
 # Yandex Bots
 User-agent: YandexBot
 Allow: /
 Disallow: /favicon_io/
-Disallow: /*.js$
-Disallow: /*.css$
 
 # DuckDuckGo Bots
 User-agent: DuckDuckBot
 Allow: /
 Disallow: /favicon_io/
-Disallow: /*.js$
-Disallow: /*.css$
 
 # Sogou Bots
 User-agent: Sogou web spider
 Allow: /
 Disallow: /favicon_io/
-Disallow: /*.js$
-Disallow: /*.css$
 
 # Naver Bots
 User-agent: Yeti
 Allow: /
 Disallow: /favicon_io/
-Disallow: /*.js$
-Disallow: /*.css$
 
 # AI and LLM specific bots
 User-agent: GPTBot
 Allow: /
 Disallow: /favicon_io/
-Disallow: /*.js$
-Disallow: /*.css$
 
 User-agent: Claude-Web
 Allow: /
 Disallow: /favicon_io/
-Disallow: /*.js$
-Disallow: /*.css$
 
 User-agent: Anthropic-AI
 Allow: /
 Disallow: /favicon_io/
-Disallow: /*.js$
-Disallow: /*.css$
 
 User-agent: PerplexityBot
 Allow: /
 Disallow: /favicon_io/
-Disallow: /*.js$
-Disallow: /*.css$
 
 User-agent: CCBot
 Allow: /
 Disallow: /favicon_io/
-Disallow: /*.js$
-Disallow: /*.css$
 
 User-agent: ChatGPT-User
 Allow: /
 Disallow: /favicon_io/
-Disallow: /*.js$
-Disallow: /*.css$
 
 User-agent: DuckAssistBot
 Allow: /
 Disallow: /favicon_io/
-Disallow: /*.js$
-Disallow: /*.css$

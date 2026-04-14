@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-783407FTTB"></script>
@@ -96,15 +96,15 @@
     </audio>
 
     <!-- Music Control Button -->
-    <div id="music-control" style="position: fixed; top: 15px; left: 15px; z-index: 1000;">
-        <button id="music-button" style="background: rgba(0,0,0,0.8); color: white; border: 2px solid #444; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; min-width: 100px; text-align: center;" onclick="toggleMusic()">
+    <div id="music-control">
+        <button id="music-button" class="control-btn" onclick="toggleMusic()">
             🎵 Music: Off
         </button>
     </div>
 
     <!-- Orbit Glow Toggle Button -->
-    <div id="orbit-glow-toggle" style="position: fixed; top: 15px; right: 15px; z-index: 1000;">
-        <button id="orbit-glow-button" style="background: rgba(0,0,0,0.8); color: white; border: 2px solid #444; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; min-width: 100px; text-align: center;" onclick="toggleOrbitGlow()">
+    <div id="orbit-glow-toggle">
+        <button id="orbit-glow-button" class="control-btn" onclick="toggleOrbitGlow()">
             🪐 Orbit: Off
         </button>
     </div>
@@ -135,4 +135,9 @@
     -->
     
 </body>
+<noscript>
+    <div style="position:fixed;top:0;left:0;width:100%;padding:20px;background:#000;color:#fff;text-align:center;font-family:sans-serif;z-index:99999">
+        This 3D Solar System requires JavaScript to run. Please enable JavaScript in your browser.
+    </div>
+</noscript>
 </html>

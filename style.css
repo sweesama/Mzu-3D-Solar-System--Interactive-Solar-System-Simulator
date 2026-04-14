@@ -127,4 +127,33 @@ body { margin: 0; overflow: hidden; background-color: #000000; font-family: 'Int
             font-size: 14px;
             min-height: 20px;
         }
-        
+
+        /* Control Button Base Styles */
+        #music-control {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1000;
+        }
+        #orbit-glow-toggle {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
+        }
+        .control-btn {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border: 2px solid #444;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            min-width: 100px;
+            text-align: center;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .control-btn:hover {
+            border-color: #666;
+        }
+

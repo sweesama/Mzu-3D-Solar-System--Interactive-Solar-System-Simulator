@@ -89,7 +89,7 @@ const planets = [
 // Helper to replace meta tags
 function replaceMeta(html, tag, nameAttr, newValue) {
     // Matches <meta name="description" content="..."> 
-    const regex = new RegExp('<meta\\\\s+name="' + nameAttr + '"\\\\s+content="[^"]*">', 'i');
+    const regex = new RegExp('<meta\\s+name="' + nameAttr + '"\\s+content="[^"]*">', 'i');
     if (html.match(regex)) {
         return html.replace(regex, '<meta name="' + nameAttr + '" content="' + newValue + '">');
     } else {
