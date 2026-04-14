@@ -1818,6 +1818,23 @@ self.onmessage = function(e) {
             axialTiltGroup.rotation.z = planetData.axialTilt;
             axialTiltGroup.add(planetMesh);
 
+            // 为小行星/矮行星添加透明点击辅助球，提高远距离点击命中率
+            if (visualRadius < 1.5) {
+                const hitRadius = Math.max(visualRadius * 6, 2.5);
+                const hitGeometry = new THREE.SphereGeometry(hitRadius, 8, 8);
+                const hitMaterial = new THREE.MeshBasicMaterial({
+                    transparent: true,
+                    opacity: 0,
+                    depthWrite: false,
+                    side: THREE.FrontSide
+                });
+                const hitMesh = new THREE.Mesh(hitGeometry, hitMaterial);
+                hitMesh.userData = planetData; // 点击时透传行星数据
+                hitMesh.name = planetData.name + '_hitzone';
+                axialTiltGroup.add(hitMesh);
+            }
+
+
             const orbitPivot = new THREE.Object3D();  /* ... NO CHANGE ... */
             scene.add(orbitPivot);
             orbitPivot.add(axialTiltGroup);
