@@ -87,19 +87,19 @@
                 radius: 2.2, radiusMetric: 25362, orbitRadius: 125, orbitSemiMajorAxisAU: 19.2184,
                 speed: 0.0068, rotationSpeed: 0.025, axialTilt: 1.709, materialProps: { roughness: 0.7, metalness: 0.1 }, isUranus: true, hasRings: true, ringType: "uranus",
                 moons: [
-                    { name: 'Miranda', displayName: 'Miranda', type: "Moon", e: 0.0013, radius: 0.09, radiusMetric: 235.8, orbitRadius: 1.2, orbitSemiMajorAxisAU: 0.000866, speed: 0.085, color: 0x9fb3cc, materialProps: { roughness: 0.8, metalness: 0.05 }, isMiranda: true, rotationSpeed: 0.008 },
-                    { name: 'Ariel', displayName: 'Ariel', type: "Moon", e: 0.0012, radius: 0.12, radiusMetric: 578.9, orbitRadius: 1.6, orbitSemiMajorAxisAU: 0.001259, speed: 0.062, color: 0xafc3dc, materialProps: { roughness: 0.75, metalness: 0.08 }, isAriel: true, rotationSpeed: 0.006 },
-                    { name: 'Umbriel', displayName: 'Umbriel', type: "Moon", e: 0.0039, radius: 0.11, radiusMetric: 584.7, orbitRadius: 2.0, orbitSemiMajorAxisAU: 0.002661, speed: 0.048, color: 0x7f8fa0, materialProps: { roughness: 0.85, metalness: 0.06 }, isUmbriel: true, rotationSpeed: 0.005 },
-                    { name: 'Titania', displayName: 'Titania', type: "Moon", e: 0.0011, radius: 0.16, radiusMetric: 788.4, orbitRadius: 2.5, orbitSemiMajorAxisAU: 0.004363, speed: 0.035, color: 0xbfd3e0, materialProps: { roughness: 0.7, metalness: 0.1 }, isTitania: true, rotationSpeed: 0.004 },
-                    { name: 'Oberon', displayName: 'Oberon', type: "Moon", e: 0.0014, radius: 0.15, radiusMetric: 761.4, orbitRadius: 3.0, orbitSemiMajorAxisAU: 0.005834, speed: 0.028, color: 0x8fa0b0, materialProps: { roughness: 0.8, metalness: 0.07 }, isOberon: true, rotationSpeed: 0.003 }
+                    { name: 'Miranda', displayName: 'Miranda', type: "Moon", e: 0.0013, radius: 0.09, radiusMetric: 235.8, orbitRadius: 3.5, orbitSemiMajorAxisAU: 0.000866, speed: 0.085, color: 0x9fb3cc, materialProps: { roughness: 0.8, metalness: 0.05 }, isMiranda: true, rotationSpeed: 0.008 },
+                    { name: 'Ariel', displayName: 'Ariel', type: "Moon", e: 0.0012, radius: 0.12, radiusMetric: 578.9, orbitRadius: 4.5, orbitSemiMajorAxisAU: 0.001259, speed: 0.062, color: 0xafc3dc, materialProps: { roughness: 0.75, metalness: 0.08 }, isAriel: true, rotationSpeed: 0.006 },
+                    { name: 'Umbriel', displayName: 'Umbriel', type: "Moon", e: 0.0039, radius: 0.11, radiusMetric: 584.7, orbitRadius: 5.5, orbitSemiMajorAxisAU: 0.002661, speed: 0.048, color: 0x7f8fa0, materialProps: { roughness: 0.85, metalness: 0.06 }, isUmbriel: true, rotationSpeed: 0.005 },
+                    { name: 'Titania', displayName: 'Titania', type: "Moon", e: 0.0011, radius: 0.16, radiusMetric: 788.4, orbitRadius: 7.0, orbitSemiMajorAxisAU: 0.004363, speed: 0.035, color: 0xbfd3e0, materialProps: { roughness: 0.7, metalness: 0.1 }, isTitania: true, rotationSpeed: 0.004 },
+                    { name: 'Oberon', displayName: 'Oberon', type: "Moon", e: 0.0014, radius: 0.15, radiusMetric: 761.4, orbitRadius: 8.5, orbitSemiMajorAxisAU: 0.005834, speed: 0.028, color: 0x8fa0b0, materialProps: { roughness: 0.8, metalness: 0.07 }, isOberon: true, rotationSpeed: 0.003 }
                 ]
             },
             { name: 'Neptune', displayName: 'Neptune', type: "Planet", e: 0.0113, color: 0x3b5998,
                 radius: 2.1, radiusMetric: 24622, orbitRadius: 150, orbitSemiMajorAxisAU: 30.110,
                 speed: 0.0054, rotationSpeed: 0.026, axialTilt: 0.4945, materialProps: { roughness: 0.65, metalness: 0.1 }, isNeptune: true, hasRings: true, ringType: "neptune",
                 moons: [
-                    { name: 'Triton', displayName: 'Triton', type: "Moon", e: 0.000016, radius: 0.21, radiusMetric: 1353.4, orbitRadius: 2.2, orbitSemiMajorAxisAU: 0.002371, speed: -0.025, color: 0xb8c6db, materialProps: { roughness: 0.6, metalness: 0.15 }, isTriton: true, hasAtmosphere: true, atmosphereColor: 0xc8d6e8, atmosphereScale: 1.02, rotationSpeed: -0.008 },
-                    { name: 'Nereid', displayName: 'Nereid', type: "Moon", e: 0.7512, radius: 0.08, radiusMetric: 170.0, orbitRadius: 4.5, orbitSemiMajorAxisAU: 0.036087, speed: 0.003, color: 0x8a9bb0, materialProps: { roughness: 0.9, metalness: 0.05 }, isNereid: true, rotationSpeed: 0.002 }
+                    { name: 'Triton', displayName: 'Triton', type: "Moon", e: 0.000016, radius: 0.21, radiusMetric: 1353.4, orbitRadius: 4.2, orbitSemiMajorAxisAU: 0.002371, speed: -0.025, color: 0xb8c6db, materialProps: { roughness: 0.6, metalness: 0.15 }, isTriton: true, hasAtmosphere: true, atmosphereColor: 0xc8d6e8, atmosphereScale: 1.02, rotationSpeed: -0.008 },
+                    { name: 'Nereid', displayName: 'Nereid', type: "Moon", e: 0.7512, radius: 0.08, radiusMetric: 170.0, orbitRadius: 12.5, orbitSemiMajorAxisAU: 0.036087, speed: 0.003, color: 0x8a9bb0, materialProps: { roughness: 0.9, metalness: 0.05 }, isNereid: true, rotationSpeed: 0.002 }
                 ]
             },
             // Dwarf Planet System
@@ -1773,11 +1773,108 @@ self.onmessage = function(e) {
                     
                 });
                 planetMaterial = new THREE.MeshStandardMaterial({ map: texture, ...planetData.materialProps });
-            } else if (planetData.isUranus) { /* ... NO CHANGE IN TEXTURE LOGIC ... */
-                texture = createProceduralTexture(128, 64, (ctx, w, h) => { /* Uranus */ ctx.fillStyle = '#90c0c8'; ctx.fillRect(0,0,w,h); ctx.globalAlpha = 0.04; for(let y=0; y<h; y+=1) { for(let x=0; x<w; x+=1) { if (Math.random() < 0.05) { ctx.fillStyle = `rgba(180,225,235,${Math.random()*0.1 + 0.05})`; ctx.fillRect(x,y,1,1); } } } ctx.globalAlpha = 1.0; });
+            } else if (planetData.isUranus) {
+                // High-res Procedural Uranus Texture
+                texture = createProceduralTexture(1024, 512, (ctx, w, h) => {
+                    // Base color (pale cyan/blue)
+                    ctx.fillStyle = '#b5e3e3';
+                    ctx.fillRect(0, 0, w, h);
+                    
+                    // Latitudinal banding
+                    ctx.globalCompositeOperation = 'overlay';
+                    ctx.globalAlpha = 0.15;
+                    for(let y = 0; y < h; y += 4) {
+                        ctx.fillStyle = (Math.random() > 0.5) ? '#ffffff' : '#88ccdd';
+                        let bandHeight = Math.random() * 8 + 2;
+                        ctx.fillRect(0, y, w, bandHeight);
+                        y += bandHeight;
+                    }
+
+                    // Bright poles (Uranus has an extreme axial tilt, poles are often bright)
+                    ctx.globalCompositeOperation = 'source-over';
+                    let gradientTop = null;
+                    if (ctx.createLinearGradient) {
+                        gradientTop = ctx.createLinearGradient(0, 0, 0, h/4);
+                        gradientTop.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
+                        gradientTop.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                        ctx.fillStyle = gradientTop;
+                        ctx.fillRect(0, 0, w, h/4);
+                        
+                        let gradientBot = ctx.createLinearGradient(0, h, 0, h - h/4);
+                        gradientBot.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
+                        gradientBot.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                        ctx.fillStyle = gradientBot;
+                        ctx.fillRect(0, h - h/4, w, h/4);
+                    }
+
+                    // Subtle noise
+                    ctx.globalAlpha = 0.05;
+                    for(let i = 0; i < 20000; i++) {
+                        ctx.fillStyle = Math.random() > 0.5 ? '#ffffff' : '#66aacc';
+                        ctx.fillRect(Math.random()*w, Math.random()*h, Math.random()*2+1, Math.random()*2+1);
+                    }
+                    ctx.globalAlpha = 1.0;
+                });
                 planetMaterial = new THREE.MeshStandardMaterial({ map: texture, ...planetData.materialProps });
-            } else if (planetData.isNeptune) { /* ... NO CHANGE IN TEXTURE LOGIC ... */
-                texture = createProceduralTexture(128, 64, (ctx, w, h) => { /* Neptune */ ctx.fillStyle = '#3a5588'; ctx.fillRect(0,0,w,h); ctx.globalAlpha = 0.07; for(let y=0; y<h; y+=1) { for(let x=0; x<w; x+=1) { if (Math.random() < 0.08) { ctx.fillStyle = `rgba(25,40,70,${Math.random()*0.2 + 0.1})`; ctx.fillRect(x,y,1,1); } } } ctx.globalAlpha = 1.0; });
+            } else if (planetData.isNeptune) {
+                // High-res Procedural Neptune Texture
+                texture = createProceduralTexture(1024, 512, (ctx, w, h) => {
+                    // Base color (deep ocean blue)
+                    ctx.fillStyle = '#2b447a';
+                    ctx.fillRect(0, 0, w, h);
+                    
+                    // Rich Latitudinal bands
+                    ctx.globalCompositeOperation = 'overlay';
+                    for(let y = 0; y < h; y += 2) {
+                        ctx.globalAlpha = Math.random() * 0.3;
+                        ctx.fillStyle = (Math.random() > 0.5) ? '#182b54' : '#4773c2';
+                        let bandHeight = Math.random() * 6 + 2;
+                        ctx.fillRect(0, y, w, bandHeight);
+                        y += bandHeight;
+                    }
+
+                    ctx.globalCompositeOperation = 'source-over';
+                    
+                    // Great Dark Spot (approx at mid-southern latitude)
+                    if (ctx.createRadialGradient) {
+                        ctx.globalAlpha = 0.7;
+                        const spotGradient = ctx.createRadialGradient(w*0.6, h*0.65, 0, w*0.6, h*0.65, h*0.08);
+                        spotGradient.addColorStop(0, '#101b36');
+                        spotGradient.addColorStop(1, 'rgba(16, 27, 54, 0)');
+                        ctx.fillStyle = spotGradient;
+                        // Draw an ellipse for the dark spot
+                        ctx.save();
+                        ctx.translate(w*0.6, h*0.65);
+                        ctx.scale(2, 1);
+                        ctx.beginPath();
+                        ctx.arc(0, 0, h*0.06, 0, Math.PI*2);
+                        ctx.fill();
+                        ctx.restore();
+                    }
+
+                    // White cirrus clouds (methane ice clouds)
+                    ctx.globalAlpha = 0.8;
+                    ctx.fillStyle = '#ffffff';
+                    for(let i = 0; i < 50; i++) {
+                        let cx = Math.random() * w;
+                        // Concentrate some clouds near the dark spot
+                        if(i < 15) cx = w*0.6 + (Math.random()*w*0.1 - w*0.05);
+                        let cy = Math.random() * h;
+                        if(i < 15) cy = h*0.65 + (Math.random()*h*0.1 - h*0.05);
+                        
+                        let cloudWidth = Math.random() * 30 + 10;
+                        let cloudHeight = Math.random() * 2 + 1;
+                        ctx.fillRect(cx, cy, cloudWidth, cloudHeight);
+                    }
+                    
+                    // Subtle noise
+                    ctx.globalAlpha = 0.05;
+                    for(let i = 0; i < 20000; i++) {
+                        ctx.fillStyle = (Math.random() > 0.5) ? '#112244' : '#6688cc';
+                        ctx.fillRect(Math.random()*w, Math.random()*h, Math.random()*2+1, Math.random()*2+1);
+                    }
+                    ctx.globalAlpha = 1.0;
+                });
                 planetMaterial = new THREE.MeshStandardMaterial({ map: texture, ...planetData.materialProps });
             } else if (planetData.isPluto) { /* ... NO CHANGE IN TEXTURE LOGIC ... */
                 texture = createProceduralTexture(128, 64, (ctx, w, h) => { /* Pluto */ ctx.fillStyle = '#8b7d6b'; ctx.fillRect(0,0,w,h); ctx.globalAlpha = 0.4; for(let i=0; i<80; i++) { ctx.fillStyle = (Math.random() > 0.5) ? 'rgba(139,125,107,0.3)' : 'rgba(107,93,75,0.3)'; ctx.fillRect(Math.random()*w, Math.random()*h, 1, 1); } ctx.globalAlpha = 1.0; ctx.fillStyle = 'rgba(150,140,125,0.8)'; for(let i=0; i<12; i++) { ctx.beginPath(); const cx = Math.random()*w; const cy = Math.random()*h; const rx = Math.random()*w*0.2 + w*0.05; const ry = Math.random()*h*0.15 + h*0.05; ctx.ellipse(cx,cy,rx,ry, Math.random()*Math.PI, 0,2*Math.PI); ctx.fill(); } ctx.fillStyle = 'rgba(200,195,185,0.7)'; ctx.beginPath(); ctx.arc(w*0.7, h*0.3, w*0.08, 0, Math.PI*2); ctx.fill(); });
@@ -2074,12 +2171,26 @@ self.onmessage = function(e) {
                     });
 
                     const moonOrbitLineMat = new THREE.LineBasicMaterial({ color: 0x444444, transparent: true, opacity: 0.3 });
-                    const moonEllipse = new THREE.EllipseCurve(0,0, moonData.orbitRadius, moonData.orbitRadius * Math.sqrt(1-(moonData.e||0)*(moonData.e||0)), 0, 2*Math.PI, false, 0);
-                    const moonOrbitPoints = moonEllipse.getPoints(64);
-                    const moonOrbitGeom = new THREE.BufferGeometry().setFromPoints(moonOrbitPoints);
+                    const moonPoints = [];
+                    const moon_e = moonData.e || 0;
+                    const moon_a = moonData.orbitRadius;
+                    for (let i = 0; i <= 128; i++) {
+                        const M = (i / 128) * Math.PI * 2;
+                        let r = moon_a;
+                        if (moon_e > 0.0001) {
+                            let E = M;
+                            for (let j = 0; j < 7; j++) { E = M + moon_e * Math.sin(E); }
+                            r = moon_a * (1 - moon_e * Math.cos(E));
+                            let trueAnomaly = 2 * Math.atan2(Math.sqrt(1 + moon_e) * Math.sin(E / 2), Math.sqrt(1 - moon_e) * Math.cos(E / 2));
+                            moonPoints.push(new THREE.Vector2(r * Math.cos(trueAnomaly), -r * Math.sin(trueAnomaly)));
+                        } else {
+                            moonPoints.push(new THREE.Vector2(r * Math.cos(M), -r * Math.sin(M)));
+                        }
+                    }
+                    const moonOrbitGeom = new THREE.BufferGeometry().setFromPoints(moonPoints);
                     const moonOrbitLine = new THREE.Line(moonOrbitGeom, moonOrbitLineMat);
                     moonOrbitLine.rotation.x = Math.PI / 2;
-                    moonOrbitPivot.add(moonOrbitLine);
+                    axialTiltGroup.add(moonOrbitLine);
                     
                     // Store moon orbit line reference for glow toggle
                     moonOrbitLine.userData = { isMoonOrbit: true };
@@ -2192,14 +2303,15 @@ self.onmessage = function(e) {
                     let E = M; // Eccentric Anomaly
                     for (let k = 0; k < 7; k++) { E = M + e * Math.sin(E); }
                     r = a * (1 - e * Math.cos(E));
+                    let trueAnomaly = 2 * Math.atan2(Math.sqrt(1 + e) * Math.sin(E / 2), Math.sqrt(1 - e) * Math.cos(E / 2));
+                    const x = r * Math.cos(trueAnomaly);
+                    const y = -r * Math.sin(trueAnomaly);
+                    points.push(new THREE.Vector2(x, y));
+                } else {
+                    const x = r * Math.cos(M);
+                    const y = -r * Math.sin(M);
+                    points.push(new THREE.Vector2(x, y));
                 }
-                
-                // 实际运动的机制：物体放在X轴上，距离为r，然后通过pivot旋转
-                // 所以轨道线上的点应该是：x = r * cos(M), y = r * sin(M)
-                const x = r * Math.cos(M);
-                const y = r * Math.sin(M);
-                
-                points.push(new THREE.Vector2(x, y));
             }
             
             const orbitLineGeometry = new THREE.BufferGeometry().setFromPoints(points);
@@ -2947,20 +3059,22 @@ self.onmessage = function(e) {
                 const a = obj.orbitRadius; // Scene orbit radius
 
                 let r = a; // Distance from focus (sun/parent)
-                let trueAnomaly = M;
+                let M_wrapped = M % (2 * Math.PI);
+                if (M_wrapped < 0) M_wrapped += 2 * Math.PI;
+                let trueAnomaly = M_wrapped;
 
                 if (e > 0.0001) {
-                    let E = M; // Eccentric Anomaly
-                    for (let i = 0; i < 7; i++) { E = M + e * Math.sin(E); }
+                    let E = M_wrapped; // Eccentric Anomaly
+                    for (let i = 0; i < 7; i++) { E = M_wrapped + e * Math.sin(E); }
                     r = a * (1 - e * Math.cos(E));
                     trueAnomaly = 2 * Math.atan2(Math.sqrt(1 + e) * Math.sin(E / 2), Math.sqrt(1 - e) * Math.cos(E / 2));
                 }
                 
-                // 恢复原来的运动机制：物体放在X轴上，通过pivot旋转来定位
+                // 真实物理还原：由于 pivot 随着 M 旋转，我们算出基于焦点真实极坐标的偏差来放置对象
                 const positionedObject = obj.axialTiltGroup || obj.mesh;
                 if (positionedObject) {
-                     // For planets/moons, the axialTiltGroup is positioned. For asteroids/comets, the mesh itself.
-                    positionedObject.position.x = r;
+                    positionedObject.position.x = r * Math.cos(trueAnomaly - M);
+                    positionedObject.position.z = -r * Math.sin(trueAnomaly - M);
                 }
 
 
