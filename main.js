@@ -24,6 +24,58 @@
         // Camera Tracking Variables
         let trackedObject = null;
         let isTransitioningCamera = false;
+        // ✨ Phase 3.x：保存当前活跃的相机 tween 引用，新点击时主动清除，避免新旧 tween 争夺 camera.position
+        let activeCameraTweens = [];
+
+        // --- 真实贴图配置表（来自 Solar System Scope，CC-BY 4.0）---
+        // 如果某个行星/卫星在这里有对应贴图，createPlanet() 会优先加载真实贴图，
+        // 否则 fallback 到原来的程序化（Canvas 2D 画的）贴图。
+        // 阶段一：只做基础颜色贴图。地球的法线/镜面/云层/夜晚留到阶段二。
+        const REAL_TEXTURES = {
+            'Mercury': 'textures/2k_mercury.jpg',
+            'Venus':   'textures/2k_venus_atmosphere.jpg',
+            'Earth':   'textures/2k_earth_daymap.jpg',
+            'Mars':    'textures/2k_mars.jpg',
+            'Jupiter': 'textures/2k_jupiter.jpg',
+            'Saturn':  'textures/2k_saturn.jpg',
+            'Uranus':  'textures/2k_uranus.jpg',
+            'Neptune': 'textures/2k_neptune.jpg',
+            'Moon':    'textures/2k_moon.jpg',
+            // ✨ Phase 3.x：SSS 提供的 4 颗矮行星 fictional（含程序化填补空白）2K 贴图
+            'Ceres':    'textures/2k_ceres_fictional.jpg',
+            'Eris':     'textures/2k_eris_fictional.jpg',
+            'Haumea':   'textures/2k_haumea_fictional.jpg',
+            'Makemake': 'textures/2k_makemake_fictional.jpg',
+            // ✨ 卫星贴图（来自 stevealbers.net，基于 NASA Voyager/Galileo/Cassini/Juno 公开域素材）
+            // 注意：必须先跑 download_textures.ps1 把文件下载下来，否则会显示原色球（fallback）。
+            // 木星卫星：
+            'Io':       'textures/moon_io.jpg',
+            'Europa':   'textures/moon_europa.png',
+            'Ganymede': 'textures/moon_ganymede.jpg',
+            'Callisto': 'textures/moon_callisto.jpg',
+            // 土星卫星：
+            'Mimas':    'textures/moon_mimas.jpg',
+            'Titan':    'textures/moon_titan.jpg',
+            'Rhea':     'textures/moon_rhea.jpg',
+            // 天王星卫星：
+            'Miranda':  'textures/moon_miranda.jpg',
+            'Ariel':    'textures/moon_ariel.jpg',
+            'Umbriel':  'textures/moon_umbriel.jpg',
+            'Titania':  'textures/moon_titania.jpg',
+            'Oberon':   'textures/moon_oberon.jpg',
+            // 海王星卫星：
+            'Triton':   'textures/moon_triton.jpg',
+            // 冥卫：
+            'Charon':   'textures/moon_charon.jpg'
+        };
+
+        // 背景与特殊贴图（不属于行星本体）
+        const EXTRA_TEXTURES = {
+            milkyWay:    'textures/2k_stars_milky_way.jpg',  // 银河背景球
+            saturnRing:  'textures/2k_saturn_ring_alpha.png', // 土星环（含 alpha）
+            earthClouds: 'textures/2k_earth_clouds.jpg',      // 地球云层（独立透明球）
+            earthNight:  'textures/2k_earth_nightmap.jpg'    // 地球夜晚城市灯光
+        };
 
         // --- Celestial Body Data with Metric and Scene Units ---
         // radius: visual radius relative to Earth=1 for scene display
@@ -208,6 +260,7 @@ self.onmessage = function(e) {
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.outputEncoding = THREE.sRGBEncoding; // 让画面颜色真实不偏暗（修复程序化纹理偏灰问题）
 
  
             renderer.shadowMap.enabled = true;
@@ -258,6 +311,10 @@ self.onmessage = function(e) {
             updateProgress("Generating Starfield...", 80);
             await yieldThread();
             createStarfield();
+
+            updateProgress("Loading Milky Way...", 82);
+            await yieldThread();
+            createMilkyWayBackground();
 
             updateProgress("Generating Nebulae...", 85);
             await yieldThread();
@@ -320,8 +377,14 @@ self.onmessage = function(e) {
                     targetObjInfo.mesh.userData._lastPos = targetPosition.clone();
                     
                     const objectRadius = data.radius || 1;
-                    const minDistance = data.type && data.type.toLowerCase() === "star" ? 60 : 5;
-                    const distance = Math.max(objectRadius * 4, minDistance);
+                    let distance;
+                    if (data.type && data.type.toLowerCase() === "star") {
+                        distance = Math.max(objectRadius * 4, 60);
+                        controls.minDistance = 20;
+                    } else {
+                        distance = objectRadius * 2.5;
+                        controls.minDistance = Math.max(0.5, objectRadius * 1.2);
+                    }
                     
                     const offset = camera.position.clone().sub(controls.target).normalize();
                     if (offset.length() < 0.1) offset.set(0, 0, 1);
@@ -329,16 +392,21 @@ self.onmessage = function(e) {
                     
                     const newCamPos = targetPosition.clone().add(offset);
                     
-                    new TWEEN.Tween(camera.position)
+                    activeCameraTweens.forEach(t => t.stop());
+                    activeCameraTweens = [];
+
+                    const camTweenInit = new TWEEN.Tween(camera.position)
                         .to({ x: newCamPos.x, y: newCamPos.y, z: newCamPos.z }, 2000)
                         .easing(TWEEN.Easing.Quadratic.InOut)
                         .onComplete(() => { isTransitioningCamera = false; })
                         .start();
                         
-                    new TWEEN.Tween(controls.target)
+                    const targetTweenInit = new TWEEN.Tween(controls.target)
                         .to({ x: targetPosition.x, y: targetPosition.y, z: targetPosition.z }, 2000)
                         .easing(TWEEN.Easing.Quadratic.InOut)
                         .start();
+
+                    activeCameraTweens.push(camTweenInit, targetTweenInit);
                         
                     // Make the info panel show up
                     document.getElementById('info-title').innerText = data.displayName || 'Unknown';
@@ -369,6 +437,7 @@ self.onmessage = function(e) {
             const texture = new THREE.CanvasTexture(canvas);
             texture.wrapS = THREE.RepeatWrapping;
             texture.wrapT = THREE.RepeatWrapping;
+            texture.encoding = THREE.sRGBEncoding; // Canvas 画出来的像素本身就是 sRGB 颜色，要显式告诉 Three.js
             texture.needsUpdate = true;
             return texture;
         }
@@ -486,7 +555,7 @@ self.onmessage = function(e) {
             sunMesh.name = "Sun";
             sunMesh.userData = {
                 displayName: sunDisplayName,
-                type: "Stellar",
+                type: "Star",
                 radius: sunRadiusVisual,         // Visual radius for scene scale
                 radiusMetric: sunRadiusMetric,   // Actual radius in km
                 orbitRadius: 0,                  // Sun is the center (scene units)
@@ -564,7 +633,63 @@ self.onmessage = function(e) {
             // Use planetData.radius for geometry (visual radius)
             const visualRadius = planetData.radius;
 
-            if (planetData.isEarth) { /* ... ULTRA-REALISTIC EARTH TEXTURE ... */
+            // 优先尝试加载真实贴图（来自 Solar System Scope）
+            // 如果该行星在 REAL_TEXTURES 表中有对应贴图，使用真实贴图；否则走下面的程序化分支
+            const realTextureUrl = REAL_TEXTURES[planetData.name];
+            if (realTextureUrl) {
+                const loader = new THREE.TextureLoader();
+                texture = loader.load(realTextureUrl,
+                    undefined, // onLoad
+                    undefined, // onProgress
+                    (err) => { console.warn(`真实贴图加载失败: ${realTextureUrl}`, err); }
+                );
+                texture.wrapS = THREE.RepeatWrapping;
+                texture.wrapT = THREE.RepeatWrapping;
+                texture.encoding = THREE.sRGBEncoding;
+                planetMaterial = new THREE.MeshStandardMaterial({ map: texture, ...planetData.materialProps });
+
+                // ✨ Phase 3.1：地球昼夜 Shader
+                // 思路：太阳在世界原点 (0,0,0)。对每个像素计算它的世界法线和"指向太阳"方向的夹角，
+                // 夹角 > 0 = 朝阳的白天侧（用日间贴图），夹角 < 0 = 背阳的夜晚侧（叠加城市灯光自发光）。
+                if (planetData.isEarth) {
+                    const nightTex = new THREE.TextureLoader().load(EXTRA_TEXTURES.earthNight,
+                        undefined, undefined,
+                        (err) => { console.warn('地球夜晚贴图加载失败:', err); }
+                    );
+                    nightTex.encoding = THREE.sRGBEncoding;
+                    nightTex.wrapS = THREE.RepeatWrapping;
+                    nightTex.wrapT = THREE.RepeatWrapping;
+
+                    planetMaterial.onBeforeCompile = (shader) => {
+                        shader.uniforms.nightMap = { value: nightTex };
+
+                        // 顶点着色器：计算世界空间法线和位置，传给片元
+                        shader.vertexShader = 'varying vec3 vWorldNormalDN;\nvarying vec3 vWorldPosDN;\nvarying vec2 vUvDN;\n' + shader.vertexShader;
+                        shader.vertexShader = shader.vertexShader.replace(
+                            '#include <worldpos_vertex>',
+                            `#include <worldpos_vertex>
+                            vWorldNormalDN = normalize(mat3(modelMatrix) * normal);
+                            vWorldPosDN = worldPosition.xyz;
+                            vUvDN = uv;`
+                        );
+
+                        // 片元着色器：在 emissive 阶段叠加城市灯光
+                        shader.fragmentShader = 'uniform sampler2D nightMap;\nvarying vec3 vWorldNormalDN;\nvarying vec3 vWorldPosDN;\nvarying vec2 vUvDN;\n' + shader.fragmentShader;
+                        shader.fragmentShader = shader.fragmentShader.replace(
+                            '#include <emissivemap_fragment>',
+                            `#include <emissivemap_fragment>
+                            // 太阳在世界原点，sunDir = 从地表指向太阳
+                            vec3 sunDirDN = normalize(-vWorldPosDN);
+                            float facingDN = dot(vWorldNormalDN, sunDirDN);
+                            // facingDN > 0 = 白天，< 0 = 夜晚；用 smoothstep 平滑过渡（晨昏线）
+                            float nightMixDN = smoothstep(0.15, -0.05, facingDN);
+                            vec3 nightColDN = texture2D(nightMap, vUvDN).rgb;
+                            // 把夜晚灯光以自发光形式叠加（亮度 2.5 倍让灯火更明显）
+                            totalEmissiveRadiance += nightColDN * nightMixDN * 2.5;`
+                        );
+                    };
+                }
+            } else if (planetData.isEarth) { /* ... ULTRA-REALISTIC EARTH TEXTURE ... */
                 texture = createProceduralTexture(1024, 512, (ctx, w, h) => {
                     // 创建更高质量的地球纹理
                     
@@ -1779,11 +1904,11 @@ self.onmessage = function(e) {
                     // Base color (pale cyan/blue)
                     ctx.fillStyle = '#b5e3e3';
                     ctx.fillRect(0, 0, w, h);
-                    
-                    // Latitudinal banding
+
+                    // Latitudinal banding（y 步长由循环体内的 bandHeight 累加，外部不再多跳 4 像素）
                     ctx.globalCompositeOperation = 'overlay';
                     ctx.globalAlpha = 0.15;
-                    for(let y = 0; y < h; y += 4) {
+                    for(let y = 0; y < h;) {
                         ctx.fillStyle = (Math.random() > 0.5) ? '#ffffff' : '#88ccdd';
                         let bandHeight = Math.random() * 8 + 2;
                         ctx.fillRect(0, y, w, bandHeight);
@@ -1799,6 +1924,7 @@ self.onmessage = function(e) {
                         gradientTop.addColorStop(1, 'rgba(255, 255, 255, 0)');
                         ctx.fillStyle = gradientTop;
                         ctx.fillRect(0, 0, w, h/4);
+
                         
                         let gradientBot = ctx.createLinearGradient(0, h, 0, h - h/4);
                         gradientBot.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
@@ -1911,6 +2037,35 @@ self.onmessage = function(e) {
                 planetMaterial.emissiveIntensity = 0.15;
             }
 
+            // 地球独立云层（Phase 2）：在地球本体外套一个稍大一点的透明球，贴上 2k_earth_clouds.jpg
+            // 云层会随地球本体一起旋转（因为是 planetMesh 的子物体）
+            if (planetData.isEarth) {
+                const cloudsTex = new THREE.TextureLoader().load(EXTRA_TEXTURES.earthClouds,
+                    undefined, undefined,
+                    (err) => { console.warn(`地球云层贴图加载失败:`, err); }
+                );
+                cloudsTex.encoding = THREE.sRGBEncoding;
+                cloudsTex.wrapS = THREE.RepeatWrapping;
+                cloudsTex.wrapT = THREE.RepeatWrapping;
+                const cloudsGeometry = new THREE.SphereGeometry(visualRadius * 1.012, 48, 48);
+                const cloudsMaterial = new THREE.MeshStandardMaterial({
+                    map: cloudsTex,
+                    alphaMap: cloudsTex,    // 同一张图既作色彩又作 alpha：白云不透明，黑色背景透明
+                    transparent: true,
+                    depthWrite: false,
+                    opacity: 0.85,
+                    roughness: 0.95,
+                    metalness: 0.0
+                });
+                const cloudsMesh = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
+                cloudsMesh.name = "EarthClouds";
+                cloudsMesh.castShadow = false;
+                cloudsMesh.receiveShadow = false;
+                planetMesh.add(cloudsMesh);
+                // ✨ Phase 3.2：把云层引用挂到地球 mesh 上，让 animate() 中给云层加额外旋转
+                planetMesh.userData.earthCloudsMesh = cloudsMesh;
+            }
+
             const axialTiltGroup = new THREE.Object3D(); /* ... NO CHANGE ... */
             axialTiltGroup.rotation.z = planetData.axialTilt;
             axialTiltGroup.add(planetMesh);
@@ -1952,11 +2107,33 @@ self.onmessage = function(e) {
                 radius: visualRadius // Scene radius
             });
 
-            if (planetData.moons) { /* ... NO CHANGE IN MOON CREATION LOGIC, userData will carry metric data ... */
+            if (planetData.moons) { 
                 planetData.moons.forEach(moonData => {
                     const moonVisualRadius = moonData.radius;
                     let moonTexture;
-                    if (moonData.isMoon) { moonTexture = createProceduralTexture(128,64,(ctx,w,h)=>{ctx.fillStyle = '#b0b0b0';ctx.fillRect(0,0,w,h);ctx.globalAlpha=0.7;for(let i=0;i<80;i++){const cX=Math.random()*w,cY=Math.random()*h,cR=Math.random()*(w*0.04)+w*0.01;ctx.fillStyle=(Math.random()<0.6)?'rgba(80,80,80,0.6)':'rgba(160,160,160,0.4)';ctx.beginPath();ctx.arc(cX,cY,cR,0,2*Math.PI);ctx.fill();}ctx.globalAlpha=1.0;});}
+                    // ✨ 用闭包持有材质引用，加载失败时清掉 map 让 fallback 颜色生效（避免黑球）
+                    let __pendingMoonMat = null;
+                    const __fallbackColor = moonData.color || 0xaaaaaa;
+                    // 优先尝试加载真实卫星贴图
+                    const realMoonTextureUrl = REAL_TEXTURES[moonData.name];
+                    if (realMoonTextureUrl) {
+                        const moonLoader = new THREE.TextureLoader();
+                        moonTexture = moonLoader.load(realMoonTextureUrl,
+                            undefined, undefined,
+                            (err) => {
+                                console.warn(`真实卫星贴图加载失败 -> 回退原色: ${realMoonTextureUrl}`);
+                                if (__pendingMoonMat) {
+                                    __pendingMoonMat.map = null;
+                                    __pendingMoonMat.color = new THREE.Color(__fallbackColor);
+                                    __pendingMoonMat.needsUpdate = true;
+                                }
+                            }
+                        );
+                        moonTexture.wrapS = THREE.RepeatWrapping;
+                        moonTexture.wrapT = THREE.RepeatWrapping;
+                        moonTexture.encoding = THREE.sRGBEncoding;
+                    }
+                    else if (moonData.isMoon) { moonTexture = createProceduralTexture(128,64,(ctx,w,h)=>{ctx.fillStyle = '#b0b0b0';ctx.fillRect(0,0,w,h);ctx.globalAlpha=0.7;for(let i=0;i<80;i++){const cX=Math.random()*w,cY=Math.random()*h,cR=Math.random()*(w*0.04)+w*0.01;ctx.fillStyle=(Math.random()<0.6)?'rgba(80,80,80,0.6)':'rgba(160,160,160,0.4)';ctx.beginPath();ctx.arc(cX,cY,cR,0,2*Math.PI);ctx.fill();}ctx.globalAlpha=1.0;});}
                     else if (moonData.isIo) { moonTexture = createProceduralTexture(128,64,(ctx,w,h)=>{ctx.fillStyle = '#fdd835';ctx.fillRect(0,0,w,h);for(let i=0;i<20;i++){ctx.fillStyle=(Math.random()<0.5)?'rgba(200,50,0,0.7)':'rgba(50,50,50,0.6)';ctx.beginPath();ctx.arc(Math.random()*w,Math.random()*h,Math.random()*w*0.05+w*0.02,0,2*Math.PI);ctx.fill();}}); }
                     else if (moonData.isEuropa) { moonTexture = createProceduralTexture(128,64,(ctx,w,h)=>{ctx.fillStyle = '#ddeeff';ctx.fillRect(0,0,w,h);ctx.strokeStyle='rgba(150,180,200,0.5)';ctx.lineWidth=1;for(let i=0;i<30;i++){ctx.beginPath();ctx.moveTo(Math.random()*w,Math.random()*h);ctx.lineTo(Math.random()*w,Math.random()*h);ctx.stroke();}}); }
                     else if (moonData.isGanymede) { moonTexture = createProceduralTexture(128,64,(ctx,w,h)=>{ctx.fillStyle = '#9090a0';ctx.fillRect(0,0,w,h);for(let i=0;i<40;i++){ctx.fillStyle=(Math.random()<0.6)?'rgba(60,60,70,0.5)':'rgba(150,150,160,0.3)';ctx.beginPath();ctx.arc(Math.random()*w,Math.random()*h,Math.random()*w*0.04+w*0.01,0,2*Math.PI);ctx.fill();}}); }
@@ -2142,6 +2319,8 @@ self.onmessage = function(e) {
                     }
 
                     const moonMaterial = new THREE.MeshStandardMaterial({ map: moonTexture, ...moonData.materialProps });
+                    // ✨ 把材质引用回填到 onError 闭包用的变量，让加载失败时能把 map 清掉、避免黑球
+                    __pendingMoonMat = moonMaterial;
                     const moonGeometry = new THREE.SphereGeometry(moonVisualRadius, 16, 16);
                     const moonMesh = new THREE.Mesh(moonGeometry, moonMaterial);
                     moonMesh.name = moonData.name;
@@ -2244,16 +2423,45 @@ self.onmessage = function(e) {
 
 
             if (planetData.hasRings) { 
-                const ringSegments = 128;
                 let ringGeometry, ringMaterial;
-                
+                const ringSegments = 128; // 环的角向分段数（越多越圆滑）
+
                 // 根据行星类型创建不同的环系统
                 switch (planetData.ringType || "saturn") {
-                    case "saturn":
-                        // 土星环 - 明亮复杂
-                        ringGeometry = new THREE.RingGeometry(visualRadius * 1.35, visualRadius * 2.7, ringSegments, 10, 0, Math.PI * 2);
-                        ringMaterial = createRingMaterial("saturn", visualRadius);
+                    case "saturn": {
+                        // 土星环 - 用真实 NASA 贴图（含 alpha 通道）
+                        const innerR = visualRadius * 1.35;
+                        const outerR = visualRadius * 2.7;
+                        ringGeometry = new THREE.RingGeometry(innerR, outerR, ringSegments, 10, 0, Math.PI * 2);
+                        // 关键步骤：修正 RingGeometry 的 UV
+                        // 默认 UV 是 (0~1, 0~1) 平铺到一个矩形上，但贴图是横向条带（左=内，右=外）
+                        // 这里让 u = 半径 (0=内, 1=外)，v = 角度 (用 0 即可，因为贴图沿 v 方向无变化)
+                        {
+                            const pos = ringGeometry.attributes.position;
+                            const uv = ringGeometry.attributes.uv;
+                            const v3 = new THREE.Vector3();
+                            for (let i = 0; i < pos.count; i++) {
+                                v3.fromBufferAttribute(pos, i);
+                                const r = v3.length();
+                                uv.setXY(i, (r - innerR) / (outerR - innerR), 1);
+                            }
+                            uv.needsUpdate = true;
+                        }
+                        // 加载真实环贴图
+                        const ringTex = new THREE.TextureLoader().load(EXTRA_TEXTURES.saturnRing,
+                            undefined, undefined,
+                            (err) => { console.warn(`土星环贴图加载失败: ${EXTRA_TEXTURES.saturnRing}`, err); }
+                        );
+                        ringTex.encoding = THREE.sRGBEncoding;
+                        ringMaterial = new THREE.MeshBasicMaterial({
+                            map: ringTex,
+                            alphaMap: ringTex,    // 同一张图既做颜色又做透明（亮处=粒子密集，暗处=空隙）
+                            transparent: true,
+                            side: THREE.DoubleSide,
+                            depthWrite: false
+                        });
                         break;
+                    }
                         
                     case "uranus":
                         // 天王星环 - 暗淡，垂直
@@ -2737,6 +2945,29 @@ self.onmessage = function(e) {
             scene.add(stars);
         }
 
+        // 银河背景球：把 2k_stars_milky_way.jpg 贴在一个超大球的内壁
+        // BackSide 让我们从内部看到贴图，camera.far=7000 所以半径 4500 安全在视锥范围内
+        function createMilkyWayBackground() {
+            const loader = new THREE.TextureLoader();
+            const tex = loader.load(EXTRA_TEXTURES.milkyWay,
+                undefined, undefined,
+                (err) => { console.warn(`银河背景贴图加载失败: ${EXTRA_TEXTURES.milkyWay}`, err); }
+            );
+            tex.encoding = THREE.sRGBEncoding;
+            const geo = new THREE.SphereGeometry(4500, 64, 64);
+            const mat = new THREE.MeshBasicMaterial({
+                map: tex,
+                side: THREE.BackSide,   // 从内部看
+                depthWrite: false,       // 不写深度，保证不挡其它物体
+                transparent: true,
+                opacity: 0.55           // 半透明，让程序化星空粒子和星云能透出来叠加
+            });
+            const milkyWay = new THREE.Mesh(geo, mat);
+            milkyWay.name = "milkyWayBackground";
+            milkyWay.renderOrder = -2; // 确保最先渲染（最远背景）
+            scene.add(milkyWay);
+        }
+
         function createDistantNebulae() { /* ... NO CHANGE ... */
             const nebulaGeometry = new THREE.SphereGeometry(3500, 64, 64);
 
@@ -2987,47 +3218,67 @@ self.onmessage = function(e) {
                     document.getElementById('info-eccentricity').innerText = `Orbital Eccentricity: ${data.e !== undefined ? data.e.toFixed(4) : (data.eccentricity !== undefined ? data.eccentricity.toFixed(4) : 'N/A')}`;
 
                     document.getElementById('info-panel').style.display = 'block';
-                    
+
+                    // ✨ Phase 3.x Bug 修复：Belt 类型（Kuiper/Asteroid）是一大堆粒子的集合体，
+                    // 没有明确的 radius，位置在原点，强行移动镜头会直接钻进太阳。
+                    // 这类对象只显示信息面板，不移动镜头、不追踪。
+                    const isBeltType = data.type && /belt/i.test(data.type);
+                    if (isBeltType) {
+                        return; // 直接结束，保持当前相机位置
+                    }
+
                     // Set tracked object for camera tracking
                     trackedObject = tempObj;
                     isTransitioningCamera = true;
-                    
+
                     // Initialize or update _lastPos
                     const targetPosition = new THREE.Vector3();
                     tempObj.getWorldPosition(targetPosition);
                     if (!tempObj.userData._lastPos) {
                         tempObj.userData._lastPos = targetPosition.clone();
                     }
-                    
+
+                    // ✨ Phase 3.x：先停掉旧 tween，避免新旧 tween 同时改 camera.position 互相打架
+                    // （之前点击太阳偶尔进入太阳内部就是这个 bug 导致的）
+                    activeCameraTweens.forEach(t => t.stop());
+                    activeCameraTweens = [];
+
                     // Calculate target distance based on object size
+                    // ✨ 所有非恒星天体统一视觉大小：distance = radius * 2.5
+                    // 不论是行星、矮行星、卫星还是彗星核，点击后都填满约 40% 屏幕
                     const objectRadius = data.radius || 1;
-                    const minDistance = data.type === "Star" ? 60 : 5;
-                    const distance = Math.max(objectRadius * 4, minDistance);
-                    
+                    let distance;
+                    if (data.type === "Star") {
+                        distance = Math.max(objectRadius * 4, 60); // 太阳保留较远距离
+                        controls.minDistance = 20;
+                    } else {
+                        distance = objectRadius * 2.5;
+                        controls.minDistance = Math.max(0.5, objectRadius * 1.2);
+                    }
+
                     // Transition camera using TWEEN
                     const offset = camera.position.clone().sub(controls.target).normalize();
-                    // If looking straight down/up or very close, ensure a sensible offset
                     if (offset.length() < 0.1) offset.set(0, 0, 1);
                     offset.multiplyScalar(distance);
-                    
                     const newCamPos = targetPosition.clone().add(offset);
-                    
-                    new TWEEN.Tween(camera.position)
+
+                    const camTween = new TWEEN.Tween(camera.position)
                         .to({ x: newCamPos.x, y: newCamPos.y, z: newCamPos.z }, 1500)
                         .easing(TWEEN.Easing.Quadratic.InOut)
                         .onComplete(() => { isTransitioningCamera = false; })
                         .start();
-                        
-                    new TWEEN.Tween(controls.target)
+
+                    const targetTween = new TWEEN.Tween(controls.target)
                         .to({ x: targetPosition.x, y: targetPosition.y, z: targetPosition.z }, 1500)
                         .easing(TWEEN.Easing.Quadratic.InOut)
                         .start();
-                        
+
+                    activeCameraTweens.push(camTween, targetTween);
+
                 } else {
-                     // document.getElementById('info-panel').style.display = 'none'; // Hide if nothing useful clicked
+                    // 点击空白处，不做处理
                 }
         }
-
 
         function onWindowResize() { /* ... NO CHANGE ... */
             camera.aspect = window.innerWidth / window.innerHeight;
@@ -3080,6 +3331,10 @@ self.onmessage = function(e) {
 
                 if (obj.mesh) { // Self-rotation
                     obj.mesh.rotation.y += (obj.rotationSpeed || 0) * delta * baseRotationSpeedMultiplier;
+                    // ✨ Phase 3.2：地球云层独立加速旋转（比地球本体快 25%，制造云在飘的视觉）
+                    if (obj.mesh.userData && obj.mesh.userData.earthCloudsMesh) {
+                        obj.mesh.userData.earthCloudsMesh.rotation.y += (obj.rotationSpeed || 0) * delta * baseRotationSpeedMultiplier * 0.25;
+                    }
                 }
 
                 if (obj.isComet && obj.tail) { /* ... NO CHANGE IN TAIL LOGIC ... */
