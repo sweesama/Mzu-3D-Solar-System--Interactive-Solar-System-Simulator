@@ -66,7 +66,10 @@
             // 海王星卫星：
             'Triton':   'textures/moon_triton.jpg',
             // 冥卫：
-            'Charon':   'textures/moon_charon.jpg'
+            'Charon':   'textures/moon_charon.jpg',
+            // 火星卫星（来自 Grant Hutchison/Cornell，基于 NASA 公开域素材）：
+            'Phobos':   'textures/moon_phobos.jpg',
+            'Deimos':   'textures/moon_deimos.jpg'
         };
 
         // 背景与特殊贴图（不属于行星本体）
