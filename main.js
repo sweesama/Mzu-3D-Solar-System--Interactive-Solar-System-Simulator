@@ -307,6 +307,10 @@ self.onmessage = function(e) {
             await yieldThread();
             await createAsteroidBeltAsync();
 
+            updateProgress("Loading Featured Asteroid Models...", 68);
+            await yieldThread();
+            await createFeaturedAsteroidModels();
+
             updateProgress("Generating Kuiper Belt...", 70);
             await yieldThread();
             createKuiperBelt();
@@ -327,26 +331,26 @@ self.onmessage = function(e) {
             await yieldThread();
             // --- Create Comets with Metric Data ---
             createComet({
-                name: "HalleyTypeComet", displayName: "哈雷型彗星", type: "彗星",
+                name: "HalleyTypeComet", displayName: "Halley-type Comet", type: "Comet",
                 orbitRadius: 200, orbitSemiMajorAxisAU: 17.834, e: 0.967,
                 coreRadius: 0.1, coreRadiusMetric: 5.5, // Approx Halley nucleus radius in km
-                speed: 0.0020, rotationSpeed: 0.005, coreColor: 0xe0e0ff, tailColor: 0xb0c0ff,
+                speed: 0.0020, rotationSpeed: 0.005, coreColor: 0x4b4740, coreEmissive: 0x080706, coreEmissiveIntensity: 0.04, tailColor: 0xb0c0ff, coreShape: "elongated",
                 initialOrbitRotationX: Math.PI / 4, initialOrbitRotationY: Math.PI / 3, tailInitialLengthFactor: 5
             });
 
             createComet({
-                name: "LongPeriodExampleComet", displayName: "长周期彗星 (LP-1)", type: "彗星",
+                name: "LongPeriodExampleComet", displayName: "Long-period Comet (LP-1)", type: "Comet",
                 orbitRadius: 450, orbitSemiMajorAxisAU: 20000, e: 0.995,
                 coreRadius: 0.30, coreRadiusMetric: 10,
-                speed: 0.0007, rotationSpeed: 0.003, coreColor: 0xd0f0e0, coreEmissive: 0xccffdd, tailColor: 0xa0d0b0,
+                speed: 0.0007, rotationSpeed: 0.003, coreColor: 0x3f3b34, coreEmissive: 0x070605, coreEmissiveIntensity: 0.04, tailColor: 0xa0d0b0, coreShape: "bilobed",
                 tailParticleCount: 1000, initialOrbitRotationX: Math.PI / 2.5, initialOrbitRotationY: Math.PI * 1.2, tailInitialLengthFactor: 6.5
             });
 
             createComet({
-                name: "ShortPeriodExampleComet", displayName: "短周期彗星 (SP-1)", type: "彗星",
+                name: "ShortPeriodExampleComet", displayName: "Short-period Comet (SP-1)", type: "Comet",
                 orbitRadius: 90, orbitSemiMajorAxisAU: 3.5, e: 0.75,
                 coreRadius: 0.18, coreRadiusMetric: 2,
-                speed: 0.0045, rotationSpeed: 0.007, coreColor: 0xf0e0d0, coreEmissive: 0xffeedd, tailColor: 0xd0b090,
+                speed: 0.0045, rotationSpeed: 0.007, coreColor: 0x5a5044, coreEmissive: 0x090705, coreEmissiveIntensity: 0.04, tailColor: 0xd0b090, coreShape: "irregular",
                 tailParticleCount: 600, initialOrbitRotationX: -Math.PI / 8, initialOrbitRotationY: Math.PI * 0.5, tailInitialLengthFactor: 4
             });
 
@@ -2697,56 +2701,76 @@ self.onmessage = function(e) {
             });
         }
 
+        function createSmallBodySurfaceTexture(baseColor, textureSize = 128) {
+            const canvas = document.createElement('canvas');
+            canvas.width = textureSize;
+            canvas.height = textureSize;
+            const ctx = canvas.getContext('2d');
+            const color = new THREE.Color(baseColor);
+            const baseR = Math.floor(color.r * 255);
+            const baseG = Math.floor(color.g * 255);
+            const baseB = Math.floor(color.b * 255);
+            ctx.fillStyle = `rgb(${baseR}, ${baseG}, ${baseB})`;
+            ctx.fillRect(0, 0, textureSize, textureSize);
+            for (let i = 0; i < 900; i++) {
+                const x = Math.random() * textureSize;
+                const y = Math.random() * textureSize;
+                const brightness = 0.55 + Math.random() * 0.75;
+                const alpha = 0.18 + Math.random() * 0.32;
+                ctx.fillStyle = `rgba(${Math.min(255, baseR * brightness)}, ${Math.min(255, baseG * brightness)}, ${Math.min(255, baseB * brightness)}, ${alpha})`;
+                ctx.fillRect(x, y, 1 + Math.random() * 2, 1 + Math.random() * 2);
+            }
+            for (let i = 0; i < 26; i++) {
+                const x = Math.random() * textureSize;
+                const y = Math.random() * textureSize;
+                const r = 3 + Math.random() * 13;
+                const gradient = ctx.createRadialGradient(x - r * 0.25, y - r * 0.25, r * 0.1, x, y, r);
+                gradient.addColorStop(0, `rgba(${Math.min(255, baseR * 1.35)}, ${Math.min(255, baseG * 1.35)}, ${Math.min(255, baseB * 1.35)}, 0.36)`);
+                gradient.addColorStop(0.45, `rgba(${baseR * 0.55}, ${baseG * 0.55}, ${baseB * 0.55}, 0.42)`);
+                gradient.addColorStop(1, `rgba(${baseR * 0.25}, ${baseG * 0.25}, ${baseB * 0.25}, 0)`);
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(1.8, 1.2);
+            texture.encoding = THREE.sRGBEncoding;
+            return texture;
+        }
+
         // 改进的小行星几何体生成函数
         function createEnhancedAsteroidGeometry(size) {
-            // 使用低面数几何体避免球体外观
-            const geometryTypes = [
-                () => new THREE.TetrahedronGeometry(size, 0), // 四面体
-                () => new THREE.OctahedronGeometry(size, 0),   // 八面体
-                () => new THREE.DodecahedronGeometry(size, 0), // 十二面体
-                () => new THREE.IcosahedronGeometry(size, 0)   // 二十面体
-            ];
-            
-            const baseGeometry = geometryTypes[Math.floor(Math.random() * geometryTypes.length)]();
+            const baseGeometry = new THREE.SphereGeometry(size, 10, 8);
             const positionAttribute = baseGeometry.getAttribute('position');
             const vertex = new THREE.Vector3();
             
             // 为每个小行星生成随机种子
             const seed = Math.random();
             
-            // 大幅度变形使其不规则
             for (let j = 0; j < positionAttribute.count; j++) {
                 vertex.fromBufferAttribute(positionAttribute, j);
-                
-                // 每个顶点的独特变形
                 const vertexSeed = (seed + j * 0.1) % 1;
-                
-                // 大型不规则变形
-                const largeDeform = (vertexSeed - 0.5) * 0.6;
+                const largeDeform = (vertexSeed - 0.5) * 0.46;
+                const ridge = Math.sin(vertex.x * 37 + seed * 19) * Math.cos(vertex.y * 29 + vertex.z * 17);
                 vertex.x *= (1 + largeDeform);
                 vertex.y *= (1 + largeDeform * 0.8);
                 vertex.z *= (1 + largeDeform * 1.2);
-                
-                // 添加随机偏移
-                vertex.x += (vertexSeed - 0.5) * size * 0.3;
-                vertex.y += (vertexSeed - 0.5) * size * 0.3;
-                vertex.z += (vertexSeed - 0.5) * size * 0.3;
-                
+                vertex.multiplyScalar(1 + ridge * 0.16);
+                vertex.x += (vertexSeed - 0.5) * size * 0.18;
+                vertex.y += (vertexSeed - 0.5) * size * 0.18;
+                vertex.z += (vertexSeed - 0.5) * size * 0.18;
                 positionAttribute.setXYZ(j, vertex.x, vertex.y, vertex.z);
             }
-            
-            // 添加一些尖锐的边缘特征
             const sharpVertexCount = Math.floor(positionAttribute.count * 0.3);
             for (let i = 0; i < sharpVertexCount; i++) {
                 const vertexIndex = Math.floor(Math.random() * positionAttribute.count);
                 vertex.fromBufferAttribute(positionAttribute, vertexIndex);
-                
-                // 将某些顶点推得更远，创造尖锐效果
-                vertex.multiplyScalar(1.2 + Math.random() * 0.4);
+                vertex.multiplyScalar(1.08 + Math.random() * 0.22);
                 positionAttribute.setXYZ(vertexIndex, vertex.x, vertex.y, vertex.z);
             }
-            
-            // 重新计算法线
             baseGeometry.computeVertexNormals();
             
             return baseGeometry;
@@ -2769,9 +2793,9 @@ self.onmessage = function(e) {
             
             return new THREE.MeshStandardMaterial({
                 color: baseColor,
-                roughness: 0.85 + Math.random() * 0.1, // 0.85-0.95 很粗糙
-                metalness: 0.0 + Math.random() * 0.05, // 0.0-0.05 几乎没有金属感
-                // 移除自发光，避免塑料感
+                map: createSmallBodySurfaceTexture(baseColor),
+                roughness: 0.92 + Math.random() * 0.06,
+                metalness: 0.0 + Math.random() * 0.03,
             });
         }
 
@@ -2856,8 +2880,8 @@ self.onmessage = function(e) {
                                 const asteroidOrbitAU = a / 30 * 3.0;
                                 
                                 asteroid.userData = {
-                                    displayName: `小行星 ${j+1}`,
-                                    type: "小行星",
+                                    displayName: `Asteroid ${j+1}`,
+                                    type: "Asteroid",
                                     radius: asteroidVisualSize,
                                     radiusMetric: parseFloat(asteroidRadiusMetric.toFixed(1)),
                                     orbitRadius: parseFloat(a.toFixed(1)),
@@ -2892,6 +2916,107 @@ self.onmessage = function(e) {
                 worker.postMessage({
                     type: 'GENERATE_ASTEROID_BELT',
                     data: { count: asteroidCount, beltInnerRadius, beltOuterRadius, beltHeight, poolSize }
+                });
+            });
+        }
+
+        function createFeaturedAsteroidModels() {
+            if (!THREE.GLTFLoader) {
+                console.warn("GLTFLoader is unavailable; featured asteroid models were skipped.");
+                return Promise.resolve();
+            }
+            const featuredAsteroids = [
+                {
+                    name: "Bennu",
+                    displayName: "Asteroid Bennu",
+                    modelPath: "models/bennu.glb",
+                    radius: 0.42,
+                    radiusMetric: 0.245,
+                    orbitRadius: 50,
+                    orbitSemiMajorAxisAU: 1.126,
+                    eccentricity: 0.204,
+                    speed: 0.006,
+                    rotationSpeed: 0.012,
+                    initialRotationX: 0.28,
+                    initialRotationZ: -0.18
+                },
+                {
+                    name: "Itokawa",
+                    displayName: "Asteroid Itokawa",
+                    modelPath: "models/itokawa.glb",
+                    radius: 0.34,
+                    radiusMetric: 0.165,
+                    orbitRadius: 56,
+                    orbitSemiMajorAxisAU: 1.324,
+                    eccentricity: 0.280,
+                    speed: 0.0052,
+                    rotationSpeed: 0.01,
+                    initialRotationX: -0.34,
+                    initialRotationZ: 0.42
+                }
+            ];
+            return Promise.all(featuredAsteroids.map(createFeaturedAsteroidModel)).then(() => undefined);
+        }
+
+        function createFeaturedAsteroidModel(data) {
+            return new Promise((resolve) => {
+                const loader = new THREE.GLTFLoader();
+                loader.load(data.modelPath, (gltf) => {
+                    const model = gltf.scene;
+                    const modelRoot = new THREE.Object3D();
+                    const userData = {
+                        displayName: data.displayName,
+                        type: "Asteroid",
+                        radius: data.radius,
+                        radiusMetric: data.radiusMetric,
+                        orbitRadius: data.orbitRadius,
+                        orbitSemiMajorAxisAU: data.orbitSemiMajorAxisAU,
+                        eccentricity: data.eccentricity
+                    };
+                    const box = new THREE.Box3().setFromObject(model);
+                    const center = box.getCenter(new THREE.Vector3());
+                    const size = box.getSize(new THREE.Vector3());
+                    const maxDimension = Math.max(size.x, size.y, size.z) || 1;
+                    const scale = (data.radius * 2) / maxDimension;
+                    modelRoot.name = data.name;
+                    modelRoot.userData = userData;
+                    model.scale.setScalar(scale);
+                    model.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+                    modelRoot.rotation.x = data.initialRotationX;
+                    modelRoot.rotation.z = data.initialRotationZ;
+                    model.traverse((child) => {
+                        if (child.isMesh) {
+                            child.castShadow = true;
+                            child.receiveShadow = true;
+                            child.userData = userData;
+                            if (child.material) {
+                                child.material.roughness = Math.max(child.material.roughness || 0.8, 0.9);
+                                child.material.metalness = Math.min(child.material.metalness || 0, 0.03);
+                                child.material.needsUpdate = true;
+                            }
+                        }
+                    });
+                    modelRoot.add(model);
+                    const orbitPivot = new THREE.Object3D();
+                    orbitPivot.add(modelRoot);
+                    scene.add(orbitPivot);
+                    celestialObjects.push({
+                        isAsteroid: true,
+                        mesh: modelRoot,
+                        pivot: orbitPivot,
+                        speed: data.speed,
+                        rotationSpeed: data.rotationSpeed,
+                        orbitRadius: data.orbitRadius,
+                        eccentricity: data.eccentricity,
+                        displayName: data.displayName,
+                        type: "Asteroid",
+                        radius: data.radius
+                    });
+                    console.log(`${data.displayName} model loaded from ${data.modelPath}`);
+                    resolve();
+                }, undefined, () => {
+                    console.warn(`${data.displayName} model was not loaded; using procedural asteroid belt fallback.`);
+                    resolve();
                 });
             });
         }
@@ -3066,24 +3191,58 @@ self.onmessage = function(e) {
         }
 
 // ... (rest of the code remains the same)
+        function createCometCoreGeometry(radius, shape) {
+            const geometry = new THREE.SphereGeometry(radius, 28, 18);
+            const positionAttribute = geometry.getAttribute('position');
+            const vertex = new THREE.Vector3();
+            for (let i = 0; i < positionAttribute.count; i++) {
+                vertex.fromBufferAttribute(positionAttribute, i);
+                const nx = vertex.x / radius;
+                const ny = vertex.y / radius;
+                const nz = vertex.z / radius;
+                const ridge = Math.sin(nx * 9.7 + ny * 4.3) * Math.cos(nz * 7.1);
+                const pit = Math.sin((nx + nz) * 13.0) * Math.sin(ny * 8.0);
+                let deform = 1 + ridge * 0.16 + pit * 0.08;
+                if (shape === "bilobed") {
+                    const neck = Math.exp(-Math.pow(nx * 3.2, 2));
+                    vertex.y *= 1 - neck * 0.42;
+                    vertex.z *= 1 - neck * 0.38;
+                    vertex.x *= 1.55;
+                } else if (shape === "elongated") {
+                    vertex.x *= 1.85;
+                    vertex.y *= 0.78;
+                    vertex.z *= 0.92;
+                } else {
+                    vertex.x *= 1.25;
+                    vertex.y *= 0.86;
+                    vertex.z *= 1.08;
+                }
+                vertex.multiplyScalar(deform);
+                positionAttribute.setXYZ(i, vertex.x, vertex.y, vertex.z);
+            }
+            geometry.computeVertexNormals();
+            return geometry;
+        }
+
         function createComet(cometData) { // Added metric data to userData
             const defaults = { /* ... NO CHANGE, but ensure it includes type, orbitSemiMajorAxisAU, coreRadiusMetric ... */
-                name: "Comet", displayName: "彗星", type: "彗星",
+                name: "Comet", displayName: "Comet", type: "Comet",
                 orbitRadius: 250, orbitSemiMajorAxisAU: 50, 
                 eccentricity: 0.95, speed: 0.0015, rotationSpeed: 0.005,
                 coreRadius: 0.25, coreRadiusMetric: 5, 
                 coreColor: 0xe0e0ff, coreEmissive: 0xccccff, coreEmissiveIntensity: 0.4,
                 tailColor: 0xb0c0ff, tailParticleCount: 800, tailBaseOpacity: 0.2,
-                tailSize: 0.1, tailInitialLengthFactor: 5,
+                tailSize: 0.1, tailInitialLengthFactor: 5, coreShape: "irregular",
                 initialOrbitRotationX: Math.PI / 3, initialOrbitRotationY: Math.random() * Math.PI * 2,
             };
             const data = { ...defaults, ...cometData };
 
-            const coreGeometry = new THREE.IcosahedronGeometry(data.coreRadius, 0); // Use visual coreRadius
+            const coreGeometry = createCometCoreGeometry(data.coreRadius, data.coreShape); // Use visual coreRadius
             const coreMaterial = new THREE.MeshStandardMaterial({ /* ... NO CHANGE ... */
                 color: data.coreColor,
-                roughness: 0.6,
-                metalness: 0.05,
+                map: createSmallBodySurfaceTexture(data.coreColor),
+                roughness: 0.96,
+                metalness: 0.02,
                 emissive: data.coreEmissive,
                 emissiveIntensity: data.coreEmissiveIntensity
             });
@@ -3091,7 +3250,7 @@ self.onmessage = function(e) {
             core.name = data.name + "Core";
             core.userData = { // Ensure all necessary fields for info panel are here
                 displayName: data.displayName,
-                type: data.type, // Should be "彗星"
+                type: data.type, // Should be "Comet"
                 radius: data.coreRadius,         // Visual radius for scene scale
                 radiusMetric: data.coreRadiusMetric,   // Actual core radius in km
                 orbitRadius: data.orbitRadius, // Scene units for semi-major axis (visual)
