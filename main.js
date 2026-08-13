@@ -16,6 +16,26 @@
         raycaster.params.Line = { threshold: 1 };
         const mouse = new THREE.Vector2();
         const pointerDownPosition = new THREE.Vector2();
+
+        const pageParameters = new URLSearchParams(window.location.search);
+        const requestedQuality = pageParameters.get('quality');
+        const deviceMemory = Number(navigator.deviceMemory || 0);
+        const hardwareThreads = Number(navigator.hardwareConcurrency || 0);
+        const automaticLiteMode = window.matchMedia('(max-width: 720px)').matches ||
+            (deviceMemory > 0 && deviceMemory <= 4) ||
+            (hardwareThreads > 0 && hardwareThreads <= 4);
+        const lowDetailMode = requestedQuality === 'low' || (requestedQuality !== 'high' && automaticLiteMode);
+        const highDetailMode = requestedQuality === 'high';
+        const renderProfile = highDetailMode
+            ? { asteroids: 3000, stars: 40000, kuiperObjects: 10000, maxPixelRatio: 2, featuredModels: true }
+            : lowDetailMode
+                ? { asteroids: 700, stars: 12000, kuiperObjects: 3000, maxPixelRatio: 1.25, featuredModels: false }
+                : { asteroids: 1800, stars: 26000, kuiperObjects: 7000, maxPixelRatio: 2, featuredModels: true };
+
+        const requestedFocus = pageParameters.get('focus');
+        if (!window.INITIAL_PLANET && requestedFocus) {
+            window.INITIAL_PLANET = requestedFocus;
+        }
         
         // Store all orbit lines for glow toggle
         const orbitLines = [];
@@ -24,6 +44,7 @@
         // Camera Tracking Variables
         let trackedObject = null;
         let isTransitioningCamera = false;
+        let animationFrameId = null;
         // ✨ Phase 3.x：保存当前活跃的相机 tween 引用，新点击时主动清除，避免新旧 tween 争夺 camera.position
         let activeCameraTweens = [];
 
@@ -260,9 +281,12 @@ self.onmessage = function(e) {
             camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 7000);
             camera.position.set(0, 100, 200);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer = new THREE.WebGLRenderer({
+                antialias: !lowDetailMode,
+                powerPreference: 'high-performance'
+            });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, renderProfile.maxPixelRatio));
             renderer.outputEncoding = THREE.sRGBEncoding; // 让画面颜色真实不偏暗（修复程序化纹理偏灰问题）
 
  
@@ -309,7 +333,9 @@ self.onmessage = function(e) {
 
             updateProgress("Loading Featured Asteroid Models...", 68);
             await yieldThread();
-            await createFeaturedAsteroidModels();
+            if (renderProfile.featuredModels) {
+                await createFeaturedAsteroidModels();
+            }
 
             updateProgress("Generating Kuiper Belt...", 70);
             await yieldThread();
@@ -364,68 +390,12 @@ self.onmessage = function(e) {
             console.log("太阳系模拟初始化完成 (动态小行星带, 增强柯伊伯带, 精确数据字段, 矮行星系统)。");
             updateProgress("Initialization Complete!", 100);
             
-            // Check for SEO page auto-focus
             if (window.INITIAL_PLANET) {
-                const targetObjInfo = celestialObjects.find(obj => 
-                    (obj.displayName && obj.displayName.toLowerCase() === window.INITIAL_PLANET.toLowerCase()) ||
-                    (obj.name && obj.name.toLowerCase() === window.INITIAL_PLANET.toLowerCase()) ||
-                    (obj.mesh && obj.mesh.userData && obj.mesh.userData.displayName && obj.mesh.userData.displayName.toLowerCase() === window.INITIAL_PLANET.toLowerCase())
-                );
-                
-                if (targetObjInfo && targetObjInfo.mesh) {
-                    const data = targetObjInfo.mesh.userData || targetObjInfo;
-                    
-                    // Directly apply the tracking camera logic
-                    trackedObject = targetObjInfo.mesh;
-                    isTransitioningCamera = true;
-                    
-                    const targetPosition = new THREE.Vector3();
-                    targetObjInfo.mesh.getWorldPosition(targetPosition);
-                    targetObjInfo.mesh.userData._lastPos = targetPosition.clone();
-                    
-                    const objectRadius = data.radius || 1;
-                    let distance;
-                    if (data.type && data.type.toLowerCase() === "star") {
-                        distance = Math.max(objectRadius * 4, 60);
-                        controls.minDistance = 20;
-                    } else {
-                        distance = objectRadius * 2.5;
-                        controls.minDistance = Math.max(0.5, objectRadius * 1.2);
-                    }
-                    
-                    const offset = camera.position.clone().sub(controls.target).normalize();
-                    if (offset.length() < 0.1) offset.set(0, 0, 1);
-                    offset.multiplyScalar(distance);
-                    
-                    const newCamPos = targetPosition.clone().add(offset);
-                    
-                    activeCameraTweens.forEach(t => t.stop());
-                    activeCameraTweens = [];
-
-                    const camTweenInit = new TWEEN.Tween(camera.position)
-                        .to({ x: newCamPos.x, y: newCamPos.y, z: newCamPos.z }, 2000)
-                        .easing(TWEEN.Easing.Quadratic.InOut)
-                        .onComplete(() => { isTransitioningCamera = false; })
-                        .start();
-                        
-                    const targetTweenInit = new TWEEN.Tween(controls.target)
-                        .to({ x: targetPosition.x, y: targetPosition.y, z: targetPosition.z }, 2000)
-                        .easing(TWEEN.Easing.Quadratic.InOut)
-                        .start();
-
-                    activeCameraTweens.push(camTweenInit, targetTweenInit);
-                        
-                    // Make the info panel show up
-                    document.getElementById('info-title').innerText = data.displayName || 'Unknown';
-                    document.getElementById('info-name').innerText = `Name: ${data.displayName || 'Unknown'}`;
-                    document.getElementById('info-type').innerText = `Type: ${data.type || 'Unknown'}`;
-                    document.getElementById('info-radius-metric').innerText = `Radius (km): ${data.radiusMetric !== undefined ? data.radiusMetric.toLocaleString() : 'N/A'}`;
-                    document.getElementById('info-radius-relative').innerText = `Radius (Earth=1): ${data.radius !== undefined ? data.radius.toFixed(2) : 'N/A'}`;
-                    document.getElementById('info-orbit-au').innerText = `Orbital Semi-Major Axis (AU): ${data.orbitSemiMajorAxisAU !== undefined ? data.orbitSemiMajorAxisAU.toLocaleString(undefined, {minimumFractionDigits: 3}) : 'N/A'}`;
-                    document.getElementById('info-orbit-scene').innerText = `Orbit (Scene Units): ${data.orbitRadius !== undefined ? (data.orbitRadius === 0 && data.type === "Star" ? "Center" : data.orbitRadius.toFixed(1)) : 'N/A'}`;
-                    document.getElementById('info-eccentricity').innerText = `Orbital Eccentricity: ${data.e !== undefined ? data.e.toFixed(4) : (data.eccentricity !== undefined ? data.eccentricity.toFixed(4) : 'N/A')}`;
-                    document.getElementById('info-panel').style.display = 'block';
-                }
+                focusCelestialObject(window.INITIAL_PLANET, {
+                    updateUrl: false,
+                    duration: 2000,
+                    source: 'initial-page-focus'
+                });
             }
             
             const screen = document.getElementById('loading-screen');
@@ -2122,7 +2092,8 @@ self.onmessage = function(e) {
                     let __pendingMoonMat = null;
                     const __fallbackColor = moonData.color || 0xaaaaaa;
                     // 优先尝试加载真实卫星贴图
-                    const realMoonTextureUrl = REAL_TEXTURES[moonData.name];
+                    const skipLargeMoonTexture = lowDetailMode && ['Europa', 'Rhea'].includes(moonData.name);
+                    const realMoonTextureUrl = skipLargeMoonTexture ? null : REAL_TEXTURES[moonData.name];
                     if (realMoonTextureUrl) {
                         const moonLoader = new THREE.TextureLoader();
                         moonTexture = moonLoader.load(realMoonTextureUrl,
@@ -2800,7 +2771,7 @@ self.onmessage = function(e) {
         }
 
         async function createAsteroidBeltAsync() {
-            const asteroidCount = 3000;
+            const asteroidCount = renderProfile.asteroids;
             const beltInnerRadius = 42;
             const beltOuterRadius = 60;
             const beltHeight = 5;
@@ -3023,7 +2994,7 @@ self.onmessage = function(e) {
 
   
         function createStarfield() { /* ... NO CHANGE ... */
-            const starQty = 40000;
+            const starQty = renderProfile.stars;
             const starGeometry = new THREE.BufferGeometry();
             const positions = new Float32Array(starQty * 3);
             const colors = new Float32Array(starQty * 3);
@@ -3142,7 +3113,7 @@ self.onmessage = function(e) {
         }
 
         function createKuiperBelt() {
-            const kuiperObjectCount = 10000;
+            const kuiperObjectCount = renderProfile.kuiperObjects;
             const beltInnerRadius = 160;
             const beltOuterRadius = 240;
             const beltHeight = 35;
@@ -3380,6 +3351,7 @@ self.onmessage = function(e) {
                     document.getElementById('info-eccentricity').innerText = `Orbital Eccentricity: ${data.e !== undefined ? data.e.toFixed(4) : (data.eccentricity !== undefined ? data.eccentricity.toFixed(4) : 'N/A')}`;
 
                     document.getElementById('info-panel').style.display = 'block';
+                    syncFocusedView(data.displayName, 'canvas-selection');
 
                     // ✨ Phase 3.x Bug 修复：Belt 类型（Kuiper/Asteroid）是一大堆粒子的集合体，
                     // 没有明确的 radius，位置在原点，强行移动镜头会直接钻进太阳。
@@ -3450,7 +3422,11 @@ self.onmessage = function(e) {
         }
 
         function animate() { /* ... NO CHANGE in core logic, but relies on correct celestialObjects data ... */
-            requestAnimationFrame(animate);
+            if (document.hidden) {
+                animationFrameId = null;
+                return;
+            }
+            animationFrameId = requestAnimationFrame(animate);
             const delta = clock.getDelta();
             const elapsedTime = clock.getElapsedTime();
 
@@ -3596,7 +3572,7 @@ self.onmessage = function(e) {
             const button = document.getElementById('orbit-glow-button');
             
             if (orbitGlowEnabled) {
-                button.textContent = '🪐 Orbit: On';
+                button.textContent = 'Orbit glow: On';
                 button.style.borderColor = '#9966ff';
                 button.style.boxShadow = '0 0 10px rgba(153,102,255,0.5)';
                 
@@ -3613,7 +3589,7 @@ self.onmessage = function(e) {
                     }
                 });
             } else {
-                button.textContent = '🪐 Orbit: Off';
+                button.textContent = 'Orbit glow: Off';
                 button.style.borderColor = '#444';
                 button.style.boxShadow = 'none';
                 
@@ -3643,20 +3619,20 @@ self.onmessage = function(e) {
                 // Turn off music
                 backgroundMusic.pause();
                 musicEnabled = false;
-                button.textContent = '🎵 Music: Off';
+                button.textContent = 'Music: Off';
                 button.style.borderColor = '#444';
                 button.style.boxShadow = 'none';
             } else {
                 // Turn on music
                 backgroundMusic.play().then(() => {
                     musicEnabled = true;
-                    button.textContent = '🎵 Music: On';
+                    button.textContent = 'Music: On';
                     button.style.borderColor = '#c0c0c0';
                     button.style.boxShadow = '0 0 10px rgba(192,192,192,0.7)';
                 }).catch(error => {
                     console.log('Music autoplay prevented by browser:', error);
                     // Show user-friendly message
-                    button.textContent = '🎵 Click to Play';
+                    button.textContent = 'Click to play music';
                     button.style.borderColor = '#ffaa00';
                 });
             }
@@ -3667,7 +3643,7 @@ self.onmessage = function(e) {
             const button = document.getElementById('music-button');
             // Keep initial state as Music Off
             musicEnabled = false;
-            button.textContent = '🎵 Music: Off';
+            button.textContent = 'Music: Off';
             button.style.borderColor = '#444';
             button.style.boxShadow = 'none';
             console.log('Music button initialized - user can click to start music');
@@ -3683,10 +3659,11 @@ self.onmessage = function(e) {
 
         window.onload = function() {
             init().then(() => {
+                setupExperienceUi();
                 animate();
                 initializeMusicButton();
             }).catch(error => {
-                console.error("初始化或动画过程中发生错误:", error);
+                console.error("The 3D scene could not be initialized:", error);
                 const errorDiv = document.createElement('div');
                 errorDiv.style.position = 'fixed'; 
                 errorDiv.style.bottom = '10px';
@@ -3695,7 +3672,7 @@ self.onmessage = function(e) {
                 errorDiv.style.backgroundColor = 'rgba(255,0,0,0.7)';
                 errorDiv.style.color = "white";
                 errorDiv.style.zIndex = "1000";
-                errorDiv.textContent = "发生严重错误，请检查浏览器控制台。错误: " + error.message;
+                errorDiv.textContent = "The 3D scene could not start. Please check that WebGL is enabled. Error: " + error.message;
                 document.body.appendChild(errorDiv);
 
                 if (error instanceof Error) {

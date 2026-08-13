@@ -1,150 +1,150 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-783407FTTB"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-783407FTTB');
-</script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Earth - 3D Solar System Simulator</title>
-    
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Explore Earth, our home planet, in a realistic 3D Solar System environment. View its orbit and the Moon.">
-    <meta name="keywords" content="earth, planet earth, blue marble, solar system simulator, 3d astronomy">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Earth in 3D | Interactive Solar System Explorer</title>
+    <meta name="description" content="Explore Earth and the Moon in an interactive 3D Solar System visualization with basic planetary and orbital reference data.">
     <meta name="author" content="Mzu">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="theme-color" content="#05070d">
     <link rel="canonical" href="https://www.3dsolarsystem.net/earth.html">
-    
-    <!-- Open Graph Tags for Social Media -->
-    <meta property="og:title" content="Earth - 3D Solar System Simulator">
-    <meta property="og:description" content="Explore Earth, our home planet, in a realistic 3D Solar System environment. View its orbit and the Moon.">
-    <meta property="og:image" content="https://www.3dsolarsystem.net/favicon.png">
+
+    <meta property="og:title" content="Earth in 3D | Interactive Solar System Explorer">
+    <meta property="og:description" content="Explore Earth and the Moon in an interactive 3D Solar System visualization with basic planetary and orbital reference data.">
+    <meta property="og:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
     <meta property="og:url" content="https://www.3dsolarsystem.net/earth.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Mzu 3D Solar System">
-    
-    <!-- Twitter Card Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Earth - 3D Solar System Simulator">
-    <meta name="twitter:description" content="Explore Earth, our home planet, in a realistic 3D Solar System environment. View its orbit and the Moon.">
-    <meta name="twitter:image" content="https://www.3dsolarsystem.net/favicon.png">
-    
-    <!-- Structured Data for Search Engines -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "Mzu 3D Solar System",
-      "description": "Interactive 3D solar system simulation with realistic planets, moons, and relaxing music for meditation and education",
-      "url": "https://www.3dsolarsystem.net/",
-      "applicationCategory": "EducationalApplication",
-      "operatingSystem": "Web Browser",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "creator": {
-        "@type": "Person",
-        "name": "Mzu"
-      },
-      "keywords": "3d solar system, space simulation, astronomy education, relaxation, meditation"
-    }
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Earth in 3D | Interactive Solar System Explorer">
+    <meta name="twitter:description" content="Explore Earth and the Moon in an interactive 3D Solar System visualization with basic planetary and orbital reference data.">
+    <meta name="twitter:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
+
+    <script id="app-structured-data" type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Earth — Interactive 3D Planet View",
+  "description": "Explore Earth and the Moon in an interactive 3D Solar System visualization with basic planetary and orbital reference data.",
+  "url": "https://www.3dsolarsystem.net/earth.html",
+  "isPartOf": {
+    "@type": "WebApplication",
+    "name": "Mzu 3D Solar System",
+    "url": "https://www.3dsolarsystem.net/"
+  },
+  "about": {
+    "@type": "Thing",
+    "name": "Earth"
+  }
+}
     </script>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="shortcut icon" href="favicon.ico">
+
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="style.css">
-    <script>window.INITIAL_PLANET = 'Earth';</script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-783407FTTB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-783407FTTB');
+    </script>
+    <script>window.INITIAL_PLANET = "Earth";</script>
 </head>
-<body>
-    <!-- SEO Content for Crawlers -->
-    <div style="display:none;" id="seo-content">
-        <h1>About Planet Earth</h1>
-        <p>Earth is the third planet from the Sun and the only astronomical object known to harbor life. While large volumes of water can be found throughout the Solar System, only Earth sustains liquid surface water.</p>
-        <p>About 71% of Earth's surface is made up of the ocean, dwarfing Earth's polar ice, lakes, and rivers. The remaining 29% of Earth's surface is land, consisting of continents and islands.</p>
-        <a href="index.html">Back to Full Solar System</a>
-    </div>
-    <!-- Loading Screen -->
-    <div id="loading-screen">
+<body data-page-kind="planet" data-page-planet="Earth">
+    <div id="loading-screen" role="status" aria-live="polite">
         <div id="loading-title">Mzu 3D Solar System</div>
-        <div id="loading-progress-container">
+        <div id="loading-progress-container" aria-hidden="true">
             <div id="loading-progress-bar"></div>
         </div>
-        <div id="loading-text">Initializing Engine...</div>
+        <div id="loading-text">Preparing the Solar System…</div>
     </div>
 
-    <div id="info-panel">
-        <button class="close-button" onclick="document.getElementById('info-panel').style.display = 'none';">×</button>
-        <h3 id="info-title">天体信息</h3>
-        <p id="info-name">名称: </p>
-        <p id="info-type">类型: </p>
-        <p id="info-radius-metric">半径 (公里): </p>
-        <p id="info-radius-relative">半径 (地球=1): </p>
-        <p id="info-orbit-au">轨道半长轴 (AU): </p>
-        <p id="info-orbit-scene">轨道 (场景单位): </p>
-        <p id="info-eccentricity">轨道偏心率: </p>
-    </div>
-    
-    <!-- Background Music -->
-    <audio id="background-music" loop preload="auto" playsinline webkit-playsinline crossorigin="anonymous">
+    <aside id="experience-panel" aria-label="Solar System guide">
+        <button id="panel-close" class="icon-button" type="button" aria-label="Hide guide" title="Hide guide">×</button>
+
+        <!-- PAGE-CONTENT:START -->
+        <section class="experience-copy">
+            <p class="eyebrow">Interactive planet view</p>
+            <h1>Explore Earth in 3D</h1>
+            <p>Earth is the third planet from the Sun and the only world currently known to support life. Liquid surface water covers most of the planet, and the Moon is its natural satellite.</p>
+            <p>Use the 3D view to focus on Earth, select the Moon, and compare their available radius and orbit fields.</p>
+            <p class="model-note"><strong>Model note:</strong> This is an artistic educational visualization. Sizes, distances, and time are compressed for visibility; it is not a live ephemeris or a professional astronomy tool.</p>
+        </section>
+        <!-- PAGE-CONTENT:END -->
+
+        <div class="primary-actions" aria-label="Explorer actions">
+            <button id="tour-button" class="action-button action-primary" type="button">Start planet tour</button>
+            <button id="share-button" class="action-button" type="button">Share view</button>
+            <button id="snapshot-button" class="action-button" type="button">Save image</button>
+            <button id="embed-button" class="action-button" type="button">Copy embed</button>
+        </div>
+
+        <div id="tour-card" class="tour-card" hidden aria-live="polite">
+            <p id="tour-progress" class="eyebrow"></p>
+            <h2 id="tour-title"></h2>
+            <p id="tour-fact"></p>
+        </div>
+
+        <nav class="planet-navigation" aria-label="Explore a planet">
+            <span class="nav-label">Explore a planet</span>
+            <div class="planet-links">
+                <a href="mercury.html" data-focus="Mercury">Mercury</a>
+                <a href="venus.html" data-focus="Venus">Venus</a>
+                <a href="earth.html" data-focus="Earth" aria-current="page">Earth</a>
+                <a href="mars.html" data-focus="Mars">Mars</a>
+                <a href="jupiter.html" data-focus="Jupiter">Jupiter</a>
+                <a href="saturn.html" data-focus="Saturn">Saturn</a>
+                <a href="uranus.html" data-focus="Uranus">Uranus</a>
+                <a href="neptune.html" data-focus="Neptune">Neptune</a>
+            </div>
+        </nav>
+
+        <p class="gesture-hint">Tip: click any visible object for its radius and orbital data. Press <kbd>G</kbd> to show or hide this guide.</p>
+    </aside>
+
+    <button id="panel-open" class="panel-open-button" type="button" aria-label="Open guide" hidden>Explore &amp; learn</button>
+
+    <a id="embed-badge" href="./" target="_blank" rel="noopener">Open full explorer ↗</a>
+    <div id="action-toast" role="status" aria-live="polite"></div>
+
+    <section id="info-panel" aria-label="Selected object details">
+        <button class="close-button" type="button" aria-label="Close object details">×</button>
+        <h2 id="info-title">Celestial object</h2>
+        <p id="info-name">Name: </p>
+        <p id="info-type">Type: </p>
+        <p id="info-radius-metric">Radius (km): </p>
+        <p id="info-radius-relative">Radius (Earth=1): </p>
+        <p id="info-orbit-au">Orbital semi-major axis (AU): </p>
+        <p id="info-orbit-scene">Orbit (visual units): </p>
+        <p id="info-eccentricity">Orbital eccentricity: </p>
+    </section>
+
+    <audio id="background-music" loop preload="none" playsinline crossorigin="anonymous">
         <source src="https://archive.org/download/MoonlightSonata_755/Beethoven-MoonlightSonata.mp3" type="audio/mpeg">
-        <!-- Fallback CDN for classical music -->
-        <source src="https://www.soundjay.com/misc/sounds/classical-music-01.mp3" type="audio/mpeg">
-        <!-- Another fallback -->
-        <source src="https://freesound.org/data/previews/316/316847_5123451-lq.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
 
-    <!-- Music Control Button -->
-    <div id="music-control">
-        <button id="music-button" class="control-btn" onclick="toggleMusic()">
-            🎵 Music: Off
-        </button>
+    <div id="scene-controls" aria-label="Scene controls">
+        <button id="music-button" class="control-btn" type="button">Music: Off</button>
+        <button id="orbit-glow-button" class="control-btn" type="button">Orbit glow: Off</button>
     </div>
 
-    <!-- Orbit Glow Toggle Button -->
-    <div id="orbit-glow-toggle">
-        <button id="orbit-glow-button" class="control-btn" onclick="toggleOrbitGlow()">
-            🪐 Orbit: Off
-        </button>
-    </div>
+    <noscript>
+        <div class="noscript-message">This interactive visualization requires JavaScript and WebGL. Please enable JavaScript to explore it.</div>
+    </noscript>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/objects/Lensflare.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
     <script src="main.js"></script>
-    
-    <!-- Google Analytics (Replace GA_MEASUREMENT_ID with your actual ID) -->
-    <!-- Uncomment and replace with your Google Analytics ID when ready -->
-    <!--
-    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'GA_MEASUREMENT_ID');
-    </script>
-    -->
-    
-    <!-- Google AdSense (Replace with your AdSense publisher ID when ready) -->
-    <!-- Uncomment and replace with your AdSense ID when ready -->
-    <!--
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX" crossorigin="anonymous"></script>
-    -->
-    
+    <script src="experience.js"></script>
 </body>
-<noscript>
-    <div style="position:fixed;top:0;left:0;width:100%;padding:20px;background:#000;color:#fff;text-align:center;font-family:sans-serif;z-index:99999">
-        This 3D Solar System requires JavaScript to run. Please enable JavaScript in your browser.
-    </div>
-</noscript>
 </html>

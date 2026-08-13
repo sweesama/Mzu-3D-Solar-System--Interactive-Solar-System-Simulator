@@ -1,135 +1,137 @@
 const fs = require('fs');
 const path = require('path');
 
-const indexHtmlPath = path.join(__dirname, 'index.html');
-let indexHtml = '';
-
-try {
-    indexHtml = fs.readFileSync(indexHtmlPath, 'utf8');
-} catch (e) {
-    console.error("Could not read index.html", e);
-    process.exit(1);
-}
+const root = __dirname;
+const indexPath = path.join(root, 'index.html');
+const source = fs.readFileSync(indexPath, 'utf8');
 
 const planets = [
-    {
-        name: 'Mercury',
-        title: 'Mercury - 3D Solar System Simulator',
-        description: 'Explore Mercury in true 3D. Learn about the smallest and innermost planet in the Solar System.',
-        keywords: 'mercury, planet mercury, inner solar system, 3d space simulator, astronomy',
-        content: `<h1>About Planet Mercury</h1>
-        <p>Mercury is the smallest planet in the Solar System and the closest to the Sun. Its orbit around the Sun takes 87.97 Earth days, the shortest of all the planets.</p>
-        <p>It is a rocky planet with a solid cratered surface, much like the Earth's moon. Exploring Mercury gives us vital information about the formation of the inner planets.</p>`
-    },
-    {
-        name: 'Venus',
-        title: 'Venus - 3D Solar System Simulator',
-        description: 'Discover Venus, the second planet from the Sun. Experience its thick, toxic atmosphere in our interactive 3D simulation.',
-        keywords: 'venus, planet venus, greenhouse effect, 3d solar system, space exploration',
-        content: `<h1>About Planet Venus</h1>
-        <p>Venus is the second planet from the Sun. It is named after the Roman goddess of love and beauty. As the brightest natural object in Earth's night sky after the Moon, Venus can cast shadows and can be visible to the naked eye in broad daylight.</p>
-        <p>Venus is sometimes called Earth's "sister" or "twin" planet as it is almost as large and has a similar composition. However, its atmosphere is completely different, consisting mostly of carbon dioxide, with clouds of sulfuric acid.</p>`
-    },
-    {
-        name: 'Earth',
-        title: 'Earth - 3D Solar System Simulator',
-        description: 'Explore Earth, our home planet, in a realistic 3D Solar System environment. View its orbit and the Moon.',
-        keywords: 'earth, planet earth, blue marble, solar system simulator, 3d astronomy',
-        content: `<h1>About Planet Earth</h1>
-        <p>Earth is the third planet from the Sun and the only astronomical object known to harbor life. While large volumes of water can be found throughout the Solar System, only Earth sustains liquid surface water.</p>
-        <p>About 71% of Earth's surface is made up of the ocean, dwarfing Earth's polar ice, lakes, and rivers. The remaining 29% of Earth's surface is land, consisting of continents and islands.</p>`
-    },
-    {
-        name: 'Mars',
-        title: 'Mars - 3D Solar System Simulator',
-        description: 'Experience Mars in 3D. Learn about the Red Planet, its moons Phobos and Deimos, and its rusty surface.',
-        keywords: 'mars, planet mars, red planet, phobos, deimos, 3d solar system',
-        content: `<h1>About Planet Mars</h1>
-        <p>Mars is the fourth planet from the Sun and the second-smallest planet in the Solar System, being larger than only Mercury. In English, Mars carries the name of the Roman god of war.</p>
-        <p>Mars is a terrestrial planet with a thin atmosphere, and has a crust primarily composed of elements similar to Earth's crust, as well as a core made of iron and nickel.</p>`
-    },
-    {
-        name: 'Jupiter',
-        title: 'Jupiter - 3D Solar System Simulator',
-        description: 'Explore Jupiter, the largest planet in our Solar System. Witness its Great Red Spot and its four Galilean moons in 3D.',
-        keywords: 'jupiter, planet jupiter, gas giant, galilean moons, solar system simulator',
-        content: `<h1>About Planet Jupiter</h1>
-        <p>Jupiter is the fifth planet from the Sun and the largest in the Solar System. It is a gas giant with a mass more than two and a half times that of all the other planets in the Solar System combined.</p>
-        <p>Jupiter's iconic Great Red Spot is a giant storm known to have existed since at least 1831, and possibly since 1665.</p>`
-    },
-    {
-        name: 'Saturn',
-        title: 'Saturn - 3D Solar System Simulator',
-        description: 'Discover Saturn and its stunning procedural rings in our fully interactive 3D Solar System simulator.',
-        keywords: 'saturn, planet saturn, saturn rings, 3d space, astronomy simulator',
-        content: `<h1>About Planet Saturn</h1>
-        <p>Saturn is the sixth planet from the Sun and the second-largest in the Solar System, after Jupiter. It is a gas giant with an average radius of about nine and a half times that of Earth.</p>
-        <p>The planet's most famous feature is its prominent ring system, which is composed mostly of ice particles, with a smaller amount of rocky debris and dust.</p>`
-    },
-    {
-        name: 'Uranus',
-        title: 'Uranus - 3D Solar System Simulator',
-        description: 'Explore Uranus, the icy giant that rotates on its side. View its faint ring system and moons in true 3D.',
-        keywords: 'uranus, planet uranus, ice giant, tilted planet, 3d solar system',
-        content: `<h1>About Planet Uranus</h1>
-        <p>Uranus is the seventh planet from the Sun. Its name is a reference to the Greek god of the sky, Uranus. It has the third-largest planetary radius and fourth-largest planetary mass in the Solar System.</p>
-        <p>Uranus has a unique configuration among the planets because its axis of rotation is tilted sideways, nearly into the plane of its solar orbit.</p>`
-    },
-    {
-        name: 'Neptune',
-        title: 'Neptune - 3D Solar System Simulator',
-        description: 'Venture to Neptune, the outermost planet in the Solar System. See the deep blue ice giant in our 3D simulator.',
-        keywords: 'neptune, planet neptune, ice giant, outer solar system, 3d astronomy',
-        content: `<h1>About Planet Neptune</h1>
-        <p>Neptune is the eighth and farthest-known Solar planet from the Sun. In the Solar System, it is the fourth-largest planet by diameter, the third-most-massive planet, and the densest giant planet.</p>
-        <p>Neptune's atmosphere is notable for its active and visible weather patterns, driven by the strongest sustained winds of any planet in the Solar System.</p>`
-    }
+  {
+    name: 'Mercury',
+    description: 'Explore Mercury in an interactive 3D Solar System visualization and learn why this small, cratered world has the shortest year of any planet.',
+    intro: 'Mercury is the smallest planet and the closest major planet to the Sun. Its year lasts about 88 Earth days, while its heavily cratered surface records a long history of impacts.',
+    detail: 'Use the scene to inspect Mercury in context, then compare its small visual radius and eccentric orbit with the other planets.'
+  },
+  {
+    name: 'Venus',
+    description: 'Explore Venus in an interactive 3D Solar System visualization and learn about its dense carbon-dioxide atmosphere and extreme greenhouse effect.',
+    intro: 'Venus is similar to Earth in size but radically different at the surface. A dense carbon-dioxide atmosphere and sulfuric-acid clouds help make it the hottest planet.',
+    detail: 'Focus the 3D view on Venus, inspect its reference data, and compare its nearly circular orbit with those of neighbouring planets.'
+  },
+  {
+    name: 'Earth',
+    description: 'Explore Earth and the Moon in an interactive 3D Solar System visualization with basic planetary and orbital reference data.',
+    intro: 'Earth is the third planet from the Sun and the only world currently known to support life. Liquid surface water covers most of the planet, and the Moon is its natural satellite.',
+    detail: 'Use the 3D view to focus on Earth, select the Moon, and compare their available radius and orbit fields.'
+  },
+  {
+    name: 'Mars',
+    description: 'Explore Mars, Phobos, and Deimos in an interactive 3D Solar System visualization and learn about the cold, dusty Red Planet.',
+    intro: 'Mars is a cold, rocky world with a thin atmosphere dominated by carbon dioxide. Iron minerals in its soil give the planet its familiar red appearance.',
+    detail: 'Focus on Mars, then select its small moons Phobos and Deimos to compare the objects represented in the scene.'
+  },
+  {
+    name: 'Jupiter',
+    description: 'Explore Jupiter and selected Galilean moons in an interactive 3D Solar System visualization with key planetary reference data.',
+    intro: 'Jupiter is the largest planet in the Solar System. Its striped atmosphere hosts powerful storms, including the long-lived Great Red Spot.',
+    detail: 'Use the 3D view to focus on Jupiter and select its represented moons to compare their sizes and orbital fields.'
+  },
+  {
+    name: 'Saturn',
+    description: 'Explore Saturn, its rings, and selected moons in an interactive 3D Solar System visualization for learning and visual comparison.',
+    intro: 'Saturn is a gas giant best known for its broad ring system, made mainly of ice particles with smaller amounts of rocky material and dust.',
+    detail: 'Focus on Saturn to view its rings in context, then inspect the represented moons and compare their reference data.'
+  },
+  {
+    name: 'Uranus',
+    description: 'Explore Uranus in an interactive 3D Solar System visualization and learn about the ice giant whose rotation axis is tilted sideways.',
+    intro: 'Uranus is an ice giant with a rotation axis tilted roughly sideways relative to its orbit. Methane in its atmosphere contributes to its blue-green appearance.',
+    detail: 'Use the 3D scene to focus on Uranus and compare its distant orbit and selected moons with the inner Solar System.'
+  },
+  {
+    name: 'Neptune',
+    description: 'Explore Neptune in an interactive 3D Solar System visualization and learn about the distant blue ice giant and its strong winds.',
+    intro: 'Neptune is the farthest major planet from the Sun. It is a cold ice giant with active weather and some of the fastest winds measured in the Solar System.',
+    detail: 'Focus the scene on Neptune, inspect its available reference data, and compare its orbit with the seven other major planets.'
+  }
 ];
 
-// Helper to replace meta tags
-function replaceMeta(html, tag, nameAttr, newValue) {
-    // Matches <meta name="description" content="..."> 
-    const regex = new RegExp('<meta\\s+name="' + nameAttr + '"\\s+content="[^"]*">', 'i');
-    if (html.match(regex)) {
-        return html.replace(regex, '<meta name="' + nameAttr + '" content="' + newValue + '">');
-    } else {
-        // Fallback: inject right after <title>
-        return html.replace('</title>', '</title>\\n    <meta name="' + nameAttr + '" content="' + newValue + '">');
+function escapeHtml(value) {
+  return value.replace(/[&<>"']/g, character => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[character]));
+}
+
+function replaceMeta(html, attribute, key, value) {
+  const expression = new RegExp(`<meta\\s+${attribute}="${key}"\\s+content="[^"]*">`, 'i');
+  if (!expression.test(html)) throw new Error(`Missing ${attribute} metadata: ${key}`);
+  return html.replace(expression, `<meta ${attribute}="${key}" content="${escapeHtml(value)}">`);
+}
+
+function buildStructuredData(planet, url) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: `${planet.name} — Interactive 3D Planet View`,
+    description: planet.description,
+    url,
+    isPartOf: {
+      '@type': 'WebApplication',
+      name: 'Mzu 3D Solar System',
+      url: 'https://www.3dsolarsystem.net/'
+    },
+    about: {
+      '@type': 'Thing',
+      name: planet.name
     }
+  };
 }
 
 for (const planet of planets) {
-    let planetHtml = indexHtml;
+  const slug = planet.name.toLowerCase();
+  const canonical = `https://www.3dsolarsystem.net/${slug}.html`;
+  const title = `${planet.name} in 3D | Interactive Solar System Explorer`;
+  let html = source;
 
-    // 1. Replace title
-    planetHtml = planetHtml.replace(/<title>.*?<\/title>/i, '<title>' + planet.title + '</title>');
+  html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${title}</title>`);
+  html = replaceMeta(html, 'name', 'description', planet.description);
+  html = replaceMeta(html, 'property', 'og:title', title);
+  html = replaceMeta(html, 'property', 'og:description', planet.description);
+  html = replaceMeta(html, 'property', 'og:url', canonical);
+  html = replaceMeta(html, 'name', 'twitter:title', title);
+  html = replaceMeta(html, 'name', 'twitter:description', planet.description);
+  html = html.replace(/<link rel="canonical" href="[^"]*">/i, `<link rel="canonical" href="${canonical}">`);
+  html = html.replace(
+    /<script id="app-structured-data" type="application\/ld\+json">[\s\S]*?<\/script>/i,
+    `<script id="app-structured-data" type="application/ld+json">\n${JSON.stringify(buildStructuredData(planet, canonical), null, 2)}\n    </script>`
+  );
+  html = html.replace(
+    '<body data-page-kind="home">',
+    `<body data-page-kind="planet" data-page-planet="${planet.name}">`
+  );
+  html = html.replace(
+    '</head>',
+    `    <script>window.INITIAL_PLANET = ${JSON.stringify(planet.name)};</script>\n</head>`
+  );
 
-    // 2. Replace description
-    planetHtml = replaceMeta(planetHtml, 'meta', 'description', planet.description);
+  const visibleContent = `<!-- PAGE-CONTENT:START -->
+        <section class="experience-copy">
+            <p class="eyebrow">Interactive planet view</p>
+            <h1>Explore ${planet.name} in 3D</h1>
+            <p>${escapeHtml(planet.intro)}</p>
+            <p>${escapeHtml(planet.detail)}</p>
+            <p class="model-note"><strong>Model note:</strong> This is an artistic educational visualization. Sizes, distances, and time are compressed for visibility; it is not a live ephemeris or a professional astronomy tool.</p>
+        </section>
+        <!-- PAGE-CONTENT:END -->`;
 
-    // 3. Replace keywords
-    planetHtml = replaceMeta(planetHtml, 'meta', 'keywords', planet.keywords);
+  html = html.replace(/<!-- PAGE-CONTENT:START -->[\s\S]*?<!-- PAGE-CONTENT:END -->/, visibleContent);
+  html = html.replace(
+    new RegExp(`<a href="${slug}\\.html" data-focus="${planet.name}">`, 'i'),
+    `<a href="${slug}.html" data-focus="${planet.name}" aria-current="page">`
+  );
 
-    // 4. Inject window.INITIAL_PLANET variable
-    const scriptInjection = "<script>window.INITIAL_PLANET = '" + planet.name + "';</script>";
-    planetHtml = planetHtml.replace("</head>", "    " + scriptInjection + "\n</head>");
-
-    // 5. Inject SEO hidden content
-    const seoContent = "\n" +
-    "    <!-- SEO Content for Crawlers -->\n" +
-    '    <div style="display:none;" id="seo-content">\n' +
-    "        " + planet.content + "\n" +
-    '        <a href="index.html">Back to Full Solar System</a>\n' +
-    "    </div>";
-    
-    // Inject right after <body>
-    planetHtml = planetHtml.replace(/<body[^>]*>/i, match => match + seoContent);
-
-    // Write file
-    const fileName = planet.name.toLowerCase() + '.html';
-    const outputPath = path.join(__dirname, fileName);
-    fs.writeFileSync(outputPath, planetHtml, 'utf8');
-    console.log('Generated ' + fileName);
+  fs.writeFileSync(path.join(root, `${slug}.html`), html, 'utf8');
+  console.log(`Generated ${slug}.html`);
 }
 
-console.log('Successfully generated all SEO planet pages.');
+console.log(`Generated ${planets.length} visible, page-specific planet pages.`);
