@@ -18,19 +18,49 @@
         const pointerDownPosition = new THREE.Vector2();
 
         const pageParameters = new URLSearchParams(window.location.search);
-        const requestedQuality = pageParameters.get('quality');
+        const QUALITY_STORAGE_KEY = SolarQualityPolicy.QUALITY_STORAGE_KEY;
+
+        function readStoredQualityPreference() {
+            try {
+                return SolarQualityPolicy.normalizePreference(window.localStorage.getItem(QUALITY_STORAGE_KEY));
+            } catch (error) {
+                return '';
+            }
+        }
+
+        const requestedQuality = SolarQualityPolicy.normalizePreference(pageParameters.get('quality'));
+        const qualityPreference = requestedQuality || readStoredQualityPreference() || 'auto';
         const deviceMemory = Number(navigator.deviceMemory || 0);
         const hardwareThreads = Number(navigator.hardwareConcurrency || 0);
-        const automaticLiteMode = window.matchMedia('(max-width: 720px)').matches ||
-            (deviceMemory > 0 && deviceMemory <= 4) ||
-            (hardwareThreads > 0 && hardwareThreads <= 4);
-        const lowDetailMode = requestedQuality === 'low' || (requestedQuality !== 'high' && automaticLiteMode);
-        const highDetailMode = requestedQuality === 'high';
-        const renderProfile = highDetailMode
-            ? { asteroids: 3000, stars: 40000, kuiperObjects: 10000, maxPixelRatio: 2, featuredModels: true }
-            : lowDetailMode
-                ? { asteroids: 700, stars: 12000, kuiperObjects: 3000, maxPixelRatio: 1.25, featuredModels: false }
-                : { asteroids: 1800, stars: 26000, kuiperObjects: 7000, maxPixelRatio: 2, featuredModels: true };
+        const saveDataEnabled = Boolean(navigator.connection && navigator.connection.saveData);
+        const compactViewport = window.matchMedia('(max-width: 720px)').matches;
+        const effectivePixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+        const viewportPixels = window.innerWidth * window.innerHeight * effectivePixelRatio * effectivePixelRatio;
+
+        const qualitySignals = {
+            deviceMemory,
+            hardwareThreads,
+            saveData: saveDataEnabled,
+            compactViewport,
+            viewportPixels
+        };
+        const activeQuality = qualityPreference === 'auto'
+            ? SolarQualityPolicy.chooseAutomaticQuality(qualitySignals)
+            : qualityPreference;
+        const lowDetailMode = activeQuality === 'low';
+        const highDetailMode = activeQuality === 'high';
+        const renderProfile = SolarQualityPolicy.RENDER_PROFILES[activeQuality];
+        let runtimePixelRatioCap = renderProfile.maxPixelRatio;
+        let runtimeReliefLevel = 0;
+        let performanceSampleStartedAt = 0;
+        let performanceSampleFrames = 0;
+
+        window.SOLAR_QUALITY = {
+            preference: qualityPreference,
+            active: activeQuality,
+            runtimeReliefLevel,
+            signals: { ...qualitySignals, viewportPixels: Math.round(viewportPixels) }
+        };
 
         const requestedFocus = pageParameters.get('focus');
         if (!window.INITIAL_PLANET && requestedFocus) {
@@ -283,10 +313,10 @@ self.onmessage = function(e) {
 
             renderer = new THREE.WebGLRenderer({
                 antialias: !lowDetailMode,
-                powerPreference: 'high-performance'
+                powerPreference: lowDetailMode ? 'low-power' : 'high-performance'
             });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, renderProfile.maxPixelRatio));
+            applyRendererPixelRatio();
             renderer.outputEncoding = THREE.sRGBEncoding; // 让画面颜色真实不偏暗（修复程序化纹理偏灰问题）
 
  
@@ -3414,19 +3444,86 @@ self.onmessage = function(e) {
                 }
         }
 
+        function applyRendererPixelRatio() {
+            if (!renderer) return;
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, runtimePixelRatioCap));
+        }
+
+        function removeProceduralAsteroids(targetCount) {
+            const proceduralAsteroids = celestialObjects.filter(object =>
+                object.isAsteroid && /^Asteroid \d+$/.test(object.displayName || '')
+            );
+            const removeCount = Math.max(0, proceduralAsteroids.length - targetCount);
+            if (removeCount === 0) return 0;
+
+            const removable = proceduralAsteroids.slice(-removeCount);
+            const removableSet = new Set(removable);
+            for (const asteroid of removable) {
+                if (asteroid.pivot) scene.remove(asteroid.pivot);
+            }
+            for (let index = celestialObjects.length - 1; index >= 0; index--) {
+                if (removableSet.has(celestialObjects[index])) celestialObjects.splice(index, 1);
+            }
+            return removeCount;
+        }
+
+        function applyRuntimePerformanceRelief(measuredFps) {
+            if (!renderer || runtimeReliefLevel >= 2) return;
+            runtimeReliefLevel += 1;
+
+            if (runtimeReliefLevel === 1) {
+                runtimePixelRatioCap = Math.min(runtimePixelRatioCap, activeQuality === 'high' ? 1.5 : 1.25);
+                removeProceduralAsteroids(activeQuality === 'high' ? 1800 : 1000);
+            } else {
+                runtimePixelRatioCap = 1;
+                removeProceduralAsteroids(700);
+                document.body.classList.add('low-detail-mode');
+            }
+
+            applyRendererPixelRatio();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            window.SOLAR_QUALITY.runtimeReliefLevel = runtimeReliefLevel;
+            window.dispatchEvent(new CustomEvent('solar-quality-adjusted', {
+                detail: { level: runtimeReliefLevel, measuredFps: Math.round(measuredFps) }
+            }));
+        }
+
+        function monitorRuntimePerformance(frameTimestamp) {
+            if (qualityPreference !== 'auto' || activeQuality === 'low' || runtimeReliefLevel >= 2 || document.hidden) {
+                return;
+            }
+            if (!performanceSampleStartedAt) {
+                performanceSampleStartedAt = frameTimestamp;
+                performanceSampleFrames = 0;
+                return;
+            }
+
+            performanceSampleFrames += 1;
+            const elapsed = frameTimestamp - performanceSampleStartedAt;
+            if (elapsed < 8000) return;
+
+            const measuredFps = performanceSampleFrames * 1000 / elapsed;
+            const threshold = runtimeReliefLevel === 0 ? 42 : 38;
+            if (measuredFps < threshold) applyRuntimePerformanceRelief(measuredFps);
+            performanceSampleStartedAt = frameTimestamp;
+            performanceSampleFrames = 0;
+        }
+
         function onWindowResize() { /* ... NO CHANGE ... */
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
+            applyRendererPixelRatio();
             renderer.setSize(window.innerWidth, window.innerHeight);
  
         }
 
-        function animate() { /* ... NO CHANGE in core logic, but relies on correct celestialObjects data ... */
+        function animate(frameTimestamp = performance.now()) { /* ... NO CHANGE in core logic, but relies on correct celestialObjects data ... */
             if (document.hidden) {
                 animationFrameId = null;
                 return;
             }
             animationFrameId = requestAnimationFrame(animate);
+            monitorRuntimePerformance(frameTimestamp);
             const delta = clock.getDelta();
             const elapsedTime = clock.getElapsedTime();
 

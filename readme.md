@@ -25,8 +25,12 @@ Then open `http://localhost:8000/`.
 
 - Focus a supported object: `/?focus=Earth`
 - Use a lightweight embedded interface: `/?focus=Earth&embed=1`
+- Let the site choose a profile and adapt after sustained low frame rates: `/?quality=auto`
+- Force the balanced profile: `/?quality=balanced`
 - Force reduced detail: `/?quality=low`
 - Force full detail on a capable device: `/?quality=high`
+
+The visible quality selector stores the visitor's preference locally. Auto mode uses available memory, CPU, viewport, pixel-density, and data-saving signals without treating every phone as low-end. It can reduce render resolution and procedural asteroid load if measured performance remains poor.
 
 ## Generate planet pages
 
@@ -46,7 +50,8 @@ node --check main.js
 ## Main files
 
 - `index.html`: shared page shell and visible homepage copy
-- `main.js`: Three.js scene, interactions, guided tour, sharing, and performance profile
+- `quality-policy.js`: testable automatic quality selection and render profiles
+- `main.js`: Three.js scene, interactions, runtime performance relief, and rendering
 - `style.css`: responsive overlay and scene controls
 - `generate_seo_pages.cjs`: deterministic planet-page generator
 - `validate_site.cjs`: metadata, content, sitemap, and claim checks

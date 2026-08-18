@@ -131,6 +131,16 @@
     </audio>
 
     <div id="scene-controls" aria-label="Scene controls">
+        <label class="quality-control" for="quality-select">
+            <span>Quality</span>
+            <select id="quality-select" aria-describedby="quality-status">
+                <option value="auto">Auto</option>
+                <option value="high">High</option>
+                <option value="balanced">Balanced</option>
+                <option value="low">Low</option>
+            </select>
+            <small id="quality-status" aria-live="polite"></small>
+        </label>
         <button id="music-button" class="control-btn" type="button">Music: Off</button>
         <button id="orbit-glow-button" class="control-btn" type="button">Orbit glow: Off</button>
     </div>
@@ -144,6 +154,7 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/objects/Lensflare.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+    <script src="quality-policy.js"></script>
     <script src="main.js"></script>
     <script src="experience.js"></script>
 </body>

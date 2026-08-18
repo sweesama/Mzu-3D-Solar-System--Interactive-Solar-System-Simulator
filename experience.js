@@ -25,6 +25,40 @@ function showToast(message) {
     toastTimer = setTimeout(() => toast.classList.remove('visible'), 2600);
 }
 
+function updateQualityUi() {
+    const qualitySelect = document.getElementById('quality-select');
+    const qualityStatus = document.getElementById('quality-status');
+    const state = window.SOLAR_QUALITY;
+    if (!qualitySelect || !qualityStatus || !state) return;
+
+    qualitySelect.value = state.preference;
+    const activeLabel = state.active.charAt(0).toUpperCase() + state.active.slice(1);
+    if (state.preference === 'auto') {
+        qualityStatus.textContent = state.runtimeReliefLevel
+            ? `${activeLabel}, adjusted for smoothness`
+            : `Auto selected ${activeLabel}`;
+    } else {
+        qualityStatus.textContent = `${activeLabel} selected`;
+    }
+}
+
+function changeQualityPreference(preference) {
+    const normalized = ['auto', 'high', 'balanced', 'low'].includes(preference) ? preference : 'auto';
+    let stored = false;
+    try {
+        window.localStorage.setItem(QUALITY_STORAGE_KEY, normalized);
+        stored = true;
+    } catch (error) {
+        stored = false;
+    }
+
+    const url = new URL(window.location.href);
+    if (stored || normalized === 'auto') url.searchParams.delete('quality');
+    else url.searchParams.set('quality', normalized);
+    trackExperienceEvent('solar_quality_change', { quality_preference: normalized });
+    window.location.replace(url.toString());
+}
+
 function fillObjectInfo(data) {
     document.getElementById('info-title').innerText = data.displayName || data.name || 'Celestial object';
     document.getElementById('info-name').innerText = `Name: ${data.displayName || data.name || 'Unknown'}`;
@@ -228,6 +262,19 @@ function setupExperienceUi() {
     document.getElementById('share-button').addEventListener('click', shareCurrentView);
     document.getElementById('snapshot-button').addEventListener('click', saveSceneImage);
     document.getElementById('embed-button').addEventListener('click', copyEmbedCode);
+    document.getElementById('quality-select').addEventListener('change', event => {
+        changeQualityPreference(event.target.value);
+    });
+    updateQualityUi();
+
+    window.addEventListener('solar-quality-adjusted', event => {
+        updateQualityUi();
+        showToast(`Auto quality reduced render load after ${event.detail.measuredFps} fps.`);
+        trackExperienceEvent('solar_quality_auto_adjust', {
+            relief_level: event.detail.level,
+            measured_fps: event.detail.measuredFps
+        });
+    });
 
     if (document.body.dataset.pageKind === 'home') {
         document.querySelectorAll('[data-focus]').forEach(link => {
@@ -249,6 +296,8 @@ function setupExperienceUi() {
             animationFrameId = null;
             clock.stop();
         } else if (renderer && animationFrameId === null) {
+            performanceSampleStartedAt = 0;
+            performanceSampleFrames = 0;
             clock.start();
             animate();
         }
