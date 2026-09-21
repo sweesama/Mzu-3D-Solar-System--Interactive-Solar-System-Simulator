@@ -1,0 +1,683 @@
+(function () {
+    'use strict';
+    const $ = id => document.getElementById(id);
+    const parameters = new URLSearchParams(location.search);
+    const expedition = window.LunarExpedition;
+    if (!expedition) { $('loading-label').textContent = 'The expedition guide could not load. Please reload this page.'; return; }
+    const dictionary = {
+        en: {
+            expeditions: 'EXPEDITIONS', fullscreen: 'Full screen', return: 'Return to orbit', destination: "EARTH'S MOON", surfaceMode: 'SURFACE EXPLORATION',
+            chapter: 'EXPEDITION 001 / THE NEAR SIDE', title: 'Walk on\nthe Moon.', intro: 'Walk an imagined lunar landscape, jump in low gravity, and discover craters, rocks, and Earth above the horizon.', begin: 'Step onto the Moon', arrivalHint: 'No download. Just a little curiosity.',
+            fieldNotes: 'FIELD NOTES', reconstruction: 'An imagined site, informed by lunar science.', gravity: 'GRAVITY', atmosphere: 'ATMOSPHERE', vacuum: 'Near vacuum', distance: 'FROM ARRIVAL',
+            walkingHint: 'W A S D to walk · drag to look · Space to jump · Shift for a brisk walk', touchHint: 'Arrows to walk · drag to look · tap Jump to leap', station0: 'Crater overlook', station1: 'Boulder field', station2: 'Home in the sky',
+            astronaut: 'ASTRONAUT', jump: 'Jump', grounded: 'On the surface', airborne: 'Airborne', motionOn: 'Camera motion: On', motionOff: 'Camera motion: Off', motionHint: 'Disable head motion for a steadier view.',
+            guide: 'Field guide', photo: 'Photo mode', quality: 'Quality', auto: 'Auto', high: 'High', balanced: 'Balanced', low: 'Low', artNote: 'SCIENCE-INSPIRED ARTISTIC RECONSTRUCTION · NOT A SCANNED LANDING SITE',
+            capture: 'Save photograph', exitPhoto: 'Exit photo mode', loading: 'Preparing the lunar landscape…', fieldGuide: 'THE EXPEDITION FIELD GUIDE', guideTitle: 'Take the long way home.',
+            guideIntro: 'This is a small, freely explorable lunar landscape, not a whole-planet simulation. The three observation points are different views of the same place.', controlsTitle: 'Moving around',
+            controlsText: 'You are exploring on foot as an astronaut. Walk with W A S D or the arrow keys; Shift gives a brisker pace. Press Space to jump, then wait to land before jumping again. Momentum carries you forward in the air. Drag to look, including down at your boots. Touchscreens have direction and Jump buttons. H hides notes; P opens photo mode; Esc closes it.',
+            scienceTitle: 'Science meets imagination', scienceText: "Impact craters, airless skies, subdued rock colors, and hard sunlight are inspired by lunar science. Terrain, rock placement, and observation points are procedural art, not survey data. Earth's apparent size and placement are composed for this scene, not calculated for a real date or location.",
+            soundText: 'There is no wind sound in this near vacuum. Jumps use a constant lunar surface gravity of 1.62 m/s². The chosen 1.8 m/s takeoff gives about 1 metre of rise and 2.2 seconds in the air on level ground. Pace, takeoff strength, and camera motion are comfort settings, not a full spacesuit simulation.',
+            assetText: "Earth imagery: Solar System Scope, CC BY 4.0, using the site's existing textures. Lunar terrain and rock textures are generated locally in your browser.",
+            error: 'The 3D scene could not start. Try reloading in a browser with WebGL enabled.', lost: 'The graphics connection was interrupted. Reload this page to resume.', boundary: 'You have reached the edge of this expedition. Try another observation point.', saved: 'Photograph saved.', saveFailed: 'This browser could not save the photograph.', fullscreenFailed: 'Full screen is not available in this browser.', textureFailed: 'Earth imagery is unavailable; a simple globe is shown instead.', adjusted: 'Render resolution reduced to keep exploring smoothly.',
+            notes: [
+                ['A history of impacts', 'The raised rim and sunken bowl tell the same story: an impact scattered rock outward. Without wind or rain, these scars can remain for billions of years.', 'LANDSCAPE', 'Impact crater'],
+                ['Written in stone', 'Impacts break, scatter, and bury rock. Look closely at the angular boulders and the fine blanket of regolith beneath them. Nothing here is shaped by a breeze.', 'SURFACE', 'Rock & regolith'],
+                ['Everything we call home', 'From much of the near side, Earth stays in roughly the same part of the sky. The Moon turns once per orbit, keeping nearly the same face toward home.', 'ROTATION', 'Tidally locked']
+            ]
+        },
+        zh: {
+            expeditions: '星际探索', fullscreen: '全屏', return: '返回太阳系', destination: '地球的月亮', surfaceMode: '月面探索', chapter: '探索 001 / 月球正面', title: '漫步月球。',
+            intro: '走进一片艺术重建的月面，在低重力中跳跃，探索环形山与岩石，遥望地平线上方的地球。', begin: '踏上月球', arrivalHint: '无需下载，带上好奇心就好。', fieldNotes: '探索手记', reconstruction: '受月球科学启发的虚构地点。',
+            gravity: '月面重力', atmosphere: '大气环境', vacuum: '接近真空', distance: '距抵达点', walkingHint: 'W A S D 行走 · 拖动转头 · 空格跳跃 · Shift 快步', touchHint: '方向按钮行走 · 拖动画面转头 · 点击跳跃',
+            astronaut: '宇航员视角', jump: '跳跃', grounded: '双脚着地', airborne: '腾空中', motionOn: '镜头起伏：开', motionOff: '镜头起伏：关', motionHint: '关闭头部起伏可获得更平稳的视角。',
+            station0: '环形山眺望点', station1: '岩石原野', station2: '天空中的家园', guide: '探索指南', photo: '摄影模式', quality: '画质', auto: '自动', high: '高', balanced: '均衡', low: '低',
+            artNote: '科学启发的艺术重建 · 非真实着陆点扫描', capture: '保存照片', exitPhoto: '退出摄影', loading: '正在准备月面风景…', fieldGuide: '月球探索指南', guideTitle: '慢一点，看看远方。',
+            guideIntro: '这是一片可以自由漫游的月面区域，而非完整月球。三个观察点都位于同一个场景，可随时切换，也可自行走过去。', controlsTitle: '如何探索',
+            controlsText: '你是一位徒步探索的宇航员。W A S D 或方向键行走，Shift 快步，空格跳跃，落地后才能再次起跳。腾空时保留起跳时的水平惯性，不能像飞行器一样转向。拖动画面观察，也可以低头看看自己的靴子。触屏有方向按钮和跳跃键。H 隐藏手记，P 进入摄影，Esc 退出摄影。',
+            scienceTitle: '科学与想象的交界', scienceText: '撞击坑、漆黑天空、低饱和度岩石和强烈日照来自月球科学常识。地形、岩石分布与观察点由程序创作，并非实测地形。地球在天空中的位置和视觉大小经过构图处理，不对应真实日期或坐标。',
+            soundText: '接近真空的环境里没有风声。跳跃使用月面平均重力 1.62 m/s²；设定的起跳速度为 1.8 m/s，在平地约跳高 1 米、腾空 2.2 秒。步速、起跳力度和镜头起伏经过舒适性设计，不是完整的宇航服物理模拟。',
+            assetText: '地球影像：Solar System Scope，CC BY 4.0，复用网站已有贴图。月面地形与岩石纹理由浏览器本地生成。',
+            error: '三维场景未能启动，请在支持 WebGL 的浏览器中重新加载。', lost: '图形连接中断，请重新加载页面继续。', boundary: '已到达本次探索区域边缘，可以前往另一个观察点。', saved: '照片已保存。', saveFailed: '当前浏览器无法保存照片。', fullscreenFailed: '当前浏览器无法进入全屏。', textureFailed: '地球影像暂时无法加载，已显示简化球体。', adjusted: '已适当降低渲染分辨率，让探索更流畅。',
+            notes: [
+                ['撞击留下的岁月', '隆起的边缘与下陷的坑底，记录着一次猛烈撞击。没有风雨侵蚀，这样的痕迹可以留存数十亿年。', '地貌类型', '撞击坑'],
+                ['石头里的故事', '撞击打碎、抛散并掩埋岩石。看看这些棱角分明的石块，以及覆盖地面的细碎月壤。这里没有微风雕刻的痕迹。', '地表组成', '岩石与月壤'],
+                ['我们称之为家园', '在月球正面许多地方，地球大致停留在天空的同一片区域。月球绕地球一周时也恰好自转一周，始终以近乎同一面朝向家园。', '自转特点', '潮汐锁定']
+            ]
+        }
+    };
+    let language = parameters.get('lang') === 'zh' ? 'zh' : 'en';
+    let stationIndex = 0, exploring = false, photoMode = false, ready = false;
+    let renderer, scene, camera, surface, sunlight, walker, astronaut, animationId = null;
+    let jumpRequested = false, motionEnabled = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let yaw = -0.12, pitch = -0.06, lastTime = 0, frameCount = 0, sampleTime = 0, pixelRelief = 0;
+    let noticeTimer, lastBoundaryNotice = 0, drag = null;
+    const keys = new Set(), touchKeys = new Set(), obstacles = [];
+    const stations = expedition.stations;
+    let discoveryUI = null, featuredRock = null;
+    const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open;
+    const position = { x: stations[0].x, z: stations[0].z };
+    const touchDevice = matchMedia('(pointer: coarse)').matches;
+    const policy = window.SolarQualityPolicy;
+    let savedQuality = '';
+    try { savedQuality = localStorage.getItem(policy?.QUALITY_STORAGE_KEY || 'mzu-solar-quality') || ''; } catch (error) { savedQuality = ''; }
+    const preference = policy ? policy.normalizePreference(parameters.get('quality')) || policy.normalizePreference(savedQuality) || 'auto' : 'balanced';
+    let quality = preference === 'auto' && policy ? policy.chooseAutomaticQuality({
+        deviceMemory: navigator.deviceMemory, hardwareThreads: navigator.hardwareConcurrency,
+        compactViewport: innerWidth < 768, viewportPixels: innerWidth * innerHeight * Math.min(devicePixelRatio, 2) ** 2, saveData: navigator.connection?.saveData
+    }) : preference;
+    if (!['high', 'balanced', 'low'].includes(quality)) quality = 'balanced';
+    const profiles = {
+        high: { segments: 384, rocks: 2200, gravel: 6500, texture: 1024, shadows: 2048, ratio: 1.75 },
+        balanced: { segments: 288, rocks: 1300, gravel: 3800, texture: 512, shadows: 1024, ratio: 1.5 },
+        low: { segments: 192, rocks: 600, gravel: 1400, texture: 512, shadows: 512, ratio: 1 }
+    };
+    const profile = profiles[quality];
+    const t = key => dictionary[language][key];
+    function applyLanguage() {
+        document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en';
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+            const value = t(element.dataset.i18n);
+            if (value) element.textContent = value;
+        });
+        document.querySelector('h1').style.whiteSpace = 'pre-line';
+        $('language-button').textContent = language === 'zh' ? 'EN' : '中文';
+        $('walking-hint').textContent = t(touchDevice ? 'touchHint' : 'walkingHint');
+        updateMotionButton();
+        if (walker) $('movement-state').textContent = t(walker.grounded ? 'grounded' : 'airborne');
+        updateNotes();
+    }
+    function updateNotes() {
+        if (discoveryUI) discoveryUI.setLanguage(language);
+    }
+    function notify(key) {
+        $('notice').textContent = t(key);
+        $('notice').classList.add('visible');
+        clearTimeout(noticeTimer);
+        noticeTimer = setTimeout(() => $('notice').classList.remove('visible'), 4200);
+    }
+    function fail(key, error) {
+        ready = false;
+        if (animationId !== null) cancelAnimationFrame(animationId);
+        animationId = null;
+        $('loading-overlay').hidden = false;
+        $('loading-label').textContent = t(key);
+        document.querySelector('.loading-orbit').style.animation = 'none';
+        document.querySelectorAll('.station-button, #begin-button, #photo-button').forEach(button => { button.disabled = true; });
+        if (error) console.error('Moon expedition:', error);
+    }
+    function makeTexture() {
+        const size = profile.texture;
+        const pixels = new Uint8Array(size * size * 4);
+        const rand = LunarTerrain.random(817);
+        const fields = [8, 32, 128].map(count => ({ count, data: Float32Array.from({ length: count * count }, () => rand()) }));
+        function tileNoise(u, v, field) {
+            const x = u * field.count, z = v * field.count, ix = Math.floor(x), iz = Math.floor(z);
+            let fx = x - ix, fz = z - iz;
+            fx = fx * fx * (3 - 2 * fx); fz = fz * fz * (3 - 2 * fz);
+            const at = (a, b) => field.data[(b % field.count) * field.count + a % field.count];
+            return (at(ix, iz) * (1 - fx) + at(ix + 1, iz) * fx) * (1 - fz) + (at(ix, iz + 1) * (1 - fx) + at(ix + 1, iz + 1) * fx) * fz;
+        }
+        for (let z = 0; z < size; z++) {
+            for (let x = 0; x < size; x++) {
+                const u = x / size, v = z / size;
+                const grain = (rand() - 0.5) * 17;
+                const cloud = (tileNoise(u, v, fields[0]) - 0.5) * 33 + (tileNoise(u, v, fields[1]) - 0.5) * 27 + (tileNoise(u, v, fields[2]) - 0.5) * 20;
+                const value = Math.max(55, Math.min(200, 155 + grain + cloud + (rand() > 0.999 ? -35 : 0)));
+                const i = (z * size + x) * 4;
+                pixels[i] = value; pixels[i + 1] = value; pixels[i + 2] = value; pixels[i + 3] = 255;
+            }
+        }
+        const texture = new THREE.DataTexture(pixels, size, size, THREE.RGBAFormat);
+        texture.encoding = THREE.sRGBEncoding;
+        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        texture.magFilter = THREE.LinearFilter;
+        texture.minFilter = THREE.LinearMipmapLinearFilter;
+        texture.generateMipmaps = true;
+        texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+        texture.needsUpdate = true;
+        return texture;
+    }
+    const terrainNoiseShader = `
+        float lunarHash(vec2 p) { return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453); }
+        float lunarNoise(vec2 p) {
+            vec2 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
+            return mix(mix(lunarHash(i),lunarHash(i+vec2(1.0,0.0)),f.x),mix(lunarHash(i+vec2(0.0,1.0)),lunarHash(i+vec2(1.0,1.0)),f.x),f.y);
+        }
+    `;
+    function groundMaterial(texture, repeats) {
+        const map = texture.clone();
+        map.repeat.set(repeats, repeats);
+        map.needsUpdate = true;
+        const material = new THREE.MeshStandardMaterial({ map, bumpMap: map, bumpScale: 0.055, roughness: 1, metalness: 0, vertexColors: true });
+        material.onBeforeCompile = shader => {
+            shader.vertexShader = 'varying vec3 vGroundPosition;\n' + shader.vertexShader;
+            shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvGroundPosition = position;');
+            shader.fragmentShader = 'varying vec3 vGroundPosition;\n' + terrainNoiseShader + shader.fragmentShader;
+            shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
+                float broad = lunarNoise(vGroundPosition.xz * 0.038) - 0.5;
+                float fine = lunarNoise(vGroundPosition.xz * 1.8) - 0.5;
+                float detailFade = 1.0 - smoothstep(25.0, 130.0, distance(cameraPosition, vGroundPosition));
+                diffuseColor.rgb *= 0.94 + broad * 0.22 + fine * 0.06 * detailFade;
+            `);
+        };
+        return material;
+    }
+    function mountainMaterial() {
+        const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(0xa49f94).convertSRGBToLinear(), roughness: 1, metalness: 0, vertexColors: true });
+        material.extensions = { derivatives: true };
+        material.onBeforeCompile = shader => {
+            shader.vertexShader = 'varying vec3 vMountainPosition;\n' + shader.vertexShader;
+            shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvMountainPosition = position;');
+            shader.fragmentShader = 'varying vec3 vMountainPosition;\n' + terrainNoiseShader + `
+                float rockRelief(vec2 p) {
+                    return lunarNoise(p * 0.067) * 2.8 + lunarNoise(p * 0.19) * 0.45;
+                }
+            ` + shader.fragmentShader;
+            shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
+                vec2 rockPoint = vMountainPosition.xz + vMountainPosition.y * vec2(0.35, 0.17);
+                float footprint = max(length(dFdx(rockPoint)), length(dFdy(rockPoint)));
+                float rockDetail = 1.0 - smoothstep(2.0, 7.0, footprint);
+                float largePatches = lunarNoise(rockPoint * 0.011);
+                float fracturedRock = lunarNoise(rockPoint * 0.063 + vec2(largePatches * 3.0));
+                float grains = mix(0.5, lunarNoise(rockPoint * 0.29), rockDetail);
+                float crevices = smoothstep(0.35, 0.62, fracturedRock);
+                diffuseColor.rgb *= 0.54 + largePatches * 0.44 + crevices * 0.3 + grains * 0.16;
+            `);
+            shader.fragmentShader = shader.fragmentShader.replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
+                float reliefX = (rockRelief(rockPoint + vec2(1.0, 0.0)) - rockRelief(rockPoint - vec2(1.0, 0.0))) * 0.5;
+                float reliefZ = (rockRelief(rockPoint + vec2(0.0, 1.0)) - rockRelief(rockPoint - vec2(0.0, 1.0))) * 0.5;
+                vec3 reliefNormal = mat3(viewMatrix) * vec3(reliefX, 0.0, reliefZ);
+                normal = normalize(normal - reliefNormal * (0.4 + rockDetail * 0.6));
+            `);
+        };
+        return material;
+    }
+    function buildTerrain(texture) {
+        surface = LunarTerrain.createSurface(960, profile.segments);
+        const geometry = new THREE.PlaneGeometry(surface.size, surface.size, surface.segments, surface.segments);
+        geometry.rotateX(-Math.PI / 2);
+        const positions = geometry.attributes.position;
+        const colors = new Float32Array(positions.count * 3);
+        for (let i = 0; i < positions.count; i++) {
+            positions.setY(i, surface.heights[i]);
+            const n = LunarTerrain.noise(positions.getX(i) * 0.085, positions.getZ(i) * 0.085);
+            const shade = 0.75 + n * 0.17;
+            colors.set([shade, shade * 0.975, shade * 0.93], i * 3);
+        }
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        geometry.computeVertexNormals();
+        const ground = new THREE.Mesh(geometry, groundMaterial(texture, 240));
+        ground.receiveShadow = true;
+        ground.castShadow = true;
+        scene.add(ground);
+        const farGeometry = new THREE.PlaneGeometry(6400, 6400, quality === 'low' ? 240 : 400, quality === 'low' ? 240 : 400);
+        farGeometry.rotateX(-Math.PI / 2);
+        const farPositions = farGeometry.attributes.position;
+        const farColors = new Float32Array(farPositions.count * 3);
+        for (let i = 0; i < farPositions.count; i++) {
+            const x = farPositions.getX(i), z = farPositions.getZ(i), r = Math.hypot(x, z);
+            const blend = THREE.MathUtils.smoothstep(r, 480, 700);
+            const n = LunarTerrain.noise(x * 0.003 + 3, z * 0.003 - 1);
+            const ridge = Math.exp(-Math.pow((r - 1100) / 510, 2));
+            const broken = 0.55 + 0.35 * LunarTerrain.noise(x * 0.008, z * 0.008) + 0.1 * LunarTerrain.noise(x * 0.026, z * 0.026);
+            const fractured = (Math.abs(LunarTerrain.noise(x * 0.012 + 31, z * 0.012) * 2 - 1) - 0.4) * 12 + (LunarTerrain.noise(x * 0.022, z * 0.022 + 19) - 0.5) * 3;
+            const h = LunarTerrain.height(x, z) - 0.6 + blend * (ridge * ((45 + n * 170) * broken + fractured) + n * 28);
+            farPositions.setY(i, h);
+            const color = 0.67 + n * 0.19;
+            farColors.set([color, color * 0.98, color * 0.95], i * 3);
+        }
+        const outerIndices = [];
+        const indices = farGeometry.index.array;
+        for (let i = 0; i < indices.length; i += 3) {
+            const outside = [indices[i], indices[i + 1], indices[i + 2]].some(index => Math.max(Math.abs(farPositions.getX(index)), Math.abs(farPositions.getZ(index))) >= 430);
+            if (outside) outerIndices.push(indices[i], indices[i + 1], indices[i + 2]);
+        }
+        farGeometry.setIndex(outerIndices);
+        farGeometry.setAttribute('color', new THREE.BufferAttribute(farColors, 3));
+        farGeometry.computeVertexNormals();
+        const farMaterial = mountainMaterial();
+        const far = new THREE.Mesh(farGeometry, farMaterial);
+        far.receiveShadow = true;
+        scene.add(far);
+    }
+    function rockGeometry(seed, detail) {
+        const geometry = new THREE.IcosahedronGeometry(1, detail);
+        const p = geometry.attributes.position;
+        const c = new Float32Array(p.count * 3);
+        for (let i = 0; i < p.count; i++) {
+            const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+            const n = LunarTerrain.noise(x * 3 + seed, z * 3 + y * 2);
+            const f = 0.8 + n * 0.35;
+            p.setXYZ(i, x * f, y * (0.63 + n * 0.25), z * f);
+            const shade = 0.74 + LunarTerrain.noise(x * 8 + seed, y * 8 + z * 2) * 0.22;
+            c.set([shade, shade * 0.97, shade * 0.92], i * 3);
+        }
+        geometry.setAttribute('color', new THREE.BufferAttribute(c, 3));
+        geometry.computeVertexNormals();
+        const normals = geometry.attributes.normal;
+        const normal = new THREE.Vector3(), radial = new THREE.Vector3();
+        for (let i = 0; i < p.count; i++) {
+            normal.fromBufferAttribute(normals, i);
+            radial.set(p.getX(i), p.getY(i) * 1.7, p.getZ(i)).normalize();
+            normal.lerp(radial, 0.62).normalize();
+            normals.setXYZ(i, normal.x, normal.y, normal.z);
+        }
+        return geometry;
+    }
+    function buildRocks(texture) {
+        const rand = LunarTerrain.random(19690720);
+        const material = new THREE.MeshStandardMaterial({ map: texture, bumpMap: texture, bumpScale: 0.07, roughness: 0.98, vertexColors: true });
+        const transform = new THREE.Object3D();
+        const color = new THREE.Color();
+        for (let group = 0; group < 4; group++) {
+            const count = Math.floor(profile.rocks / 4);
+            const rocks = new THREE.InstancedMesh(rockGeometry(group * 19 + 8, 1), material, count);
+            for (let i = 0; i < count; i++) {
+                let x = (rand() - 0.5) * 760, z = (rand() - 0.5) * 760;
+                const size = 0.2 + Math.pow(rand(), 3.7) * 2.7;
+                while (stations.some(s => Math.hypot(x - s.x, z - s.z) < size + 4) || expedition.isOnRoute({ x, z }, size * 1.5 + 0.5)) {
+                    x = (rand() - 0.5) * 760; z = (rand() - 0.5) * 760;
+                }
+                transform.position.set(x, LunarTerrain.sampleSurface(surface, x, z) + size * 0.22, z);
+                transform.scale.set(size * (0.8 + rand() * 0.7), size, size * (0.8 + rand() * 0.5));
+                transform.rotation.set((rand() - 0.5) * 0.4, rand() * Math.PI * 2, (rand() - 0.5) * 0.4);
+                transform.updateMatrix();
+                rocks.setMatrixAt(i, transform.matrix);
+                rocks.setColorAt(i, color.setScalar(0.67 + rand() * 0.33));
+                if (size > 0.5) obstacles.push({ x, z, radius: size * 1.5 });
+            }
+            rocks.castShadow = quality !== 'low';
+            rocks.receiveShadow = true;
+            rocks.frustumCulled = false;
+            scene.add(rocks);
+        }
+        const heroes = [[-7, 68, 1.1], [12, 48, 2.2], [21, 50, 1.1], [-43, 13, 3.4], [-47, 8, 1.3], [-42, 18, 0.7], [90, 26, 1.5], [7, 20, 0.9], [-17, 40, 1.9]];
+        for (const [x, z, size] of heroes) {
+            const rock = new THREE.Mesh(rockGeometry(x + 100, 2), material);
+            rock.scale.set(size * 1.25, size, size);
+            rock.position.set(x, LunarTerrain.sampleSurface(surface, x, z) + size * 0.3, z);
+            rock.rotation.y = rand() * 6;
+            rock.castShadow = rock.receiveShadow = true;
+            scene.add(rock);
+            if (x === -43 && z === 13) featuredRock = rock;
+            obstacles.push({ x, z, radius: size * 1.45 });
+        }
+        const gravel = new THREE.InstancedMesh(rockGeometry(84, 0), material, profile.gravel);
+        for (let i = 0; i < profile.gravel; i++) {
+            const x = (rand() - 0.5) * 530, z = (rand() - 0.5) * 530;
+            const size = 0.03 + rand() * 0.17;
+            transform.position.set(x, LunarTerrain.sampleSurface(surface, x, z) + size * 0.1, z);
+            transform.scale.set(size * 1.7, size, size);
+            transform.rotation.set(0, rand() * Math.PI * 2, 0);
+            transform.updateMatrix();
+            gravel.setMatrixAt(i, transform.matrix);
+            gravel.setColorAt(i, color.setScalar(0.45 + rand() * 0.5));
+        }
+        gravel.receiveShadow = true;
+        gravel.frustumCulled = false;
+        scene.add(gravel);
+    }
+    function buildSky() {
+        const earthMaterial = new THREE.MeshStandardMaterial({ color: 0x7fafd0, roughness: 0.95 });
+        const earth = new THREE.Mesh(new THREE.SphereGeometry(36, 64, 48), earthMaterial);
+        earth.position.set(350, 340, -1250);
+        earth.rotation.z = 0.35;
+        earth.rotation.y = 2.4;
+        scene.add(earth);
+        const loader = new THREE.TextureLoader();
+        const earthReady = new Promise(resolve => {
+            loader.load('textures/2k_earth_daymap.jpg', texture => {
+                texture.encoding = THREE.sRGBEncoding;
+                earthMaterial.map = texture;
+                earthMaterial.color.set(0xffffff);
+                earthMaterial.needsUpdate = true;
+                resolve();
+            }, undefined, () => { notify('textureFailed'); resolve(); });
+        });
+        const cloudsMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0, depthWrite: false });
+        const clouds = new THREE.Mesh(new THREE.SphereGeometry(36.4, 48, 32), cloudsMaterial);
+        earth.add(clouds);
+        loader.load('textures/2k_earth_clouds.jpg', texture => {
+            cloudsMaterial.alphaMap = texture;
+            cloudsMaterial.opacity = 0.8;
+            cloudsMaterial.needsUpdate = true;
+        }, undefined, () => {});
+        const atmosphere = new THREE.Mesh(new THREE.SphereGeometry(37.4, 48, 32), new THREE.ShaderMaterial({
+            uniforms: {}, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+            vertexShader: 'varying vec3 vN; varying vec3 vV; void main(){vec4 mv=modelViewMatrix*vec4(position,1.0); vN=normalize(normalMatrix*normal); vV=normalize(-mv.xyz); gl_Position=projectionMatrix*mv;}',
+            fragmentShader: 'varying vec3 vN; varying vec3 vV; void main(){float f=pow(1.0-max(0.0,dot(normalize(vN),normalize(vV))),4.0); gl_FragColor=vec4(0.16,0.45,0.9,f*0.55);}'
+        }));
+        earth.add(atmosphere);
+        const sun = new THREE.Mesh(new THREE.SphereGeometry(7, 24, 16), new THREE.MeshBasicMaterial({ color: 0xfff5dc }));
+        sun.position.copy(sunlight.position).normalize().multiplyScalar(2100);
+        scene.add(sun);
+        return Promise.race([earthReady, new Promise(resolve => setTimeout(resolve, 5000))]);
+    }
+    function buildAstronaut(texture) {
+        const suit = new THREE.MeshStandardMaterial({ color: 0xb8b5ab, roughness: 0.92, bumpMap: texture, bumpScale: 0.012 });
+        const joint = new THREE.MeshStandardMaterial({ color: 0x34383a, roughness: 1 });
+        const sole = new THREE.MeshStandardMaterial({ color: 0x4a4841, roughness: 1 });
+        const shadowOnly = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false });
+        astronaut = new THREE.Group();
+        function part(parent, geometry, material, x, y, z) {
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(x, y, z);
+            mesh.castShadow = mesh.receiveShadow = true;
+            parent.add(mesh);
+            return mesh;
+        }
+        function roundedBox(width, height, depth, radius) {
+            const geometry = new THREE.BoxGeometry(width, height, depth, 6, 4, 8);
+            const positions = geometry.attributes.position, normals = geometry.attributes.normal;
+            const point = new THREE.Vector3(), core = new THREE.Vector3(), normal = new THREE.Vector3();
+            for (let i = 0; i < positions.count; i++) {
+                point.fromBufferAttribute(positions, i);
+                core.set(THREE.MathUtils.clamp(point.x, -width / 2 + radius, width / 2 - radius), THREE.MathUtils.clamp(point.y, -height / 2 + radius, height / 2 - radius), THREE.MathUtils.clamp(point.z, -depth / 2 + radius, depth / 2 - radius));
+                normal.subVectors(point, core).normalize();
+                point.copy(core).addScaledVector(normal, radius);
+                positions.setXYZ(i, point.x, point.y, point.z);
+                normals.setXYZ(i, normal.x, normal.y, normal.z);
+            }
+            return geometry;
+        }
+        const bootGeometry = roundedBox(0.25, 0.16, 0.44, 0.035);
+        const soleGeometry = roundedBox(0.26, 0.035, 0.46, 0.012);
+        const legs = [-1, 1].map(side => {
+            const leg = new THREE.Group();
+            leg.position.x = side * 0.17;
+            leg.rotation.y = side * -0.055;
+            part(leg, new THREE.CylinderGeometry(0.135, 0.12, 0.42, 12), shadowOnly, 0, 0.7, 0.08);
+            part(leg, new THREE.SphereGeometry(0.125, 12, 8), shadowOnly, 0, 0.48, 0.03);
+            part(leg, new THREE.CylinderGeometry(0.105, 0.09, 0.22, 16, 1, true), suit, 0, 0.25, 0.02);
+            part(leg, bootGeometry, suit, 0, 0.105, -0.1);
+            part(leg, soleGeometry, sole, 0, 0.023, -0.1);
+            for (let i = 0; i < 3; i++) part(leg, new THREE.BoxGeometry(0.19, 0.01, 0.023), joint, 0, 0.187, -0.23 + i * 0.055);
+            astronaut.add(leg);
+            return leg;
+        });
+        part(astronaut, new THREE.BoxGeometry(0.48, 0.19, 0.29), shadowOnly, 0, 0.94, 0.12);
+        part(astronaut, new THREE.BoxGeometry(0.53, 0.5, 0.34), shadowOnly, 0, 1.26, 0.13);
+        part(astronaut, new THREE.BoxGeometry(0.43, 0.6, 0.24), shadowOnly, 0, 1.27, 0.4);
+        part(astronaut, new THREE.SphereGeometry(0.25, 20, 16), shadowOnly, 0, 1.64, 0.08);
+        for (const side of [-1, 1]) {
+            const arm = part(astronaut, new THREE.CylinderGeometry(0.105, 0.09, 0.49, 12), shadowOnly, side * 0.36, 1.12, 0.12);
+            arm.rotation.z = side * 0.12;
+            part(astronaut, new THREE.SphereGeometry(0.095, 12, 8), shadowOnly, side * 0.39, 0.85, 0.09);
+        }
+        astronaut.userData.legs = legs;
+        astronaut.visible = false;
+        scene.add(astronaut);
+    }
+    function updateCamera() {
+        if (!walker) return;
+        const headMotion = motionEnabled && !photoMode && exploring;
+        const bob = headMotion ? walker.bob - walker.landing : 0;
+        const roll = headMotion && walker.grounded ? Math.sin(walker.stride) * Math.min(1, walker.speed / LunarTerrain.WALK_SPEED) * 0.003 : 0;
+        camera.position.set(position.x, walker.y + LunarTerrain.EYE_HEIGHT + bob, position.z);
+        camera.rotation.set(pitch, yaw, roll, 'YXZ');
+        if (astronaut) {
+            astronaut.visible = exploring;
+            astronaut.position.set(position.x, walker.y, position.z);
+            astronaut.rotation.y = yaw;
+            astronaut.userData.legs.forEach((leg, i) => {
+                const stride = Math.sin(walker.stride + i * Math.PI);
+                const amount = walker.grounded ? Math.min(1, walker.speed / LunarTerrain.WALK_SPEED) : 0;
+                leg.position.z = stride * 0.12 * amount;
+                const footZ = leg.position.z - 0.1;
+                const footX = position.x + Math.cos(yaw) * leg.position.x + Math.sin(yaw) * footZ;
+                const footWorldZ = position.z - Math.sin(yaw) * leg.position.x + Math.cos(yaw) * footZ;
+                const contact = walker.grounded ? LunarTerrain.sampleSurface(surface, footX, footWorldZ) - walker.y : 0;
+                leg.position.y = contact + Math.max(0, stride) * 0.07 * amount;
+            });
+        }
+        $('movement-state').textContent = t(walker.grounded ? 'grounded' : 'airborne');
+        $('heading').textContent = `${String(Math.round((-yaw * 180 / Math.PI + 360) % 360)).padStart(3, '0')}°`;
+        const distance = Math.round(Math.hypot(position.x - stations[0].x, position.z - stations[0].z));
+        $('distance-value').textContent = `${distance} m`;
+    }
+    function clearMovement() {
+        keys.clear(); touchKeys.clear(); jumpRequested = false; drag = null;
+        if (walker && walker.grounded) { walker.vx = 0; walker.vz = 0; walker.speed = 0; }
+    }
+    function requestJump() {
+        if (ready && exploring && !photoMode && !isDialogOpen() && walker.grounded) jumpRequested = true;
+    }
+    function updateMotionButton() {
+        $('motion-button').textContent = t(motionEnabled ? 'motionOn' : 'motionOff');
+        $('motion-button').setAttribute('aria-pressed', String(motionEnabled));
+    }
+    function enter() {
+        if (!ready) return;
+        exploring = true;
+        $('arrival-card').hidden = true;
+        $('field-card').hidden = false;
+        $('reticle').hidden = false;
+        $('walking-hint').hidden = false;
+        $('locomotion-status').hidden = false;
+        $('touch-pad').hidden = !touchDevice;
+        updateCamera();
+        sunlight.shadow.needsUpdate = true;
+        $('moon-canvas').focus({ preventScroll: true });
+    }
+    function relocate(index) {
+        if (!ready) return;
+        clearMovement();
+        stationIndex = index;
+        const station = stations[index];
+        position.x = station.x; position.z = station.z;
+        walker = LunarTerrain.createWalker(surface, position);
+        yaw = station.yaw; pitch = station.pitch;
+        updateCamera();
+        updateNotes();
+        if (discoveryUI) discoveryUI.select(index);
+        document.querySelectorAll('[data-station]').forEach(button => {
+            button.classList.toggle('selected', Number(button.dataset.station) === index);
+            button.setAttribute('aria-pressed', String(Number(button.dataset.station) === index));
+        });
+        enter();
+        sunlight.shadow.needsUpdate = true;
+    }
+    function setPhoto(enabled) {
+        if (!ready) return;
+        photoMode = enabled;
+        clearMovement();
+        updateCamera();
+        document.body.classList.toggle('photo-mode', enabled);
+        $('photo-controls').hidden = !enabled;
+        if (discoveryUI) discoveryUI.update(0);
+        $('moon-canvas').focus({ preventScroll: true });
+    }
+    function frame(now) {
+        if (!ready || document.hidden) { animationId = null; return; }
+        animationId = requestAnimationFrame(frame);
+        const dt = Math.min((now - (lastTime || now)) / 1000, 0.1);
+        lastTime = now;
+        if (exploring && !photoMode && !isDialogOpen() && dt > 0) {
+            const forward = Number(keys.has('KeyW') || keys.has('ArrowUp') || touchKeys.has('forward')) - Number(keys.has('KeyS') || keys.has('ArrowDown') || touchKeys.has('back'));
+            const right = Number(keys.has('KeyD') || keys.has('ArrowRight') || touchKeys.has('right')) - Number(keys.has('KeyA') || keys.has('ArrowLeft') || touchKeys.has('left'));
+            const wasMoving = walker.speed > 0.001 || !walker.grounded;
+            LunarTerrain.updateWalker(surface, walker, { forward, right, yaw, fast: keys.has('ShiftLeft') || keys.has('ShiftRight'), jump: jumpRequested }, dt, obstacles);
+            jumpRequested = false;
+            position.x = walker.x; position.z = walker.z;
+            if (Math.hypot(position.x, position.z) > LunarTerrain.WALK_RADIUS - 1 && now - lastBoundaryNotice > 5000) { notify('boundary'); lastBoundaryNotice = now; }
+            if (wasMoving || walker.speed > 0.001 || !walker.grounded) sunlight.shadow.needsUpdate = true;
+            updateCamera();
+        }
+        if (Math.hypot(sunlight.target.position.x - position.x, sunlight.target.position.z - position.z) > 20) {
+            sunlight.target.position.set(position.x, 0, position.z);
+            sunlight.position.set(position.x - 180, 105, position.z - 160);
+            sunlight.shadow.needsUpdate = true;
+        }
+        if (discoveryUI) discoveryUI.update(now);
+        renderer.render(scene, camera);
+        if (!sampleTime) sampleTime = now;
+        frameCount++;
+        if (now - sampleTime > 6000) {
+            const fps = frameCount * 1000 / (now - sampleTime);
+            if (preference === 'auto' && fps < 27 && pixelRelief < 2) {
+                pixelRelief++;
+                renderer.setPixelRatio(Math.max(0.75, Math.min(devicePixelRatio, profile.ratio) * (1 - pixelRelief * 0.2)));
+                notify('adjusted');
+            }
+            frameCount = 0; sampleTime = now;
+        }
+    }
+    function bindInput() {
+        const canvas = $('moon-canvas');
+        canvas.addEventListener('pointerdown', event => {
+            if (!ready || event.button !== 0) return;
+            drag = { id: event.pointerId, x: event.clientX, y: event.clientY, startX: event.clientX, startY: event.clientY, moved: false };
+            canvas.setPointerCapture(event.pointerId);
+            canvas.focus({ preventScroll: true });
+        });
+        canvas.addEventListener('pointermove', event => {
+            if (!drag || drag.id !== event.pointerId) return;
+            yaw = THREE.MathUtils.euclideanModulo(yaw - (event.clientX - drag.x) * 0.003 + Math.PI, Math.PI * 2) - Math.PI;
+            pitch = THREE.MathUtils.clamp(pitch - (event.clientY - drag.y) * 0.003, -1.45, 1.2);
+            drag.moved ||= Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) > 6;
+            drag.x = event.clientX; drag.y = event.clientY;
+            sunlight.shadow.needsUpdate = true;
+            updateCamera();
+        });
+        const endDrag = () => { drag = null; };
+        canvas.addEventListener('pointerup', event => {
+            const clicked = drag && drag.id === event.pointerId && !drag.moved;
+            endDrag();
+            if (clicked && discoveryUI) discoveryUI.hitRock(event.clientX, event.clientY);
+        });
+        canvas.addEventListener('pointercancel', endDrag);
+        canvas.addEventListener('lostpointercapture', endDrag);
+        const movementCodes = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ShiftLeft', 'ShiftRight'];
+        document.addEventListener('keydown', event => {
+            if (event.code === 'Escape' && isDialogOpen()) {
+                event.preventDefault();
+                ($('guide-dialog').open ? $('guide-dialog') : $('discovery-dialog')).close();
+                canvas.focus({ preventScroll: true });
+                return;
+            }
+            if (event.code === 'Escape' && photoMode) { setPhoto(false); return; }
+            if (event.target.matches('input, textarea, select, button, a') || isDialogOpen()) return;
+            if (movementCodes.includes(event.code) && exploring && !photoMode) { event.preventDefault(); keys.add(event.code); }
+            if (event.code === 'Space' && exploring && !photoMode) {
+                event.preventDefault();
+                if (!event.repeat) requestJump();
+            }
+            if (event.repeat) return;
+            if (event.code === 'KeyE' && discoveryUI) discoveryUI.interact();
+            if (event.code === 'KeyP') setPhoto(!photoMode);
+            if (event.code === 'KeyH' && exploring && !photoMode) $('field-card').hidden = !$('field-card').hidden;
+        });
+        document.addEventListener('keyup', event => keys.delete(event.code));
+        document.querySelectorAll('[data-move]').forEach(button => {
+            button.addEventListener('pointerdown', event => {
+                event.preventDefault();
+                button.setPointerCapture(event.pointerId);
+                touchKeys.add(button.dataset.move);
+            });
+            for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) button.addEventListener(name, () => touchKeys.delete(button.dataset.move));
+        });
+        window.addEventListener('blur', clearMovement);
+        document.addEventListener('visibilitychange', () => {
+            clearMovement();
+            if (document.hidden) {
+                if (animationId !== null) cancelAnimationFrame(animationId);
+                animationId = null;
+            } else if (ready && animationId === null) {
+                lastTime = 0; sampleTime = 0; frameCount = 0;
+                animationId = requestAnimationFrame(frame);
+            }
+        });
+        window.addEventListener('resize', () => {
+            if (!renderer) return;
+            camera.aspect = innerWidth / innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(innerWidth, innerHeight);
+        });
+        canvas.addEventListener('webglcontextlost', event => { event.preventDefault(); fail('lost'); });
+    }
+    async function init() {
+        try {
+            if (!window.THREE || !window.LunarTerrain) throw new Error('Required 3D dependencies are unavailable');
+            renderer = new THREE.WebGLRenderer({ canvas: $('moon-canvas'), antialias: quality !== 'low', powerPreference: 'high-performance' });
+            renderer.setSize(innerWidth, innerHeight);
+            renderer.setPixelRatio(Math.min(devicePixelRatio, profile.ratio));
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 0.95;
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000000);
+            camera = new THREE.PerspectiveCamera(58, innerWidth / innerHeight, 0.08, 7200);
+            scene.add(new THREE.AmbientLight(0xc4c8d0, 0.105));
+            sunlight = new THREE.DirectionalLight(0xfff6e8, 2.3);
+            sunlight.position.set(-180, 105, -160);
+            sunlight.castShadow = true;
+            sunlight.shadow.mapSize.set(profile.shadows, profile.shadows);
+            Object.assign(sunlight.shadow.camera, { left: -145, right: 145, top: 145, bottom: -145, near: 1, far: 650 });
+            sunlight.shadow.bias = -0.00018;
+            sunlight.shadow.normalBias = 0.08;
+            sunlight.shadow.autoUpdate = false;
+            sunlight.shadow.needsUpdate = true;
+            scene.add(sunlight, sunlight.target);
+            await new Promise(resolve => setTimeout(resolve, 30));
+            const texture = makeTexture();
+            buildTerrain(texture);
+            await new Promise(resolve => setTimeout(resolve, 20));
+            buildRocks(texture);
+            buildAstronaut(texture);
+            walker = LunarTerrain.createWalker(surface, position);
+            await buildSky();
+            updateCamera();
+            renderer.render(scene, camera);
+            if (typeof window.createMoonDiscoveries !== 'function') throw new Error('Discovery interface is unavailable');
+            discoveryUI = window.createMoonDiscoveries({ scene, camera, surface, rock: featuredRock, getWalker: () => walker, isExploring: () => exploring, isPhotoMode: () => photoMode, clearMovement, onPhoto: () => setPhoto(true), getNotes: () => t('notes'), language });
+            ready = true;
+            $('loading-overlay').hidden = true;
+            document.querySelectorAll('.station-button, #begin-button, #photo-button').forEach(button => { button.disabled = false; });
+            bindInput();
+            animationId = requestAnimationFrame(frame);
+        } catch (error) { fail('error', error); }
+    }
+    $('language-button').addEventListener('click', () => { language = language === 'en' ? 'zh' : 'en'; applyLanguage(); });
+    $('begin-button').addEventListener('click', enter);
+    document.querySelectorAll('[data-station]').forEach(button => button.addEventListener('click', () => relocate(Number(button.dataset.station))));
+    $('help-button').addEventListener('click', () => { clearMovement(); $('guide-dialog').showModal(); });
+    $('jump-button').addEventListener('pointerdown', event => { event.preventDefault(); requestJump(); });
+    $('jump-button').addEventListener('click', event => { if (event.detail === 0) requestJump(); });
+    $('motion-button').addEventListener('click', () => { motionEnabled = !motionEnabled; updateMotionButton(); if (ready) updateCamera(); });
+    $('guide-dialog').addEventListener('close', () => { if (ready) $('moon-canvas').focus({ preventScroll: true }); });
+    $('photo-button').addEventListener('click', () => setPhoto(true));
+    $('exit-photo-button').addEventListener('click', () => setPhoto(false));
+    $('fullscreen-button').addEventListener('click', async () => {
+        try {
+            if (document.fullscreenElement) await document.exitFullscreen();
+            else await document.documentElement.requestFullscreen();
+        } catch (error) { notify('fullscreenFailed'); }
+    });
+    $('capture-button').addEventListener('click', () => {
+        try {
+            renderer.render(scene, camera);
+            renderer.domElement.toBlob(blob => {
+                if (!blob) { notify('saveFailed'); return; }
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url; link.download = `mzu-moon-expedition-${stationIndex + 1}.png`;
+                link.click();
+                setTimeout(() => URL.revokeObjectURL(url), 10000);
+                notify('saved');
+            }, 'image/png');
+        } catch (error) { notify('saveFailed'); }
+    });
+    $('moon-quality').value = preference;
+    $('return-orbit').href = `index.html?focus=Moon&quality=${preference}`;
+    $('moon-quality').addEventListener('change', event => {
+        try { localStorage.setItem(policy?.QUALITY_STORAGE_KEY || 'mzu-solar-quality', event.target.value); } catch (error) { savedQuality = ''; }
+        const url = new URL(location.href);
+        url.searchParams.set('quality', event.target.value);
+        url.searchParams.set('lang', language);
+        location.assign(url.toString());
+    });
+    applyLanguage();
+    init();
+}());

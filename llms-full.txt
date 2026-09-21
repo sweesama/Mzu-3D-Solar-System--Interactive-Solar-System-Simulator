@@ -30,6 +30,14 @@ The scene is not a real-time model of the current Solar System. It does not calc
 - Use Save image to download the rendered canvas as a PNG.
 - Use Copy embed to copy a responsive iframe snippet. `?embed=1` hides the main interface for embedding.
 
+## Moon surface expedition
+
+https://www.3dsolarsystem.net/moon.html is a separate first-person lunar exploration experience. Visitors can walk with WASD or arrow keys, jump with Space, follow a guided route, and record three discoveries using E or a touch-friendly button. The featured rock can be rotated in a specimen viewer. Photo mode pauses movement and exports a PNG.
+
+The scene is a science-inspired artistic reconstruction, not a scan of a real landing site or an identified rock sample. Jump gravity is 1.62 m/s²; takeoff strength, walking pace, and camera motion are experience settings rather than a full spacesuit simulation. Earth's placement and apparent size are artistically composed.
+
+Discovery progress is stored locally in the visitor's browser when storage is available. No account or AI API access is required. The initial interface is English, with an optional Chinese interface. Terrain detail can be adjusted for device performance.
+
 ## Data shown
 
 Selectable objects may expose their name, type, visual radius, radius in kilometres, semi-major axis in astronomical units, visual orbit distance, and eccentricity. These values are reference fields; their on-screen rendering is not to scale.
