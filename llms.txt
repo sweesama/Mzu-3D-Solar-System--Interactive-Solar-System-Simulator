@@ -8,7 +8,7 @@
 - [Mercury](https://www.3dsolarsystem.net/mercury.html)
 - [Venus](https://www.3dsolarsystem.net/venus.html)
 - [Earth](https://www.3dsolarsystem.net/earth.html)
-- [Moon expedition](https://www.3dsolarsystem.net/moon.html): Walk and jump through an artistic lunar landscape, discover three observation points, inspect a 3D rock, and keep a journal in your browser.
+- [Moon expedition](https://www.3dsolarsystem.net/moon.html): Walk and jump through an artistic lunar landscape leaving footprints, discover five observation points, inspect a 3D rock, and keep a journal in your browser.
 - [Mars](https://www.3dsolarsystem.net/mars.html)
 - [Jupiter](https://www.3dsolarsystem.net/jupiter.html)
 - [Saturn](https://www.3dsolarsystem.net/saturn.html)

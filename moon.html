@@ -6,10 +6,10 @@
     <meta name="theme-color" content="#080909">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <title>Moon Exploration in 3D | Mzu Solar System</title>
-    <meta name="description" content="Explore an imagined Moon landscape in your browser. Walk and jump in lunar gravity, discover crater viewpoints, inspect a 3D rock, and keep an exploration journal.">
+    <meta name="description" content="Explore an imagined Moon landscape in your browser. Walk and jump in lunar gravity, discover five viewpoints, inspect a 3D rock, and keep an exploration journal.">
     <link rel="canonical" href="https://www.3dsolarsystem.net/moon.html">
     <meta property="og:title" content="Moon Exploration in 3D | Mzu Solar System">
-    <meta property="og:description" content="Walk an imagined lunar landscape, discover three observation points, inspect a rock in 3D, and photograph Earth above the horizon.">
+    <meta property="og:description" content="Walk an imagined lunar landscape, discover five observation points, inspect a rock in 3D, and photograph Earth above the horizon.">
     <meta property="og:url" content="https://www.3dsolarsystem.net/moon.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Mzu 3D Solar System">
@@ -26,7 +26,7 @@
       "@type": "WebApplication",
       "name": "Mzu Moon Expedition",
       "url": "https://www.3dsolarsystem.net/moon.html",
-      "description": "A science-inspired artistic Moon landscape with first-person walking, lunar-gravity jumps, three discovery points, a rotatable rock specimen, and a local exploration journal.",
+      "description": "A science-inspired artistic Moon landscape with first-person walking, lunar-gravity jumps, five discovery points, a rotatable rock specimen, and a local exploration journal.",
       "applicationCategory": "EducationalApplication",
       "operatingSystem": "Any modern web browser with WebGL support",
       "isAccessibleForFree": true,
@@ -43,6 +43,7 @@
     <main id="expedition" aria-label="Interactive lunar landscape">
         <canvas id="moon-canvas" tabindex="0" aria-label="Lunar landscape. Drag to look; use W A S D or arrow keys to walk."></canvas>
         <div class="scene-shade" aria-hidden="true"></div>
+        <div class="visor" id="visor" aria-hidden="true" hidden></div>
         <header class="expedition-header">
             <a class="brand" href="index.html" aria-label="Mzu Solar System"><span class="brand-orbit" aria-hidden="true"></span>MZU <span class="brand-divider">/</span> <span class="brand-sub" data-i18n="expeditions">EXPEDITIONS</span></a>
             <div class="header-actions">
@@ -64,10 +65,10 @@
         </section>
 
         <section id="field-card" class="field-card route-card" hidden>
-            <p class="eyebrow"><span data-i18n="fieldRoute">YOUR FIELD ROUTE</span><span id="discovery-count" role="status" aria-live="polite">0 / 3</span></p>
-            <progress id="discovery-progress" max="3" value="0" aria-label="Discoveries completed"></progress>
-            <p id="route-complete" class="route-complete" hidden data-i18n="allFound">All three discoveries are in your journal. Stay a little longer.</p>
-            <p id="station-number" class="route-number">01 / 03</p>
+            <p class="eyebrow"><span data-i18n="fieldRoute">YOUR FIELD ROUTE</span><span id="discovery-count" role="status" aria-live="polite">0 / 5</span></p>
+            <progress id="discovery-progress" max="5" value="0" aria-label="Discoveries completed"></progress>
+            <p id="route-complete" class="route-complete" hidden data-i18n="allFound">All five discoveries are in your journal. Stay a little longer.</p>
+            <p id="station-number" class="route-number">01 / 05</p>
             <h2 id="station-title"></h2>
             <p id="station-description"></p>
             <div class="route-bearing"><span id="route-arrow" aria-hidden="true">↑</span><div><strong id="route-distance"></strong><span id="route-instruction"></span></div></div>
@@ -77,7 +78,7 @@
         <button id="discovery-pin" class="discovery-pin" type="button" hidden aria-label="Discovery destination"><span id="pin-number">01</span><span id="pin-distance"></span></button>
 
         <div class="telemetry" aria-label="Lunar environment">
-            <div><span data-i18n="gravity">GRAVITY</span><strong>1.62 <small>m/s²</small></strong></div>
+            <div><span data-i18n="gravity">GRAVITY</span><strong><span id="gravity-value">1.62</span> <small>m/s²</small></strong><small id="gravity-mode" class="gravity-mode">MOON</small></div>
             <div><span data-i18n="atmosphere">ATMOSPHERE</span><strong data-i18n="vacuum">Near vacuum</strong></div>
             <div><span data-i18n="distance">FROM ARRIVAL</span><strong id="distance-value">0 <small>m</small></strong></div>
         </div>
@@ -114,11 +115,13 @@
         <form method="dialog"><button class="dialog-close" aria-label="Close guide">×</button></form>
         <p class="eyebrow" data-i18n="fieldGuide">THE EXPEDITION FIELD GUIDE</p>
         <h2 id="guide-title" data-i18n="guideTitle">Take the long way home.</h2>
-        <p data-i18n="guideIntro">This is a small, freely explorable lunar landscape, not a whole-planet simulation. The three observation points are different views of the same place.</p>
+        <p data-i18n="guideIntro">This is a small, freely explorable lunar landscape, not a whole-planet simulation. The five observation points are different views of the same place; two of them can only be reached on foot.</p>
         <p data-discovery-i18n="routeHelp">Follow the amber guide dots and distance arrow. Walk up to a stop and press E or Discover to add it to your journal. Quick travel does not automatically record a discovery.</p>
         <h3 data-i18n="controlsTitle">Moving around</h3>
         <p data-i18n="controlsText">You are exploring on foot as an astronaut. Walk with W A S D or the arrow keys; Shift gives a brisker pace. Press Space to jump, then wait to land before jumping again. Momentum carries you forward in the air. Drag to look, including down at your boots. Touchscreens have direction and Jump buttons. H hides notes; P opens photo mode; Esc closes it.</p>
         <div class="motion-choice"><button id="motion-button" type="button" aria-pressed="true">Camera motion: On</button><span data-i18n="motionHint">Disable head motion for a steadier view.</span></div>
+        <div class="motion-choice"><button id="gravity-button" type="button" aria-pressed="false" aria-label="Compare Earth gravity">Compare Earth gravity · G</button><span data-i18n="gravityHint">Same takeoff push, different fall. Feel how little height a jump gives under Earth gravity.</span></div>
+        <div class="motion-choice"><button id="sound-button" type="button" aria-pressed="true" aria-label="Toggle suit sounds">Suit sounds: On</button><span data-i18n="soundHint">Breathing, footfalls and a radio chime inside the suit — the airless surface itself is silent. M toggles.</span></div>
         <h3 data-i18n="scienceTitle">Science meets imagination</h3>
         <p data-i18n="scienceText">Impact craters, airless skies, subdued rock colors, and hard sunlight are inspired by lunar science. Terrain, rock placement, and observation points are procedural art, not survey data. Earth's apparent size and placement are composed for this scene, not calculated for a real date or location.</p>
         <p data-i18n="soundText">There is no wind sound in this near vacuum. Jumps use a constant lunar surface gravity of 1.62 m/s². The chosen 1.8 m/s takeoff gives about 1 metre of rise and 2.2 seconds in the air on level ground. Pace, takeoff strength, and camera motion are comfort settings, not a full spacesuit simulation.</p>
@@ -142,6 +145,7 @@
     <script src="quality-policy.js"></script>
     <script src="lunar-terrain.js"></script>
     <script src="lunar-expedition.js"></script>
+    <script src="lunar-audio.js"></script>
     <script src="moon-discoveries.js"></script>
     <script src="moon.js"></script>
 </body>

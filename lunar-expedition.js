@@ -7,14 +7,17 @@
     const discoveries = Object.freeze([
         Object.freeze({ id: 'crater', x: -12, z: 6, radius: 4, node: 1, markerHeight: 1.4 }),
         Object.freeze({ id: 'boulder', x: -43, z: 13, radius: 9.5, node: 2, markerHeight: 4.5 }),
-        Object.freeze({ id: 'earth', x: 110, z: 20, radius: 5, node: 7, markerHeight: 1.4 })
+        Object.freeze({ id: 'earth', x: 110, z: 20, radius: 5, node: 7, markerHeight: 1.4 }),
+        Object.freeze({ id: 'station', x: 32, z: -60, radius: 5, node: 14, markerHeight: 1.9 }),
+        Object.freeze({ id: 'shadow', x: 141, z: -52, radius: 5, node: 16, markerHeight: 1.6 })
     ]);
     const nodes = Object.freeze([
         { x: 0, z: 6 }, { x: -12, z: 6 }, { x: -35, z: 15 }, { x: -35, z: 28 },
         { x: 0, z: 32 }, { x: 40, z: 33 }, { x: 80, z: 36 }, { x: 110, z: 20 },
-        { x: -65, z: 8 }, { x: -65, z: 28 }, { x: -43, z: 28 }, { x: 105, z: 40 }
+        { x: -65, z: 8 }, { x: -65, z: 28 }, { x: -43, z: 28 }, { x: 105, z: 40 },
+        { x: 40, z: 4 }, { x: 40, z: -52 }, { x: 31, z: -58 }, { x: 120, z: -12 }, { x: 140, z: -50 }
     ].map(Object.freeze));
-    const edges = Object.freeze([[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [8, 9], [9, 10], [10, 3], [11, 7]].map(Object.freeze));
+    const edges = Object.freeze([[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [8, 9], [9, 10], [10, 3], [11, 7], [0, 12], [12, 13], [13, 14], [7, 15], [15, 16]].map(Object.freeze));
     function project(point, a, b) {
         const dx = b.x - a.x, dz = b.z - a.z;
         const t = Math.max(0, Math.min(1, ((point.x - a.x) * dx + (point.z - a.z) * dz) / (dx * dx + dz * dz)));

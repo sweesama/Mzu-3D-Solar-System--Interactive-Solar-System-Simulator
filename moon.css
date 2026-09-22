@@ -12,6 +12,14 @@ button:focus-visible, a:focus-visible, select:focus-visible, canvas:focus-visibl
 #expedition, #moon-canvas { position: fixed; inset: 0; width: 100%; height: 100%; }
 #moon-canvas { display: block; touch-action: none; outline: none; }
 .scene-shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, #0008, transparent 42%, transparent 82%, #0005), linear-gradient(180deg, #0008 0%, transparent 23%, transparent 56%, #000b 100%); }
+.visor { position: absolute; inset: 0; pointer-events: none;
+    background:
+        radial-gradient(ellipse 132% 42% at 50% -14%, rgba(3,4,6,.9) 0%, rgba(3,4,6,.55) 55%, transparent 74%),
+        radial-gradient(ellipse 138% 36% at 50% 114%, rgba(3,4,6,.85) 0%, rgba(3,4,6,.45) 55%, transparent 74%),
+        linear-gradient(113deg, transparent 43%, rgba(255,244,224,.03) 48%, rgba(255,244,224,.012) 53%, transparent 59%),
+        radial-gradient(ellipse 122% 90% at 50% 45%, transparent 58%, rgba(7,9,11,.34) 84%, rgba(3,4,6,.78) 99%);
+}
+.gravity-mode { font: 8px ui-monospace, Consolas, monospace; letter-spacing: .17em; color: var(--accent); }
 .expedition-header { position: absolute; inset: max(28px, env(safe-area-inset-top)) 38px auto; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
 .brand { display: flex; align-items: center; gap: 12px; font-size: 18px; letter-spacing: .16em; font-weight: 650; }
 .brand-orbit { width: 23px; height: 23px; border: 1px solid var(--ink); border-radius: 50%; transform: rotate(-35deg); position: relative; }
@@ -81,7 +89,7 @@ dialog p { font-size: 13px; line-height: 1.8; color: #bfc3b9; }
 dialog .asset-note { font-size: 11px; border-top: 1px solid var(--line); padding-top: 18px; }
 .dialog-close { position: absolute; right: 15px; top: 12px; color: #bbb; background: none; border: none; font-size: 25px; padding: 0 8px; }
 #photo-controls { position: absolute; bottom: max(30px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 20px; white-space: nowrap; }
-.photo-mode .expedition-header, .photo-mode .location-label, .photo-mode .compass, .photo-mode .arrival-card, .photo-mode .field-card, .photo-mode .telemetry, .photo-mode .expedition-footer, .photo-mode .art-note, .photo-mode .walking-hint, .photo-mode #reticle, .photo-mode .touch-pad, .photo-mode .scene-shade { display: none !important; }
+.photo-mode .expedition-header, .photo-mode .location-label, .photo-mode .compass, .photo-mode .arrival-card, .photo-mode .field-card, .photo-mode .telemetry, .photo-mode .expedition-footer, .photo-mode .art-note, .photo-mode .walking-hint, .photo-mode #reticle, .photo-mode .touch-pad, .photo-mode .scene-shade, .photo-mode .visor { display: none !important; }
 .no-script { position: fixed; inset: 0; z-index: 50; display: grid; place-content: center; background: #080909; padding: 25px; }
 .no-script a { text-decoration: underline; }
 .touch-pad { position: absolute; bottom: 160px; right: 25px; display: grid; grid-template-columns: repeat(3, 42px); grid-template-rows: repeat(2, 42px); gap: 3px; touch-action: none; }

@@ -1,6 +1,7 @@
 (function (root) {
     const WALK_RADIUS = 300;
     const GRAVITY = 1.62;
+    const EARTH_GRAVITY = 9.8;
     const EYE_HEIGHT = 1.68;
     const WALK_SPEED = 1.55;
     const FAST_SPEED = 2.8;
@@ -101,8 +102,9 @@
     function createWalker(surface, position) {
         return { x: position.x, z: position.z, y: sampleSurface(surface, position.x, position.z), vx: 0, vz: 0, vy: 0, grounded: true, stride: 0, bob: 0, landing: 0, speed: 0 };
     }
-    function updateWalker(surface, body, input, dt, obstacles) {
+    function updateWalker(surface, body, input, dt, obstacles, gravity) {
         if (!(dt > 0) || !Number.isFinite(dt)) return body;
+        const g = gravity > 0 ? gravity : GRAVITY;
         if (input.jump && body.grounded) { body.vy = JUMP_SPEED; body.grounded = false; }
         const steps = Math.ceil(dt / (1 / 120));
         const step = dt / steps;
@@ -131,8 +133,8 @@
                 else { body.grounded = false; body.vy = 0; }
             }
             if (!body.grounded) {
-                body.y += body.vy * step - 0.5 * GRAVITY * step * step;
-                body.vy -= GRAVITY * step;
+                body.y += body.vy * step - 0.5 * g * step * step;
+                body.vy -= g * step;
                 if (body.y <= ground) {
                     body.y = ground;
                     body.landing = Math.min(0.07, Math.max(0, -body.vy) * 0.024);
@@ -148,5 +150,5 @@
         }
         return body;
     }
-    root.LunarTerrain = Object.freeze({ WALK_RADIUS, GRAVITY, EYE_HEIGHT, WALK_SPEED, FAST_SPEED, JUMP_SPEED, craters, random, noise, height, createSurface, sampleSurface, move, createWalker, updateWalker });
+    root.LunarTerrain = Object.freeze({ WALK_RADIUS, GRAVITY, EARTH_GRAVITY, EYE_HEIGHT, WALK_SPEED, FAST_SPEED, JUMP_SPEED, craters, random, noise, height, createSurface, sampleSurface, move, createWalker, updateWalker });
 }(typeof globalThis !== 'undefined' ? globalThis : this));

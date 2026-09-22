@@ -63,13 +63,24 @@ assert.ok(Math.abs(aerial.x - 0.5) < 1e-8, 'Airborne movement preserves takeoff 
 const wallWalker = lunar.createWalker(flat, { x: 0, z: 0 });
 for (let i = 0; i < 240; i++) lunar.updateWalker(flat, wallWalker, { right: 1, yaw: 0, jump: i === 60 }, 1 / 60, [{ x: 3, z: 0, radius: 1 }]);
 assert.ok(wallWalker.x < 1.7, 'Jumping must not bypass rock collision');
+assert.equal(lunar.EARTH_GRAVITY, 9.8);
+const heavy = lunar.createWalker(flat, { x: 0, z: 0 });
+lunar.updateWalker(flat, heavy, { jump: true }, 0.2, [], lunar.EARTH_GRAVITY);
+assert.ok(Math.abs(heavy.y - (lunar.JUMP_SPEED * 0.2 - 0.5 * lunar.EARTH_GRAVITY * 0.2 ** 2)) < 1e-9, 'Gravity override must change the jump arc');
+const moonAudio = loadBrowserModule('lunar-audio.js', 'MoonAudio');
+const silentAudio = moonAudio.create();
+assert.equal(typeof silentAudio.start, 'function');
+silentAudio.step(1); silentAudio.jump(); silentAudio.land(1); silentAudio.chime(); silentAudio.setEnabled(false);
 const expedition = loadBrowserModule('lunar-expedition.js', 'LunarExpedition');
+assert.equal(expedition.discoveries.length, 5);
 assert.equal(expedition.parseProgress('not-json').length, 0);
 assert.equal(expedition.parseProgress('{}').length, 0);
 assert.equal(expedition.parseProgress('["crater","crater","invalid"]').length, 1);
 assert.equal(expedition.canDiscover({ x: -12, z: 6, grounded: false }, 0), false);
 assert.equal(expedition.canDiscover({ x: 0, z: 6, grounded: true }, 0), false);
 assert.equal(expedition.canDiscover({ x: -12, z: 6, grounded: true }, 0), true);
+assert.equal(expedition.canDiscover({ x: 32, z: -60, grounded: true }, 3), true);
+assert.equal(expedition.canDiscover({ x: 141, z: -52, grounded: true }, 4), true);
 assert.equal(expedition.recordDiscovery([], { x: 200, z: 100, grounded: true }, 0).length, 0);
 const firstDiscovery = expedition.recordDiscovery([], { x: -12, z: 6, grounded: true }, 0);
 assert.equal(expedition.recordDiscovery(firstDiscovery, { x: -12, z: 6, grounded: true }, 0).length, 1);
@@ -103,6 +114,11 @@ assert.match(moonHtml, /lunar-terrain\.js/);
 assert.match(moonHtml, /moon\.js/);
 assert.match(moonHtml, /id="return-orbit"/);
 assert.match(moonHtml, /id="touch-pad"/);
+assert.match(moonHtml, /lunar-audio\.js/);
+assert.match(moonHtml, /id="visor"/);
+assert.match(moonHtml, /id="gravity-button"/);
+assert.match(moonHtml, /id="sound-button"/);
+assert.match(moonHtml, /id="gravity-value"/);
 assert.match(fs.readFileSync(path.join(root, 'index.html'), 'utf8'), /href="moon\.html"/);
 
 function capture(html, expression, label, file) {

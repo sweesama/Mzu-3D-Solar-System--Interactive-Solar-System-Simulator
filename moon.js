@@ -9,39 +9,45 @@
             expeditions: 'EXPEDITIONS', fullscreen: 'Full screen', return: 'Return to orbit', destination: "EARTH'S MOON", surfaceMode: 'SURFACE EXPLORATION',
             chapter: 'EXPEDITION 001 / THE NEAR SIDE', title: 'Walk on\nthe Moon.', intro: 'Walk an imagined lunar landscape, jump in low gravity, and discover craters, rocks, and Earth above the horizon.', begin: 'Step onto the Moon', arrivalHint: 'No download. Just a little curiosity.',
             fieldNotes: 'FIELD NOTES', reconstruction: 'An imagined site, informed by lunar science.', gravity: 'GRAVITY', atmosphere: 'ATMOSPHERE', vacuum: 'Near vacuum', distance: 'FROM ARRIVAL',
-            walkingHint: 'W A S D to walk · drag to look · Space to jump · Shift for a brisk walk', touchHint: 'Arrows to walk · drag to look · tap Jump to leap', station0: 'Crater overlook', station1: 'Boulder field', station2: 'Home in the sky',
+            walkingHint: 'W A S D to walk · drag to look · Space to jump · G gravity · M sound', touchHint: 'Arrows to walk · drag to look · tap Jump to leap', station0: 'Crater overlook', station1: 'Boulder field', station2: 'Home in the sky',
             astronaut: 'ASTRONAUT', jump: 'Jump', grounded: 'On the surface', airborne: 'Airborne', motionOn: 'Camera motion: On', motionOff: 'Camera motion: Off', motionHint: 'Disable head motion for a steadier view.',
             guide: 'Field guide', photo: 'Photo mode', quality: 'Quality', auto: 'Auto', high: 'High', balanced: 'Balanced', low: 'Low', artNote: 'SCIENCE-INSPIRED ARTISTIC RECONSTRUCTION · NOT A SCANNED LANDING SITE',
             capture: 'Save photograph', exitPhoto: 'Exit photo mode', loading: 'Preparing the lunar landscape…', fieldGuide: 'THE EXPEDITION FIELD GUIDE', guideTitle: 'Take the long way home.',
-            guideIntro: 'This is a small, freely explorable lunar landscape, not a whole-planet simulation. The three observation points are different views of the same place.', controlsTitle: 'Moving around',
-            controlsText: 'You are exploring on foot as an astronaut. Walk with W A S D or the arrow keys; Shift gives a brisker pace. Press Space to jump, then wait to land before jumping again. Momentum carries you forward in the air. Drag to look, including down at your boots. Touchscreens have direction and Jump buttons. H hides notes; P opens photo mode; Esc closes it.',
+            guideIntro: 'This is a small, freely explorable lunar landscape, not a whole-planet simulation. The five observation points are different views of the same place; two of them can only be reached on foot.', controlsTitle: 'Moving around',
+            gravityCompare: 'Compare Earth gravity · G', gravityLunar: 'Back to lunar gravity · G', gravityHint: 'Same takeoff push, different fall. Feel how little height a jump gives under Earth gravity.', soundOn: 'Suit sounds: On', soundOff: 'Suit sounds: Off', soundHint: 'Breathing, footfalls and a radio chime inside the suit — the airless surface itself is silent. M toggles.', gravityMoon: 'Lunar gravity — 1.62 m/s².', gravityEarth: 'Earth gravity — 9.8 m/s². Same push, far less height.', moonTag: 'MOON', earthTag: 'EARTH',
+            controlsText: 'You are exploring on foot as an astronaut. Walk with W A S D or the arrow keys; Shift gives a brisker pace. Press Space to jump, then wait to land before jumping again. Momentum carries you forward in the air. Drag to look, including down at your boots. Touchscreens have direction and Jump buttons. G compares Earth gravity; M toggles suit sounds. H hides notes; P opens photo mode; Esc closes it.',
             scienceTitle: 'Science meets imagination', scienceText: "Impact craters, airless skies, subdued rock colors, and hard sunlight are inspired by lunar science. Terrain, rock placement, and observation points are procedural art, not survey data. Earth's apparent size and placement are composed for this scene, not calculated for a real date or location.",
-            soundText: 'There is no wind sound in this near vacuum. Jumps use a constant lunar surface gravity of 1.62 m/s². The chosen 1.8 m/s takeoff gives about 1 metre of rise and 2.2 seconds in the air on level ground. Pace, takeoff strength, and camera motion are comfort settings, not a full spacesuit simulation.',
+            soundText: "In this near vacuum there is no wind to hear; the sounds come from inside the suit — breath, footfalls conducted through the body, and a radio chime for each discovery. Jumps use a constant lunar surface gravity of 1.62 m/s²; press G to feel Earth's 9.8 m/s² with the same takeoff push. The chosen 1.8 m/s takeoff gives about 1 metre of rise and 2.2 seconds in the air on level ground. Pace, takeoff strength, and camera motion are comfort settings, not a full spacesuit simulation.",
             assetText: "Earth imagery: Solar System Scope, CC BY 4.0, using the site's existing textures. Lunar terrain and rock textures are generated locally in your browser.",
             error: 'The 3D scene could not start. Try reloading in a browser with WebGL enabled.', lost: 'The graphics connection was interrupted. Reload this page to resume.', boundary: 'You have reached the edge of this expedition. Try another observation point.', saved: 'Photograph saved.', saveFailed: 'This browser could not save the photograph.', fullscreenFailed: 'Full screen is not available in this browser.', textureFailed: 'Earth imagery is unavailable; a simple globe is shown instead.', adjusted: 'Render resolution reduced to keep exploring smoothly.',
             notes: [
                 ['A history of impacts', 'The raised rim and sunken bowl tell the same story: an impact scattered rock outward. Without wind or rain, these scars can remain for billions of years.', 'LANDSCAPE', 'Impact crater'],
                 ['Written in stone', 'Impacts break, scatter, and bury rock. Look closely at the angular boulders and the fine blanket of regolith beneath them. Nothing here is shaped by a breeze.', 'SURFACE', 'Rock & regolith'],
-                ['Everything we call home', 'From much of the near side, Earth stays in roughly the same part of the sky. The Moon turns once per orbit, keeping nearly the same face toward home.', 'ROTATION', 'Tidally locked']
+                ['Everything we call home', 'From much of the near side, Earth stays in roughly the same part of the sky. The Moon turns once per orbit, keeping nearly the same face toward home.', 'ROTATION', 'Tidally locked'],
+                ['Listening to the Moon', 'Apollo crews left seismometers that recorded moonquakes and meteoroid impacts for years. This small station is an artistic prop honouring those instruments.', 'INSTRUMENT', 'Seismic station'],
+                ['Where sunlight never rests', 'The bowl below holds pockets of deep shadow. Near the real lunar poles, some crater floors have not seen the Sun for billions of years — and may preserve water ice.', 'LIGHT', 'Shadowed hollow']
             ]
         },
         zh: {
             expeditions: '星际探索', fullscreen: '全屏', return: '返回太阳系', destination: '地球的月亮', surfaceMode: '月面探索', chapter: '探索 001 / 月球正面', title: '漫步月球。',
             intro: '走进一片艺术重建的月面，在低重力中跳跃，探索环形山与岩石，遥望地平线上方的地球。', begin: '踏上月球', arrivalHint: '无需下载，带上好奇心就好。', fieldNotes: '探索手记', reconstruction: '受月球科学启发的虚构地点。',
-            gravity: '月面重力', atmosphere: '大气环境', vacuum: '接近真空', distance: '距抵达点', walkingHint: 'W A S D 行走 · 拖动转头 · 空格跳跃 · Shift 快步', touchHint: '方向按钮行走 · 拖动画面转头 · 点击跳跃',
+            gravity: '月面重力', atmosphere: '大气环境', vacuum: '接近真空', distance: '距抵达点', walkingHint: 'W A S D 行走 · 拖动转头 · 空格跳跃 · G 重力 · M 声音', touchHint: '方向按钮行走 · 拖动画面转头 · 点击跳跃',
             astronaut: '宇航员视角', jump: '跳跃', grounded: '双脚着地', airborne: '腾空中', motionOn: '镜头起伏：开', motionOff: '镜头起伏：关', motionHint: '关闭头部起伏可获得更平稳的视角。',
             station0: '环形山眺望点', station1: '岩石原野', station2: '天空中的家园', guide: '探索指南', photo: '摄影模式', quality: '画质', auto: '自动', high: '高', balanced: '均衡', low: '低',
             artNote: '科学启发的艺术重建 · 非真实着陆点扫描', capture: '保存照片', exitPhoto: '退出摄影', loading: '正在准备月面风景…', fieldGuide: '月球探索指南', guideTitle: '慢一点，看看远方。',
-            guideIntro: '这是一片可以自由漫游的月面区域，而非完整月球。三个观察点都位于同一个场景，可随时切换，也可自行走过去。', controlsTitle: '如何探索',
-            controlsText: '你是一位徒步探索的宇航员。W A S D 或方向键行走，Shift 快步，空格跳跃，落地后才能再次起跳。腾空时保留起跳时的水平惯性，不能像飞行器一样转向。拖动画面观察，也可以低头看看自己的靴子。触屏有方向按钮和跳跃键。H 隐藏手记，P 进入摄影，Esc 退出摄影。',
+            guideIntro: '这是一片可以自由漫游的月面区域，而非完整月球。五个观察点都位于同一个场景，其中两个只能徒步走到。', controlsTitle: '如何探索',
+            gravityCompare: '对比地球重力 · G', gravityLunar: '恢复月球重力 · G', gravityHint: '同样的起跳力度，不同的下落感受。切换到地球重力，体验跳跃高度骤减。', soundOn: '宇航服声音：开', soundOff: '宇航服声音：关', soundHint: '呼吸、脚步的体内传导声与发现时的无线电提示音——月面本身寂静无声。M 切换。', gravityMoon: '月球重力 — 1.62 m/s²。', gravityEarth: '地球重力 — 9.8 m/s²。同样的起跳，高度骤减。', moonTag: '月球', earthTag: '地球',
+            controlsText: '你是一位徒步探索的宇航员。W A S D 或方向键行走，Shift 快步，空格跳跃，落地后才能再次起跳。腾空时保留起跳时的水平惯性，不能像飞行器一样转向。拖动画面观察，也可以低头看看自己的靴子。触屏有方向按钮和跳跃键。G 对比地球重力，M 开关宇航服声音。H 隐藏手记，P 进入摄影，Esc 退出摄影。',
             scienceTitle: '科学与想象的交界', scienceText: '撞击坑、漆黑天空、低饱和度岩石和强烈日照来自月球科学常识。地形、岩石分布与观察点由程序创作，并非实测地形。地球在天空中的位置和视觉大小经过构图处理，不对应真实日期或坐标。',
-            soundText: '接近真空的环境里没有风声。跳跃使用月面平均重力 1.62 m/s²；设定的起跳速度为 1.8 m/s，在平地约跳高 1 米、腾空 2.2 秒。步速、起跳力度和镜头起伏经过舒适性设计，不是完整的宇航服物理模拟。',
+            soundText: '接近真空的环境里没有风声；你听到的来自宇航服内部——呼吸、经身体传导的脚步，以及记录发现时的无线电提示音。跳跃使用月面平均重力 1.62 m/s²；按 G 可用相同的起跳力度感受地球 9.8 m/s² 的重力。设定的起跳速度为 1.8 m/s，在平地约跳高 1 米、腾空 2.2 秒。步速、起跳力度和镜头起伏经过舒适性设计，不是完整的宇航服物理模拟。',
             assetText: '地球影像：Solar System Scope，CC BY 4.0，复用网站已有贴图。月面地形与岩石纹理由浏览器本地生成。',
             error: '三维场景未能启动，请在支持 WebGL 的浏览器中重新加载。', lost: '图形连接中断，请重新加载页面继续。', boundary: '已到达本次探索区域边缘，可以前往另一个观察点。', saved: '照片已保存。', saveFailed: '当前浏览器无法保存照片。', fullscreenFailed: '当前浏览器无法进入全屏。', textureFailed: '地球影像暂时无法加载，已显示简化球体。', adjusted: '已适当降低渲染分辨率，让探索更流畅。',
             notes: [
                 ['撞击留下的岁月', '隆起的边缘与下陷的坑底，记录着一次猛烈撞击。没有风雨侵蚀，这样的痕迹可以留存数十亿年。', '地貌类型', '撞击坑'],
                 ['石头里的故事', '撞击打碎、抛散并掩埋岩石。看看这些棱角分明的石块，以及覆盖地面的细碎月壤。这里没有微风雕刻的痕迹。', '地表组成', '岩石与月壤'],
-                ['我们称之为家园', '在月球正面许多地方，地球大致停留在天空的同一片区域。月球绕地球一周时也恰好自转一周，始终以近乎同一面朝向家园。', '自转特点', '潮汐锁定']
+                ['我们称之为家园', '在月球正面许多地方，地球大致停留在天空的同一片区域。月球绕地球一周时也恰好自转一周，始终以近乎同一面朝向家园。', '自转特点', '潮汐锁定'],
+                ['倾听月球', '阿波罗宇航员留下的月震仪曾持续工作多年，记录月震与陨石撞击。这座小小的科考站是致敬那些仪器的艺术道具。', '仪器类型', '月震仪'],
+                ['阳光照不到的地方', '脚下的坑底藏着深深的阴影。在真实的月球两极，一些坑底数十亿年未见阳光——那里可能保存着水冰。', '光照特点', '阴影坑']
             ]
         }
     };
@@ -51,6 +57,9 @@
     let jumpRequested = false, motionEnabled = !matchMedia('(prefers-reduced-motion: reduce)').matches;
     let yaw = -0.12, pitch = -0.06, lastTime = 0, frameCount = 0, sampleTime = 0, pixelRelief = 0;
     let noticeTimer, lastBoundaryNotice = 0, drag = null;
+    let gravity = LunarTerrain.GRAVITY, audio = null, soundEnabled = true;
+    let footprints = null, printCursor = 0, lastPrintMark = 0;
+    const dust = { bursts: [], texture: null };
     const keys = new Set(), touchKeys = new Set(), obstacles = [];
     const stations = expedition.stations;
     let discoveryUI = null, featuredRock = null;
@@ -83,6 +92,9 @@
         $('language-button').textContent = language === 'zh' ? 'EN' : '中文';
         $('walking-hint').textContent = t(touchDevice ? 'touchHint' : 'walkingHint');
         updateMotionButton();
+        updateGravityButton();
+        updateSoundButton();
+        $('gravity-mode').textContent = t(gravity === LunarTerrain.GRAVITY ? 'moonTag' : 'earthTag');
         if (walker) $('movement-state').textContent = t(walker.grounded ? 'grounded' : 'airborne');
         updateNotes();
     }
@@ -408,6 +420,162 @@
         astronaut.visible = false;
         scene.add(astronaut);
     }
+    function buildFootprints() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 64; canvas.height = 96;
+        const context = canvas.getContext('2d');
+        context.translate(32, 48);
+        context.fillStyle = 'rgba(38,36,32,0.55)';
+        context.beginPath(); context.ellipse(0, 0, 13, 22, 0, 0, Math.PI * 2); context.fill();
+        context.fillStyle = 'rgba(22,21,18,0.8)';
+        for (let i = 0; i < 8; i++) context.fillRect(-11, -20 + i * 5, 22, 2.6);
+        context.fillStyle = 'rgba(20,19,16,0.85)';
+        context.fillRect(-10, 15, 20, 8);
+        const texture = new THREE.CanvasTexture(canvas);
+        const geometry = new THREE.PlaneGeometry(0.24, 0.42);
+        geometry.rotateX(-Math.PI / 2);
+        const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthWrite: false, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
+        footprints = new THREE.InstancedMesh(geometry, material, 240);
+        footprints.frustumCulled = false;
+        const hidden = new THREE.Matrix4().makeScale(0, 0, 0);
+        for (let i = 0; i < 240; i++) footprints.setMatrixAt(i, hidden);
+        footprints.instanceMatrix.needsUpdate = true;
+        scene.add(footprints);
+    }
+    function dropPrint(mark) {
+        const side = mark % 2 ? -1 : 1;
+        const legX = side * 0.17;
+        const footZ = -0.1 + (walker.grounded ? Math.min(0, Math.sin(walker.stride + (side < 0 ? 0 : Math.PI)) * 0.12) : 0);
+        const x = position.x + Math.cos(yaw) * legX + Math.sin(yaw) * footZ;
+        const z = position.z - Math.sin(yaw) * legX + Math.cos(yaw) * footZ;
+        const y = LunarTerrain.sampleSurface(surface, x, z) + 0.015;
+        const slopeX = (LunarTerrain.sampleSurface(surface, x + 0.35, z) - LunarTerrain.sampleSurface(surface, x - 0.35, z)) / 0.7;
+        const slopeZ = (LunarTerrain.sampleSurface(surface, x, z + 0.35) - LunarTerrain.sampleSurface(surface, x, z - 0.35)) / 0.7;
+        const normal = new THREE.Vector3(-slopeX, 1, -slopeZ).normalize();
+        const align = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal);
+        const turn = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw + (rand() - 0.5) * 0.12);
+        const matrix = new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), align.multiply(turn), new THREE.Vector3(side < 0 ? -1 : 1, 1, 1));
+        footprints.setMatrixAt(printCursor % 240, matrix);
+        footprints.instanceMatrix.needsUpdate = true;
+        printCursor++;
+        if (walker.speed > 0.6) spawnDust(x, y + 0.03, z, 4, 0.28);
+        if (audio) audio.step(walker.speed / LunarTerrain.WALK_SPEED);
+        return { x, z };
+    }
+    function dustTexture() {
+        if (dust.texture) return dust.texture;
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = 32;
+        const context = canvas.getContext('2d');
+        const gradient = context.createRadialGradient(16, 16, 0, 16, 16, 16);
+        gradient.addColorStop(0, 'rgba(255,255,255,0.85)');
+        gradient.addColorStop(0.5, 'rgba(255,255,255,0.3)');
+        gradient.addColorStop(1, 'rgba(255,255,255,0)');
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, 32, 32);
+        dust.texture = new THREE.CanvasTexture(canvas);
+        return dust.texture;
+    }
+    function spawnDust(x, y, z, count, energy) {
+        const positions = new Float32Array(count * 3);
+        const velocities = new Float32Array(count * 3);
+        for (let i = 0; i < count; i++) {
+            const angle = rand() * Math.PI * 2, spread = energy * (0.3 + rand() * 0.9);
+            positions[i * 3] = x; positions[i * 3 + 1] = y; positions[i * 3 + 2] = z;
+            velocities[i * 3] = Math.cos(angle) * spread + walker.vx * 0.3;
+            velocities[i * 3 + 1] = energy * (0.5 + rand() * 0.9);
+            velocities[i * 3 + 2] = Math.sin(angle) * spread + walker.vz * 0.3;
+        }
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const material = new THREE.PointsMaterial({ size: 0.05 + energy * 0.05, map: dustTexture(), color: 0xbcb4a4, transparent: true, opacity: 0.65, depthWrite: false, sizeAttenuation: true });
+        const points = new THREE.Points(geometry, material);
+        points.frustumCulled = false;
+        scene.add(points);
+        dust.bursts.push({ points, velocities, age: 0, life: 1.15 + energy * 0.4 });
+        if (dust.bursts.length > 24) {
+            const old = dust.bursts.shift();
+            scene.remove(old.points);
+            old.points.geometry.dispose(); old.points.material.dispose();
+        }
+    }
+    function updateDust(dt) {
+        for (let i = dust.bursts.length - 1; i >= 0; i--) {
+            const burst = dust.bursts[i];
+            burst.age += dt;
+            const attribute = burst.points.geometry.attributes.position;
+            for (let j = 0; j < attribute.count; j++) {
+                let px = attribute.getX(j) + burst.velocities[j * 3] * dt;
+                let py = attribute.getY(j) + burst.velocities[j * 3 + 1] * dt;
+                let pz = attribute.getZ(j) + burst.velocities[j * 3 + 2] * dt;
+                burst.velocities[j * 3 + 1] -= gravity * dt;
+                const ground = LunarTerrain.sampleSurface(surface, px, pz) + 0.01;
+                if (py < ground) { py = ground; burst.velocities[j * 3] *= 0.3; burst.velocities[j * 3 + 1] = 0; burst.velocities[j * 3 + 2] *= 0.3; }
+                attribute.setXYZ(j, px, py, pz);
+            }
+            attribute.needsUpdate = true;
+            burst.points.material.opacity = Math.max(0, 0.65 * (1 - burst.age / burst.life));
+            if (burst.age >= burst.life) {
+                scene.remove(burst.points);
+                burst.points.geometry.dispose(); burst.points.material.dispose();
+                dust.bursts.splice(i, 1);
+            }
+        }
+    }
+    function buildInstrument() {
+        const station = new THREE.Group();
+        const metal = new THREE.MeshStandardMaterial({ color: 0xc8c1b1, roughness: 0.5, metalness: 0.55 });
+        const dark = new THREE.MeshStandardMaterial({ color: 0x36393d, roughness: 0.85 });
+        const panel = new THREE.MeshStandardMaterial({ color: 0x24405e, roughness: 0.35, metalness: 0.45 });
+        function part(geometry, material, x, y, z) {
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(x, y, z);
+            mesh.castShadow = mesh.receiveShadow = true;
+            station.add(mesh);
+            return mesh;
+        }
+        for (const [lx, lz] of [[-0.26, -0.26], [0.26, -0.26], [-0.26, 0.26], [0.26, 0.26]]) {
+            const leg = part(new THREE.CylinderGeometry(0.02, 0.03, 0.55, 8), dark, lx, 0.27, lz);
+            leg.rotation.z = lx * 0.35; leg.rotation.x = -lz * 0.35;
+        }
+        part(new THREE.BoxGeometry(0.6, 0.42, 0.6), metal, 0, 0.68, 0);
+        part(new THREE.SphereGeometry(0.16, 16, 12), metal, 0, 0.95, 0);
+        const mast = part(new THREE.CylinderGeometry(0.012, 0.012, 0.85, 8), dark, 0.18, 1.3, 0.18);
+        part(new THREE.SphereGeometry(0.045, 10, 8), metal, 0.18, 1.74, 0.18);
+        const dish = part(new THREE.SphereGeometry(0.22, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2.6), metal, -0.2, 1.06, -0.2);
+        dish.rotation.x = -0.9; dish.rotation.y = 0.5;
+        for (const side of [-1, 1]) {
+            const wing = part(new THREE.BoxGeometry(0.78, 0.025, 0.4), panel, side * 0.72, 0.62, 0);
+            wing.rotation.z = side * -0.28;
+        }
+        const x = 32, z = -60;
+        station.position.set(x, LunarTerrain.sampleSurface(surface, x, z), z);
+        station.rotation.y = 2.2;
+        scene.add(station);
+        obstacles.push({ x, z, radius: 1 });
+    }
+    const rand = LunarTerrain.random(4451);
+    function updateGravityButton() {
+        $('gravity-button').textContent = t(gravity === LunarTerrain.GRAVITY ? 'gravityCompare' : 'gravityLunar');
+        $('gravity-button').setAttribute('aria-pressed', String(gravity !== LunarTerrain.GRAVITY));
+    }
+    function updateSoundButton() {
+        $('sound-button').textContent = t(soundEnabled ? 'soundOn' : 'soundOff');
+        $('sound-button').setAttribute('aria-pressed', String(soundEnabled));
+    }
+    function toggleGravity() {
+        gravity = gravity === LunarTerrain.GRAVITY ? LunarTerrain.EARTH_GRAVITY : LunarTerrain.GRAVITY;
+        $('gravity-value').textContent = gravity.toFixed(2);
+        $('gravity-mode').textContent = t(gravity === LunarTerrain.GRAVITY ? 'moonTag' : 'earthTag');
+        updateGravityButton();
+        notify(gravity === LunarTerrain.GRAVITY ? 'gravityMoon' : 'gravityEarth');
+    }
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        try { localStorage.setItem('mzu-moon-sound', soundEnabled ? 'on' : 'off'); } catch (error) { }
+        if (audio) audio.setEnabled(soundEnabled);
+        updateSoundButton();
+    }
     function updateCamera() {
         if (!walker) return;
         const headMotion = motionEnabled && !photoMode && exploring;
@@ -449,6 +617,8 @@
     function enter() {
         if (!ready) return;
         exploring = true;
+        $('visor').hidden = false;
+        if (audio) audio.start();
         $('arrival-card').hidden = true;
         $('field-card').hidden = false;
         $('reticle').hidden = false;
@@ -466,6 +636,7 @@
         const station = stations[index];
         position.x = station.x; position.z = station.z;
         walker = LunarTerrain.createWalker(surface, position);
+        lastPrintMark = 0;
         yaw = station.yaw; pitch = station.pitch;
         updateCamera();
         updateNotes();
@@ -496,13 +667,24 @@
             const forward = Number(keys.has('KeyW') || keys.has('ArrowUp') || touchKeys.has('forward')) - Number(keys.has('KeyS') || keys.has('ArrowDown') || touchKeys.has('back'));
             const right = Number(keys.has('KeyD') || keys.has('ArrowRight') || touchKeys.has('right')) - Number(keys.has('KeyA') || keys.has('ArrowLeft') || touchKeys.has('left'));
             const wasMoving = walker.speed > 0.001 || !walker.grounded;
-            LunarTerrain.updateWalker(surface, walker, { forward, right, yaw, fast: keys.has('ShiftLeft') || keys.has('ShiftRight'), jump: jumpRequested }, dt, obstacles);
+            const wasAirborne = !walker.grounded;
+            const fallSpeed = wasAirborne ? Math.max(0, -walker.vy) : 0;
+            LunarTerrain.updateWalker(surface, walker, { forward, right, yaw, fast: keys.has('ShiftLeft') || keys.has('ShiftRight'), jump: jumpRequested }, dt, obstacles, gravity);
             jumpRequested = false;
             position.x = walker.x; position.z = walker.z;
+            if (!wasAirborne && !walker.grounded) { spawnDust(position.x, walker.y + 0.06, position.z, 10, 0.45); if (audio) audio.jump(); }
+            if (wasAirborne && walker.grounded) {
+                const energy = Math.min(1.5, Math.max(0.3, fallSpeed / 3));
+                spawnDust(position.x, walker.y + 0.05, position.z, Math.round(14 + energy * 14), 0.4 + energy * 0.7);
+                if (audio) audio.land(energy);
+            }
+            const printMark = Math.floor(walker.stride / Math.PI);
+            while (lastPrintMark < printMark) { lastPrintMark++; dropPrint(lastPrintMark); }
             if (Math.hypot(position.x, position.z) > LunarTerrain.WALK_RADIUS - 1 && now - lastBoundaryNotice > 5000) { notify('boundary'); lastBoundaryNotice = now; }
             if (wasMoving || walker.speed > 0.001 || !walker.grounded) sunlight.shadow.needsUpdate = true;
             updateCamera();
         }
+        if (exploring && dt > 0) updateDust(dt);
         if (Math.hypot(sunlight.target.position.x - position.x, sunlight.target.position.z - position.z) > 20) {
             sunlight.target.position.set(position.x, 0, position.z);
             sunlight.position.set(position.x - 180, 105, position.z - 160);
@@ -527,7 +709,7 @@
         canvas.addEventListener('pointerdown', event => {
             if (!ready || event.button !== 0) return;
             drag = { id: event.pointerId, x: event.clientX, y: event.clientY, startX: event.clientX, startY: event.clientY, moved: false };
-            canvas.setPointerCapture(event.pointerId);
+            try { canvas.setPointerCapture(event.pointerId); } catch (error) { }
             canvas.focus({ preventScroll: true });
         });
         canvas.addEventListener('pointermove', event => {
@@ -556,7 +738,7 @@
                 return;
             }
             if (event.code === 'Escape' && photoMode) { setPhoto(false); return; }
-            if (event.target.matches('input, textarea, select, button, a') || isDialogOpen()) return;
+            if ((event.target instanceof Element && event.target.matches('input, textarea, select, button, a')) || isDialogOpen()) return;
             if (movementCodes.includes(event.code) && exploring && !photoMode) { event.preventDefault(); keys.add(event.code); }
             if (event.code === 'Space' && exploring && !photoMode) {
                 event.preventDefault();
@@ -566,6 +748,8 @@
             if (event.code === 'KeyE' && discoveryUI) discoveryUI.interact();
             if (event.code === 'KeyP') setPhoto(!photoMode);
             if (event.code === 'KeyH' && exploring && !photoMode) $('field-card').hidden = !$('field-card').hidden;
+            if (event.code === 'KeyG' && exploring && !photoMode) toggleGravity();
+            if (event.code === 'KeyM') toggleSound();
         });
         document.addEventListener('keyup', event => keys.delete(event.code));
         document.querySelectorAll('[data-move]').forEach(button => {
@@ -580,9 +764,11 @@
         document.addEventListener('visibilitychange', () => {
             clearMovement();
             if (document.hidden) {
+                if (audio) audio.suspend();
                 if (animationId !== null) cancelAnimationFrame(animationId);
                 animationId = null;
             } else if (ready && animationId === null) {
+                if (audio && exploring) audio.start();
                 lastTime = 0; sampleTime = 0; frameCount = 0;
                 animationId = requestAnimationFrame(frame);
             }
@@ -626,12 +812,14 @@
             await new Promise(resolve => setTimeout(resolve, 20));
             buildRocks(texture);
             buildAstronaut(texture);
+            buildFootprints();
+            buildInstrument();
             walker = LunarTerrain.createWalker(surface, position);
             await buildSky();
             updateCamera();
             renderer.render(scene, camera);
             if (typeof window.createMoonDiscoveries !== 'function') throw new Error('Discovery interface is unavailable');
-            discoveryUI = window.createMoonDiscoveries({ scene, camera, surface, rock: featuredRock, getWalker: () => walker, isExploring: () => exploring, isPhotoMode: () => photoMode, clearMovement, onPhoto: () => setPhoto(true), getNotes: () => t('notes'), language });
+            discoveryUI = window.createMoonDiscoveries({ scene, camera, surface, rock: featuredRock, getWalker: () => walker, isExploring: () => exploring, isPhotoMode: () => photoMode, clearMovement, onPhoto: () => setPhoto(true), onDiscover: () => { if (audio) audio.chime(); }, getNotes: () => t('notes'), language });
             ready = true;
             $('loading-overlay').hidden = true;
             document.querySelectorAll('.station-button, #begin-button, #photo-button').forEach(button => { button.disabled = false; });
@@ -646,6 +834,8 @@
     $('jump-button').addEventListener('pointerdown', event => { event.preventDefault(); requestJump(); });
     $('jump-button').addEventListener('click', event => { if (event.detail === 0) requestJump(); });
     $('motion-button').addEventListener('click', () => { motionEnabled = !motionEnabled; updateMotionButton(); if (ready) updateCamera(); });
+    $('sound-button').addEventListener('click', toggleSound);
+    $('gravity-button').addEventListener('click', toggleGravity);
     $('guide-dialog').addEventListener('close', () => { if (ready) $('moon-canvas').focus({ preventScroll: true }); });
     $('photo-button').addEventListener('click', () => setPhoto(true));
     $('exit-photo-button').addEventListener('click', () => setPhoto(false));
@@ -678,6 +868,9 @@
         url.searchParams.set('lang', language);
         location.assign(url.toString());
     });
+    audio = window.MoonAudio ? window.MoonAudio.create() : null;
+    try { soundEnabled = localStorage.getItem('mzu-moon-sound') !== 'off'; } catch (error) { soundEnabled = true; }
+    if (audio && !soundEnabled) audio.setEnabled(false);
     applyLanguage();
     init();
 }());

@@ -1,19 +1,19 @@
 (function (root) {
-    root.createMoonDiscoveries = function ({ scene, camera, surface, rock, getWalker, isExploring, isPhotoMode, clearMovement, onPhoto, getNotes, language: initialLanguage }) {
+    root.createMoonDiscoveries = function ({ scene, camera, surface, rock, getWalker, isExploring, isPhotoMode, clearMovement, onPhoto, onDiscover, getNotes, language: initialLanguage }) {
         const $ = id => document.getElementById(id);
         const model = root.LunarExpedition;
         const copy = {
             en: {
-                fieldRoute: 'YOUR FIELD ROUTE', allFound: 'All three discoveries are in your journal. Stay a little longer.', discover: 'Discover · E', review: 'Read again · E', chooseStop: 'Next stop', rotateRock: 'Drag or use arrow keys to rotate', continueRoute: 'Continue exploring', takePhoto: 'Frame a photograph', discoveryDisclaimer: 'This is an imagined site, not a surveyed landing site or an identified lunar sample.',
+                fieldRoute: 'YOUR FIELD ROUTE', allFound: 'All five discoveries are in your journal. Stay a little longer.', discover: 'Discover · E', review: 'Read again · E', chooseStop: 'Next stop', rotateRock: 'Drag or use arrow keys to rotate', continueRoute: 'Continue exploring', takePhoto: 'Frame a photograph', discoveryDisclaimer: 'This is an imagined site, not a surveyed landing site or an identified lunar sample.',
                 savedHere: 'Journal saved on this device.', visitOnly: 'Journal kept for this visit only.', follow: 'Follow the amber guide dots', closeEnough: 'You are here. Press E or Discover.', landFirst: 'Land before recording a discovery.', approach: 'Walk closer to this discovery.', recorded: 'DISCOVERY RECORDED', journal: 'FROM YOUR FIELD JOURNAL', away: 'm to the stop', ready: 'Ready to discover', quick: 'Quick travel — discovery not automatic', unavailable: 'The 3D specimen viewer is unavailable.', routeHelp: 'Follow the amber guide dots and distance arrow. Walk up to a stop and press E or Discover to add it to your journal. The numbered buttons offer quick travel, not automatic discoveries. Guide dots are interface aids, not structures on the Moon. H hides or restores the route card.',
-                teasers: ['Find a place on the crater rim and read the landscape.', 'Approach the large boulder, then turn it around in the specimen viewer.', 'Reach the viewing point and find Earth above the horizon.'],
-                details: ['The rim is built from material displaced during impact. The surrounding debris is called ejecta. Our crater is an artistic example of this process, not a reconstruction of a named lunar crater.', 'Lunar regolith is a mixture of rock fragments, mineral grains, and glass produced by impacts. Shape alone cannot tell us this model’s mineral composition or age. Rotate the representative rock to examine its surface.', 'Earth is much larger in the lunar sky than the Moon is in our sky. Tidal locking keeps it near the same place when viewed from much of the near side, although libration makes it move somewhat. This scene uses an artistic sky arrangement.']
+                teasers: ['Find a place on the crater rim and read the landscape.', 'Approach the large boulder, then turn it around in the specimen viewer.', 'Reach the viewing point and find Earth above the horizon.', 'Walk south from arrival to find a small science station resting on the plain.', 'Hike to the eastern rim of the deep crater and look into its shadowed floor.'],
+                details: ['The rim is built from material displaced during impact. The surrounding debris is called ejecta. Our crater is an artistic example of this process, not a reconstruction of a named lunar crater.', 'Lunar regolith is a mixture of rock fragments, mineral grains, and glass produced by impacts. Shape alone cannot tell us this model’s mineral composition or age. Rotate the representative rock to examine its surface.', 'Earth is much larger in the lunar sky than the Moon is in our sky. Tidal locking keeps it near the same place when viewed from much of the near side, although libration makes it move somewhat. This scene uses an artistic sky arrangement.', 'Between 1969 and 1977, Apollo seismometers recorded thousands of moonquakes and meteoroid impacts, including shallow quakes that can last tens of minutes. This prop honours those instruments; its readings are imagined, not real data.', 'Permanently shadowed craters near the lunar poles are among the coldest places in the Solar System — colder than −230 °C. Ice delivered by comets may survive there for ages. This hollow is a modest artistic echo of those places.']
             },
             zh: {
-                fieldRoute: '你的探索路线', allFound: '三个发现都已记入手记。不妨再多停留一会儿。', discover: '记录发现 · E', review: '重读手记 · E', chooseStop: '换一站', rotateRock: '拖动或使用方向键旋转岩石', continueRoute: '继续探索', takePhoto: '构图拍照', discoveryDisclaimer: '这是虚构场景，并非真实着陆点测绘，也不是已鉴定的月球样本。',
+                fieldRoute: '你的探索路线', allFound: '五个发现都已记入手记。不妨再多停留一会儿。', discover: '记录发现 · E', review: '重读手记 · E', chooseStop: '换一站', rotateRock: '拖动或使用方向键旋转岩石', continueRoute: '继续探索', takePhoto: '构图拍照', discoveryDisclaimer: '这是虚构场景，并非真实着陆点测绘，也不是已鉴定的月球样本。',
                 savedHere: '手记已保存在此设备。', visitOnly: '手记仅在本次浏览中保留。', follow: '沿淡金色引导点前进', closeEnough: '已抵达，按 E 或点击记录发现。', landFirst: '请先落地，再记录发现。', approach: '请走近这个发现点。', recorded: '新的发现已记录', journal: '你的探索手记', away: '米到达此站', ready: '可以记录发现', quick: '快捷移动，不会自动完成发现', unavailable: '三维岩石查看器暂时不可用。', routeHelp: '跟随淡金色引导点和距离箭头，走近后按 E 或点击记录发现。底部编号可以快捷移动，但不会自动完成发现。引导点只是界面辅助，并非月面真实设施。H 可隐藏或恢复路线卡片。',
-                teasers: ['走到环形山边缘，读一读地形留下的痕迹。', '走近那块大岩石，在查看器中转动并观察它。', '到达眺望点，寻找地平线上方的地球。'],
-                details: ['撞击将物质挤压、抛散，堆成隆起的坑缘，周边散落的碎屑称为溅射物。这里的环形山是这一过程的艺术示例，并不对应某个真实命名的陨石坑。', '月壤由岩石碎屑、矿物颗粒以及撞击产生的玻璃等组成。仅凭外形无法判断这个模型的矿物成分或年龄。可以旋转这块代表性岩石，仔细观察表面。', '从月球看地球，其视直径比从地球看月球大得多。潮汐锁定使月球正面许多地区天空中的地球位置相对稳定，天平动仍会带来一定变化。本场景的天空经过艺术构图。']
+                teasers: ['走到环形山边缘，读一读地形留下的痕迹。', '走近那块大岩石，在查看器中转动并观察它。', '到达眺望点，寻找地平线上方的地球。', '从抵达点向南走，找一座落在平原上的小型科考站。', '徒步到东侧深坑的边缘，俯视它阴影中的坑底。'],
+                details: ['撞击将物质挤压、抛散，堆成隆起的坑缘，周边散落的碎屑称为溅射物。这里的环形山是这一过程的艺术示例，并不对应某个真实命名的陨石坑。', '月壤由岩石碎屑、矿物颗粒以及撞击产生的玻璃等组成。仅凭外形无法判断这个模型的矿物成分或年龄。可以旋转这块代表性岩石，仔细观察表面。', '从月球看地球，其视直径比从地球看月球大得多。潮汐锁定使月球正面许多地区天空中的地球位置相对稳定，天平动仍会带来一定变化。本场景的天空经过艺术构图。', '1969 到 1977 年间，阿波罗月震仪记录了数千次月震与陨石撞击，有些浅源月震可持续数十分钟。这座科考站是致敬那些仪器的道具，读数是虚构的。', '月球两极的永久阴影坑是太阳系中最冷的地方之一，可低于零下 230 摄氏度，彗星带来的水冰或许能在其中留存很久。这处浅坑是对那些地方的朴素艺术再现。']
             }
         };
         let language = initialLanguage, found = [], persistent = true;
@@ -44,11 +44,13 @@
         const text = key => copy[language][key];
         const isOpen = () => $('discovery-dialog').open;
         function journal() {
-            $('discovery-count').textContent = `${found.length} / 3`;
+            const total = model.discoveries.length;
+            $('discovery-count').textContent = `${found.length} / ${total}`;
+            $('discovery-progress').max = total;
             $('discovery-progress').value = found.length;
-            $('route-complete').hidden = found.length !== 3;
+            $('route-complete').hidden = found.length !== total;
             $('progress-storage').textContent = text(persistent ? 'savedHere' : 'visitOnly');
-            $('station-number').textContent = `0${selected + 1} / 03`;
+            $('station-number').textContent = `0${selected + 1} / 0${total}`;
             $('station-title').textContent = getNotes()[selected][0];
             $('station-description').textContent = text('teasers')[selected];
             document.querySelectorAll('[data-station]').forEach(button => {
@@ -153,7 +155,8 @@
             selected = index;
             clearMovement(); journal();
             const note = getNotes()[index];
-            $('discovery-label').textContent = `${text(alreadyFound ? 'journal' : 'recorded')} · ${found.length} / 3`;
+            $('discovery-label').textContent = `${text(alreadyFound ? 'journal' : 'recorded')} · ${found.length} / ${model.discoveries.length}`;
+            if (!alreadyFound && onDiscover) onDiscover();
             $('discovery-title').textContent = note[0];
             $('discovery-description').textContent = note[1];
             $('discovery-detail').textContent = text('details')[index];
@@ -177,7 +180,7 @@
         }
         $('discover-button').addEventListener('click', () => interact());
         $('discovery-pin').addEventListener('click', () => interact());
-        $('next-discovery').addEventListener('click', () => { select((selected + 1) % 3); $('moon-canvas').focus(); });
+        $('next-discovery').addEventListener('click', () => { select((selected + 1) % model.discoveries.length); $('moon-canvas').focus(); });
         $('continue-route').addEventListener('click', () => {
             $('discovery-dialog').close();
             const next = model.discoveries.findIndex(item => !found.includes(item.id));

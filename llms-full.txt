@@ -32,7 +32,7 @@ The scene is not a real-time model of the current Solar System. It does not calc
 
 ## Moon surface expedition
 
-https://www.3dsolarsystem.net/moon.html is a separate first-person lunar exploration experience. Visitors can walk with WASD or arrow keys, jump with Space, follow a guided route, and record three discoveries using E or a touch-friendly button. The featured rock can be rotated in a specimen viewer. Photo mode pauses movement and exports a PNG.
+https://www.3dsolarsystem.net/moon.html is a separate first-person lunar exploration experience. Visitors can walk with WASD or arrow keys, jump with Space, follow a guided route, and record five discoveries using E or a touch-friendly button — three are served by quick travel, two can only be reached on foot. Walking leaves footprints and landing kicks up ballistic dust. A helmet visor frame and optional suit-internal sounds (breathing, footfalls, radio chime; M toggles) frame the view. Pressing G compares Earth gravity (9.8 m/s²) with lunar gravity using the same takeoff push. The featured rock can be rotated in a specimen viewer. Photo mode pauses movement and exports a PNG.
 
 The scene is a science-inspired artistic reconstruction, not a scan of a real landing site or an identified rock sample. Jump gravity is 1.62 m/s²; takeoff strength, walking pace, and camera motion are experience settings rather than a full spacesuit simulation. Earth's placement and apparent size are artistically composed.
 
