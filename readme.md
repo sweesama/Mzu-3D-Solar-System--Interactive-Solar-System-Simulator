@@ -32,6 +32,13 @@ Then open `http://localhost:8000/`.
 
 The visible quality selector stores the visitor's preference locally. Auto mode uses available memory, CPU, viewport, pixel-density, and data-saving signals without treating every phone as low-end. It can reduce render resolution and procedural asteroid load if measured performance remains poor.
 
+### Camera focus behavior
+
+- `?focus=` and the planet navigation share one focus path: the camera flies to the object and then follows it (`trackedObject`), so moving bodies stay framed. Satellites keep the same close-up framing as planets (`radius × 2.5`); there is no separate widened framing.
+- Before the first `animate()` frame, orbital positions have not been written yet, so initial focus runs `updateOrbitalPosition()` once over all bodies to place them before computing the camera destination.
+- Camera transitions aim at where the object will be when the flight ends (`predictWorldPosition`), so fast-moving moons do not get left behind mid-flight.
+- Canvas clicks ignore orbit guide lines, ignore a planet's invisible click-helper sphere when the camera is inside it, and pick the candidate the ray passes closest to relative to its size. Moons also carry small click-helper spheres (capped at 35% of their orbit radius), so they can be clicked reliably even inside a planet's own helper zone. Belt particles are only a fallback when nothing else was aimed at.
+
 ## Generate planet pages
 
 The eight planet pages are generated from `index.html` and factual page data:
@@ -76,7 +83,7 @@ Open `http://localhost:8000/moon.html` or use **Step onto the Moon** in the Sola
 - The viewpoint is an astronaut on foot, not a rover or flying camera. Click **Step onto the Moon**, then use WASD or arrow keys to walk, Shift for a brisker pace, and drag to look. Look down to see your boots. Touchscreens have a direction pad and **Jump** button.
 - **Space** jumps from the ground. There is no double jump or automatic repeated jumping when held. Airborne movement preserves takeoff momentum; steep uphill terrain, larger rocks, and the region boundary still block passage. Landing and uneven terrain are handled against the rendered ground.
 - Walking leaves alternating boot prints on the regolith, and jumps kick up dust that falls back along ballistic arcs — there is no air to drift it. A subtle helmet-visor frame borders the view and is hidden in photo mode for clean captures.
-- Optional suit sounds (key **M** or the field guide toggle) play breathing, conducted footfalls, landing thumps, and a radio chime on each discovery; the exterior remains silent. All audio is synthesized in the browser with Web Audio — there are no audio files.
+- Optional suit sounds (key **M** or the field guide toggle) play a quiet life-support hum, conducted footfalls, landing thumps, and a radio chime on each discovery; the exterior remains silent. All audio is synthesized in the browser with Web Audio — there are no audio files.
 - **G** or the field-guide button switches between lunar gravity (1.62 m/s²) and Earth gravity (9.8 m/s²) with the same takeoff velocity, so visitors can feel the difference in jump height. The telemetry panel and dust both follow the active gravity.
 - **Field guide** explains controls and scientific/artistic choices. Its **Camera motion** toggle disables walking sway and landing dip without disabling gravity. Motion is initially off for visitors requesting reduced motion. H toggles the field notes; Esc closes the guide and returns keyboard control to walking.
 - **Photo mode** or P hides the interface and pauses movement, including mid-jump. Save photograph exports the canvas as PNG; Esc exits photo mode.
@@ -92,6 +99,16 @@ Implementation: `moon.html` and `moon.css` provide the expedition interface, `mo
 
 `lunar-expedition.js` contains the discovery positions, lightweight route graph, proximity checks, and validated journal parsing. `moon-discoveries.js` connects the route to the interface, progress storage, and the on-demand rock viewer. Random large rocks leave a clear corridor around the authored route; the original featured boulders remain. Both the discovery dialog and field guide pause walking and jumping.
 
+## Mars expedition
+
+The public page is `https://www.3dsolarsystem.net/mars-expedition.html` (the name avoids colliding with the existing `mars.html` orbital detail page). It is listed in `sitemap.xml`, linked from the homepage and generated planet pages, and carries the same indexable metadata as the Moon expedition.
+
+- The same first-person engine as the Moon expedition, retuned for Mars: gravity is **3.71 m/s²** (G toggles Earth's 9.8 m/s²), so the same 1.8 m/s takeoff gives roughly a 0.44-metre hop — visibly heavier than the Moon.
+- The environment differs deliberately: a butterscotch sky dome, tan dust haze (distance fog), a smaller Sun with a faint blue-tinged halo, and two dim moonlets instead of Earth. Terrain includes a layered flat-topped mesa, a wind-rippled dune field, and degraded craters.
+- Audio differs too: Mars has a real but thin atmosphere — Perseverance's microphones showed a deep silence broken by occasional faint gusts, so the soundscape is suit-internal sounds plus rare low-frequency gusts, not a constant wind bed. A quiet life-support hum is present on both worlds (Apollo crews heard their suit fans). Footfalls are crunchier than on the Moon.
+- Five discoveries — layered mesa, basalt boulder (3D specimen viewer), dune field, weather mast, degraded crater rim. The weather mast and crater are on foot only. Progress saves under `mzu-mars-discoveries-v1`.
+- Files mirror the lunar set: `mars-expedition.html`, `mars.js`, `mars-terrain.js`, `mars-expedition.js`, `mars-audio.js`. `moon-discoveries.js` and `moon.css` are shared — the discoveries module accepts optional `expedition`, `terrain`, and `strings` parameters.
+
 After changes, run:
 
 ```bash
@@ -102,6 +119,10 @@ node --check lunar-terrain.js
 node --check lunar-expedition.js
 node --check lunar-audio.js
 node --check moon-discoveries.js
+node --check mars.js
+node --check mars-terrain.js
+node --check mars-expedition.js
+node --check mars-audio.js
 ```
 
 Route verification includes both directions of every route segment at all three terrain detail levels, distant/airborne discovery rejection, duplicate prevention, and invalid saved-data handling. Browser checks should cover walking the complete route with scene obstacles, specimen rotation/zoom, quick-travel without automatic progress, refresh persistence, storage-disabled fallback, and touch discovery controls.

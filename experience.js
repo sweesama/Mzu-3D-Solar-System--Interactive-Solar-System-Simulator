@@ -117,6 +117,11 @@ function focusCelestialObject(name, options = {}) {
     target.mesh.getWorldPosition(targetPosition);
     target.mesh.userData._lastPos = targetPosition.clone();
 
+    // 瞄准镜头飞行结束时目标将要到达的位置（快速移动的卫星不会在途中跑丢）
+    const aimPosition = (target.pivot && typeof predictWorldPosition === 'function')
+        ? predictWorldPosition(target, duration / 1000)
+        : targetPosition;
+
     const objectRadius = data.radius || 1;
     const isStar = data.type && data.type.toLowerCase() === 'star';
     const distance = isStar ? Math.max(objectRadius * 4, 60) : objectRadius * 2.5;
@@ -125,7 +130,7 @@ function focusCelestialObject(name, options = {}) {
     const offset = camera.position.clone().sub(controls.target).normalize();
     if (offset.length() < 0.1) offset.set(0, 0, 1);
     offset.multiplyScalar(distance);
-    const cameraDestination = targetPosition.clone().add(offset);
+    const cameraDestination = aimPosition.clone().add(offset);
 
     activeCameraTweens.forEach(tween => tween.stop());
     activeCameraTweens = [];
@@ -136,7 +141,7 @@ function focusCelestialObject(name, options = {}) {
         .onComplete(() => { isTransitioningCamera = false; })
         .start();
     const targetTween = new TWEEN.Tween(controls.target)
-        .to({ x: targetPosition.x, y: targetPosition.y, z: targetPosition.z }, duration)
+        .to({ x: aimPosition.x, y: aimPosition.y, z: aimPosition.z }, duration)
         .easing(TWEEN.Easing.Quadratic.InOut)
         .start();
     activeCameraTweens.push(cameraTween, targetTween);

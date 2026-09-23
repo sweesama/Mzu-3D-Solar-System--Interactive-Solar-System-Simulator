@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#080909">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <title>Mars Exploration in 3D | Mzu Solar System</title>
+    <meta name="description" content="Explore an imagined Martian plain in your browser. Walk and jump in Mars gravity, discover five viewpoints, inspect a 3D specimen, and keep an exploration journal.">
+    <link rel="canonical" href="https://www.3dsolarsystem.net/mars-expedition.html">
+    <meta property="og:title" content="Mars Exploration in 3D | Mzu Solar System">
+    <meta property="og:description" content="Walk an imagined Martian landscape, discover five observation points, inspect a rock in 3D, and feel lighter gravity under a butterscotch sky.">
+    <meta property="og:url" content="https://www.3dsolarsystem.net/mars-expedition.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Mzu 3D Solar System">
+    <meta property="og:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
+    <meta property="og:image:alt" content="Mzu 3D Solar System logo">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Mars Exploration in 3D | Mzu Solar System">
+    <meta name="twitter:description" content="Walk, jump, and make discoveries in a science-inspired Martian landscape. Free browser-based exploration, with no account required.">
+    <meta name="twitter:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
+    <meta name="twitter:image:alt" content="Mzu 3D Solar System logo">
+    <script id="app-structured-data" type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Mzu Mars Expedition",
+      "url": "https://www.3dsolarsystem.net/mars-expedition.html",
+      "description": "A science-inspired artistic Mars landscape with first-person walking, Martian-gravity jumps, five discovery points, a rotatable rock specimen, and a local exploration journal.",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Any modern web browser with WebGL support",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "inLanguage": ["en", "zh-CN"],
+      "about": { "@type": "Thing", "name": "Mars" },
+      "isPartOf": { "@type": "WebSite", "name": "Mzu 3D Solar System", "url": "https://www.3dsolarsystem.net/" }
+    }
+    </script>
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="moon.css">
+</head>
+<body>
+    <main id="expedition" aria-label="Interactive Martian landscape">
+        <canvas id="moon-canvas" tabindex="0" aria-label="Martian landscape. Drag to look; use W A S D or arrow keys to walk."></canvas>
+        <div class="scene-shade" aria-hidden="true"></div>
+        <div class="visor" id="visor" aria-hidden="true" hidden></div>
+        <header class="expedition-header">
+            <a class="brand" href="index.html" aria-label="Mzu Solar System"><span class="brand-orbit" aria-hidden="true"></span>MZU <span class="brand-divider">/</span> <span class="brand-sub" data-i18n="expeditions">EXPEDITIONS</span></a>
+            <div class="header-actions">
+                <button id="language-button" class="quiet-button" type="button" aria-label="Switch language">中文</button>
+                <button id="fullscreen-button" class="quiet-button" type="button" data-i18n="fullscreen">Full screen</button>
+                <a id="return-orbit" class="return-link" href="index.html?focus=Mars"><span aria-hidden="true">↗</span> <span data-i18n="return">Return to orbit</span></a>
+            </div>
+        </header>
+
+        <div class="location-label"><span class="live-dot"></span><span data-i18n="destination">MARS</span><span class="location-line"></span><span data-i18n="surfaceMode">SURFACE EXPLORATION</span></div>
+        <div class="compass" aria-label="View heading"><span>W</span><span>·</span><span id="heading">000°</span><span>·</span><span>E</span><i></i></div>
+
+        <section id="arrival-card" class="arrival-card">
+            <p class="eyebrow" data-i18n="chapter">EXPEDITION 002 / THE RED PLAIN</p>
+            <h1 data-i18n="title">Walk on<br>Mars.</h1>
+            <p class="arrival-description" data-i18n="intro">Walk an imagined Martian plain, jump in gentler gravity, and read layered rock, wind-blown dunes, and a butterscotch sky.</p>
+            <button id="begin-button" class="primary-button" type="button" disabled><span data-i18n="begin">Step onto Mars</span><span aria-hidden="true">→</span></button>
+            <p class="arrival-hint" data-i18n="arrivalHint">No download. Just a little curiosity.</p>
+        </section>
+
+        <section id="field-card" class="field-card route-card" hidden>
+            <p class="eyebrow"><span data-i18n="fieldRoute">YOUR FIELD ROUTE</span><span id="discovery-count" role="status" aria-live="polite">0 / 5</span></p>
+            <progress id="discovery-progress" max="5" value="0" aria-label="Discoveries completed"></progress>
+            <p id="route-complete" class="route-complete" hidden data-i18n="allFound">All five discoveries are in your journal. Stay a little longer.</p>
+            <p id="station-number" class="route-number">01 / 05</p>
+            <h2 id="station-title"></h2>
+            <p id="station-description"></p>
+            <div class="route-bearing"><span id="route-arrow" aria-hidden="true">↑</span><div><strong id="route-distance"></strong><span id="route-instruction"></span></div></div>
+            <div class="route-actions"><button id="discover-button" type="button" disabled data-i18n="discover">Discover · E</button><button id="next-discovery" type="button" data-i18n="chooseStop">Next stop</button></div>
+            <p id="progress-storage" class="field-footnote"></p>
+        </section>
+        <button id="discovery-pin" class="discovery-pin" type="button" hidden aria-label="Discovery destination"><span id="pin-number">01</span><span id="pin-distance"></span></button>
+
+        <div class="telemetry" aria-label="Martian environment">
+            <div><span data-i18n="gravity">GRAVITY</span><strong><span id="gravity-value">3.71</span> <small>m/s²</small></strong><small id="gravity-mode" class="gravity-mode">MARS</small></div>
+            <div><span data-i18n="atmosphere">ATMOSPHERE</span><strong data-i18n="vacuum">Thin CO₂</strong></div>
+            <div><span data-i18n="distance">FROM ARRIVAL</span><strong id="distance-value">0 <small>m</small></strong></div>
+        </div>
+
+        <div id="reticle" aria-hidden="true" hidden><i></i><i></i></div>
+        <div id="walking-hint" class="walking-hint" hidden data-i18n="walkingHint">W A S D to walk · drag to look · Space to jump · Shift for a brisk walk</div>
+        <div id="locomotion-status" class="locomotion-state" hidden><span data-i18n="astronaut">ASTRONAUT</span><span aria-hidden="true">/</span><span id="movement-state">On the surface</span></div>
+        <div id="touch-pad" class="touch-pad" hidden role="group" aria-label="Movement controls">
+            <button data-move="forward" type="button" aria-label="Walk forward">↑</button>
+            <button data-move="left" type="button" aria-label="Walk left">←</button>
+            <button data-move="back" type="button" aria-label="Walk backward">↓</button>
+            <button data-move="right" type="button" aria-label="Walk right">→</button>
+            <button id="jump-button" type="button" data-i18n="jump" aria-label="Jump">Jump</button>
+        </div>
+
+        <footer class="expedition-footer">
+            <nav class="station-nav" aria-label="Observation points">
+                <button class="station-button selected" data-station="0" type="button" disabled><span>01</span><span data-i18n="station0">Layered mesa</span></button>
+                <button class="station-button" data-station="1" type="button" disabled><span>02</span><span data-i18n="station1">Boulder field</span></button>
+                <button class="station-button" data-station="2" type="button" disabled><span>03</span><span data-i18n="station2">Dune edge</span></button>
+            </nav>
+            <div class="footer-tools">
+                <button id="help-button" class="tool-button" type="button" aria-controls="guide-dialog" data-i18n="guide">Field guide</button>
+                <button id="photo-button" class="tool-button" type="button" disabled data-i18n="photo">Photo mode</button>
+                <label class="quality-label"><span data-i18n="quality">Quality</span><select id="moon-quality" aria-label="Render quality"><option value="auto" data-i18n="auto">Auto</option><option value="high" data-i18n="high">High</option><option value="balanced" data-i18n="balanced">Balanced</option><option value="low" data-i18n="low">Low</option></select></label>
+            </div>
+        </footer>
+        <p class="art-note" data-i18n="artNote">SCIENCE-INSPIRED ARTISTIC RECONSTRUCTION · NOT A SCANNED LANDING SITE</p>
+        <div id="photo-controls" hidden><button id="capture-button" class="primary-button" type="button" data-i18n="capture">Save photograph</button><button id="exit-photo-button" class="quiet-button" type="button" data-i18n="exitPhoto">Exit photo mode</button></div>
+        <div id="notice" role="status" aria-live="polite"></div>
+        <div id="loading-overlay" role="status" aria-live="polite"><span class="loading-orbit" aria-hidden="true"></span><p class="eyebrow">MZU / EXPEDITION 002</p><p id="loading-label" data-i18n="loading">Preparing the Martian landscape…</p><a href="index.html" data-i18n="return">Return to orbit</a></div>
+    </main>
+    <dialog id="guide-dialog" aria-labelledby="guide-title">
+        <form method="dialog"><button class="dialog-close" aria-label="Close guide">×</button></form>
+        <p class="eyebrow" data-i18n="fieldGuide">THE EXPEDITION FIELD GUIDE</p>
+        <h2 id="guide-title" data-i18n="guideTitle">Take the long way home.</h2>
+        <p data-i18n="guideIntro">This is a small, freely explorable Martian plain, not a whole-planet simulation. The five observation points are different views of the same place; two of them can only be reached on foot.</p>
+        <p data-discovery-i18n="routeHelp">Follow the amber guide dots and distance arrow. Walk up to a stop and press E or Discover to add it to your journal. Quick travel does not automatically record a discovery.</p>
+        <h3 data-i18n="controlsTitle">Moving around</h3>
+        <p data-i18n="controlsText">You are exploring on foot as an astronaut. Walk with W A S D or the arrow keys; Shift gives a brisker pace. Press Space to jump, then wait to land before jumping again. Momentum carries you forward in the air. Drag to look, including down at your boots. Touchscreens have direction and Jump buttons. H hides notes; P opens photo mode; Esc closes it.</p>
+        <div class="motion-choice"><button id="motion-button" type="button" aria-pressed="true">Camera motion: On</button><span data-i18n="motionHint">Disable head motion for a steadier view.</span></div>
+        <div class="motion-choice"><button id="gravity-button" type="button" aria-pressed="false" aria-label="Compare Earth gravity">Compare Earth gravity · G</button><span data-i18n="gravityHint">Same takeoff push, different fall. Feel how little height a jump gives under Earth gravity.</span></div>
+        <div class="motion-choice"><button id="sound-button" type="button" aria-pressed="true" aria-label="Toggle suit sounds">Suit sounds: On</button><span data-i18n="soundHint">Fan hum and footfalls inside the suit; outside, deep silence broken by an occasional faint gust. M toggles.</span></div>
+        <h3 data-i18n="scienceTitle">Science meets imagination</h3>
+        <p data-i18n="scienceText">The butterscotch sky comes from fine dust scattering sunlight; layered rock, basalt boulders, and wind-shaped dunes are inspired by rover imagery. Terrain and observation points are procedural art, not survey data.</p>
+        <p data-i18n="soundText">Mars has a real atmosphere — about one percent of Earth's — but it carries sound poorly: recordings by NASA's Perseverance rover show that a deep silence prevails, broken by occasional faint, muffled gusts. Most of what you hear comes from inside the suit. Jumps use a constant Martian gravity of 3.71 m/s²; press G to feel Earth's 9.8 m/s² with the same takeoff push.</p>
+        <p data-i18n="skyHint">Click the Sun, Earth, or a moon in the sky to learn about it — you can then visit it in the Solar System view.</p>
+        <p class="asset-note" data-i18n="assetText">No external imagery on this page — terrain, rock textures, and the sky are generated locally in your browser.</p>
+    </dialog>
+    <dialog id="discovery-dialog" aria-labelledby="discovery-title">
+        <form method="dialog"><button class="dialog-close" aria-label="Close discovery">×</button></form>
+        <p class="eyebrow" id="discovery-label"></p>
+        <h2 id="discovery-title"></h2>
+        <div id="specimen-view" hidden>
+            <canvas id="specimen-canvas" tabindex="0" aria-label="Rock specimen. Drag or use arrow keys to rotate."></canvas>
+            <div class="specimen-controls"><span data-i18n="rotateRock">Drag to rotate the rock</span><button id="specimen-out" type="button" aria-label="Zoom out">−</button><button id="specimen-in" type="button" aria-label="Zoom in">+</button></div>
+        </div>
+        <p id="discovery-description"></p>
+        <p id="discovery-detail"></p>
+        <p class="asset-note" data-i18n="discoveryDisclaimer">This is an imagined site, not a surveyed landing site or an identified Martian sample.</p>
+        <div class="discovery-actions"><button id="continue-route" class="primary-button" type="button" data-i18n="continueRoute">Continue exploring</button><button id="discovery-photo" class="quiet-button" type="button" data-i18n="takePhoto">Frame a photograph</button></div>
+    </dialog>
+    <dialog id="moonlet-dialog" aria-labelledby="moonlet-title">
+        <form method="dialog"><button class="dialog-close" aria-label="Close">×</button></form>
+        <p class="eyebrow" data-i18n="skyEyebrow">IN THE MARTIAN SKY</p>
+        <h2 id="moonlet-title"></h2>
+        <p id="moonlet-text"></p>
+        <div class="discovery-actions"><a id="moonlet-link" class="primary-button" href="index.html" style="text-decoration:none" data-i18n="viewOrbit">See it in the Solar System</a><form method="dialog"><button class="quiet-button" type="submit" data-i18n="keepExploring">Keep exploring</button></form></div>
+    </dialog>
+    <noscript><div class="no-script">JavaScript and WebGL are needed for this expedition. <a href="index.html">Return to the Solar System</a>.</div></noscript>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="quality-policy.js"></script>
+    <script src="mars-terrain.js"></script>
+    <script src="mars-expedition.js"></script>
+    <script src="mars-audio.js"></script>
+    <script src="moon-discoveries.js"></script>
+    <script src="mars.js"></script>
+</body>
+</html>

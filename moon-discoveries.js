@@ -1,8 +1,9 @@
 (function (root) {
-    root.createMoonDiscoveries = function ({ scene, camera, surface, rock, getWalker, isExploring, isPhotoMode, clearMovement, onPhoto, onDiscover, getNotes, language: initialLanguage }) {
+    root.createMoonDiscoveries = function ({ scene, camera, surface, rock, getWalker, isExploring, isPhotoMode, clearMovement, onPhoto, onDiscover, getNotes, language: initialLanguage, expedition, terrain, strings }) {
         const $ = id => document.getElementById(id);
-        const model = root.LunarExpedition;
-        const copy = {
+        const model = expedition || root.LunarExpedition;
+        const terrainModule = terrain || root.LunarTerrain;
+        const copy = strings || {
             en: {
                 fieldRoute: 'YOUR FIELD ROUTE', allFound: 'All five discoveries are in your journal. Stay a little longer.', discover: 'Discover · E', review: 'Read again · E', chooseStop: 'Next stop', rotateRock: 'Drag or use arrow keys to rotate', continueRoute: 'Continue exploring', takePhoto: 'Frame a photograph', discoveryDisclaimer: 'This is an imagined site, not a surveyed landing site or an identified lunar sample.',
                 savedHere: 'Journal saved on this device.', visitOnly: 'Journal kept for this visit only.', follow: 'Follow the amber guide dots', closeEnough: 'You are here. Press E or Discover.', landFirst: 'Land before recording a discovery.', approach: 'Walk closer to this discovery.', recorded: 'DISCOVERY RECORDED', journal: 'FROM YOUR FIELD JOURNAL', away: 'm to the stop', ready: 'Ready to discover', quick: 'Quick travel — discovery not automatic', unavailable: 'The 3D specimen viewer is unavailable.', routeHelp: 'Follow the amber guide dots and distance arrow. Walk up to a stop and press E or Discover to add it to your journal. The numbered buttons offer quick travel, not automatic discoveries. Guide dots are interface aids, not structures on the Moon. H hides or restores the route card.',
@@ -29,18 +30,27 @@
         sprite.width = sprite.height = 32;
         const context = sprite.getContext('2d');
         context.fillStyle = '#ffffff'; context.beginPath(); context.arc(16, 16, 12, 0, Math.PI * 2); context.fill();
-        const positions = [];
-        for (const [a, b] of model.edges) {
-            const start = model.nodes[a], end = model.nodes[b];
-            const count = Math.ceil(Math.hypot(end.x - start.x, end.z - start.z) / 2.5);
-            for (let i = 0; i < count; i++) {
-                const x = start.x + (end.x - start.x) * i / count, z = start.z + (end.z - start.z) * i / count;
-                positions.push(x, LunarTerrain.sampleSurface(surface, x, z) + 0.08, z);
-            }
-        }
         const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-        trail.add(new THREE.Points(geometry, new THREE.PointsMaterial({ color: 0xdfb889, map: new THREE.CanvasTexture(sprite), size: 0.22, transparent: true, opacity: 0.7, depthWrite: false, alphaTest: 0.1 })));
+        const MAX_DOTS = 256;
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(MAX_DOTS * 3), 3));
+        const trailPoints = new THREE.Points(geometry, new THREE.PointsMaterial({ color: 0xdfb889, map: new THREE.CanvasTexture(sprite), size: 0.22, transparent: true, opacity: 0.7, depthWrite: false, alphaTest: 0.1 }));
+        trailPoints.frustumCulled = false;
+        trail.add(trailPoints);
+        function layTrail(body, target, guidance) {
+            const attribute = geometry.getAttribute('position');
+            let count = 0;
+            const waypoints = guidance.path.concat([{ x: target.x, z: target.z }]);
+            for (let i = 0; i < waypoints.length - 1 && count < MAX_DOTS; i++) {
+                const start = waypoints[i], end = waypoints[i + 1];
+                const steps = Math.max(1, Math.ceil(Math.hypot(end.x - start.x, end.z - start.z) / 2.5));
+                for (let j = 0; j < steps && count < MAX_DOTS; j++) {
+                    const x = start.x + (end.x - start.x) * j / steps, z = start.z + (end.z - start.z) * j / steps;
+                    attribute.setXYZ(count++, x, terrainModule.sampleSurface(surface, x, z) + 0.08, z);
+                }
+            }
+            geometry.setDrawRange(0, count);
+            attribute.needsUpdate = true;
+        }
         const text = key => copy[language][key];
         const isOpen = () => $('discovery-dialog').open;
         function journal() {
@@ -69,7 +79,7 @@
             trail.visible = active;
             if (!active || !body) { $('discovery-pin').hidden = true; return; }
             camera.updateMatrixWorld();
-            pinPosition.set(target.x, LunarTerrain.sampleSurface(surface, target.x, target.z) + target.markerHeight, target.z).project(camera);
+            pinPosition.set(target.x, terrainModule.sampleSurface(surface, target.x, target.z) + target.markerHeight, target.z).project(camera);
             const x = (pinPosition.x * 0.5 + 0.5) * innerWidth, y = (-pinPosition.y * 0.5 + 0.5) * innerHeight;
             $('discovery-pin').hidden = pinPosition.z < -1 || pinPosition.z > 1 || x < 35 || x > innerWidth - 35 || y < 150 || y > innerHeight - 170;
             $('discovery-pin').style.transform = `translate(${x}px, ${y}px) translate(-50%, -100%)`;
@@ -78,6 +88,7 @@
             const distance = Math.hypot(body.x - target.x, body.z - target.z);
             const near = model.canDiscover(body, selected), recorded = found.includes(target.id);
             const guidance = model.guidance(body, selected);
+            layTrail(body, target, guidance);
             const bearing = Math.atan2(guidance.x - body.x, -(guidance.z - body.z)) + camera.rotation.y;
             $('route-arrow').style.transform = `rotate(${bearing}rad)`;
             $('route-distance').textContent = near ? text('ready') : `${Math.ceil(Math.max(distance, guidance.distance))} ${text('away')}`;

@@ -32,11 +32,17 @@ The scene is not a real-time model of the current Solar System. It does not calc
 
 ## Moon surface expedition
 
-https://www.3dsolarsystem.net/moon.html is a separate first-person lunar exploration experience. Visitors can walk with WASD or arrow keys, jump with Space, follow a guided route, and record five discoveries using E or a touch-friendly button — three are served by quick travel, two can only be reached on foot. Walking leaves footprints and landing kicks up ballistic dust. A helmet visor frame and optional suit-internal sounds (breathing, footfalls, radio chime; M toggles) frame the view. Pressing G compares Earth gravity (9.8 m/s²) with lunar gravity using the same takeoff push. The featured rock can be rotated in a specimen viewer. Photo mode pauses movement and exports a PNG.
+https://www.3dsolarsystem.net/moon.html is a separate first-person lunar exploration experience. Visitors can walk with WASD or arrow keys, jump with Space, follow a guided route, and record five discoveries using E or a touch-friendly button — three are served by quick travel, two can only be reached on foot. Walking leaves footprints and landing kicks up ballistic dust. A helmet visor frame and optional suit-internal sounds (footfalls, life-support hum, radio chime; M toggles) frame the view. Pressing G compares Earth gravity (9.8 m/s²) with lunar gravity using the same takeoff push. The featured rock can be rotated in a specimen viewer. Photo mode pauses movement and exports a PNG.
 
 The scene is a science-inspired artistic reconstruction, not a scan of a real landing site or an identified rock sample. Jump gravity is 1.62 m/s²; takeoff strength, walking pace, and camera motion are experience settings rather than a full spacesuit simulation. Earth's placement and apparent size are artistically composed.
 
 Discovery progress is stored locally in the visitor's browser when storage is available. No account or AI API access is required. The initial interface is English, with an optional Chinese interface. Terrain detail can be adjusted for device performance.
+
+## Mars surface expedition
+
+https://www.3dsolarsystem.net/mars-expedition.html is a separate first-person Martian exploration experience built on the same engine as the Moon expedition. Visitors walk with WASD or arrow keys, jump with Space, follow a guided route, and record five discoveries using E or a touch-friendly button — three are served by quick travel, two can only be reached on foot. Walking leaves boot prints and landing kicks up dust; mostly a deep silence prevails, broken by an occasional faint synthesized gust, matching what Perseverance's microphones recorded. Pressing G compares Earth gravity (9.8 m/s²) with Martian gravity (3.71 m/s²) using the same takeoff push. The butterscotch sky, dust haze, blue-tinged solar halo, layered mesa, dune field, and weather-mast prop are artistic reconstructions informed by rover imagery, not survey data.
+
+Discovery progress is stored locally in the visitor's browser when storage is available. No account or AI API access is required. The initial interface is English, with an optional Chinese interface.
 
 ## Data shown
 

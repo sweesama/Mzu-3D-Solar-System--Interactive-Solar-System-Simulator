@@ -10,6 +10,7 @@
 - [Earth](https://www.3dsolarsystem.net/earth.html)
 - [Moon expedition](https://www.3dsolarsystem.net/moon.html): Walk and jump through an artistic lunar landscape leaving footprints, discover five observation points, inspect a 3D rock, and keep a journal in your browser.
 - [Mars](https://www.3dsolarsystem.net/mars.html)
+- [Mars expedition](https://www.3dsolarsystem.net/mars-expedition.html): Walk and jump through an artistic Martian plain in lighter gravity, discover five observation points including dunes and layered rock, inspect a 3D specimen, and keep a journal in your browser.
 - [Jupiter](https://www.3dsolarsystem.net/jupiter.html)
 - [Saturn](https://www.3dsolarsystem.net/saturn.html)
 - [Uranus](https://www.3dsolarsystem.net/uranus.html)

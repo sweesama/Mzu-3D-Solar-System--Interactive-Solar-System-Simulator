@@ -74,6 +74,7 @@
         // Camera Tracking Variables
         let trackedObject = null;
         let isTransitioningCamera = false;
+        const ORBIT_SPEED_MULTIPLIER = 2.5; // 与 animate() 中的轨道速度倍率保持一致
         let animationFrameId = null;
         // ✨ Phase 3.x：保存当前活跃的相机 tween 引用，新点击时主动清除，避免新旧 tween 争夺 camera.position
         let activeCameraTweens = [];
@@ -417,10 +418,23 @@ self.onmessage = function(e) {
             window.addEventListener('pointerdown', onPointerDown, false);
             window.addEventListener('pointerup', onPointerUp, false);
 
+            const focusName = pageParameters.get('focus');
+            let focusHandled = false;
+            if (focusName) {
+                // 动画循环还没开始，天体的轨道位置尚未写入，先全部摆到初始位置再聚焦
+                celestialObjects.forEach(updateOrbitalPosition);
+                const target = celestialObjects.find(object => object.displayName && object.displayName.toLowerCase() === focusName.toLowerCase())
+                    || (focusName.toLowerCase() === 'sun' && sun && sun.userData && sun.userData.displayName ? { mesh: sun } : null);
+                if (target && target.mesh && target.mesh.userData && target.mesh.userData.displayName) {
+                    selectObject(target.mesh, target.mesh.userData);
+                    focusHandled = true;
+                }
+            }
+
             console.log("太阳系模拟初始化完成 (动态小行星带, 增强柯伊伯带, 精确数据字段, 矮行星系统)。");
             updateProgress("Initialization Complete!", 100);
             
-            if (window.INITIAL_PLANET) {
+            if (window.INITIAL_PLANET && !focusHandled) {
                 focusCelestialObject(window.INITIAL_PLANET, {
                     updateUrl: false,
                     duration: 2000,
@@ -2343,6 +2357,17 @@ self.onmessage = function(e) {
 
                     moonOrbitPivot.add(moonMesh);
 
+                    // 卫星体积小、移动快，加一个小号透明点击辅助球（挂在 moonMesh 上随它移动），
+                    // 半径限制在轨道半径的 35% 以内，避免遮住行星或相邻卫星的点击
+                    const moonHitRadius = Math.min(Math.max(moonVisualRadius * 6, 0.15), (moonData.orbitRadius || 1) * 0.35);
+                    const moonHitMesh = new THREE.Mesh(
+                        new THREE.SphereGeometry(moonHitRadius, 8, 8),
+                        new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false, side: THREE.FrontSide })
+                    );
+                    moonHitMesh.userData = moonData;
+                    moonHitMesh.name = moonData.name + '_hitzone';
+                    moonMesh.add(moonHitMesh);
+
                     celestialObjects.push({
                         isMoon: true,
                         mesh: moonMesh,
@@ -3320,41 +3345,7 @@ self.onmessage = function(e) {
             pointerDownPosition.y = event.clientY;
         }
 
-        function onPointerUp(event) { // Updated to show more specific data
-            // Ignore if it's a drag (10px tolerance)
-            const deltaX = Math.abs(event.clientX - pointerDownPosition.x);
-            const deltaY = Math.abs(event.clientY - pointerDownPosition.y);
-            if (deltaX > 10 || deltaY > 10) return;
-
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(scene.children, true);
-
-            // Try all intersected objects, not just the first, to find one with displayName
-            let clickedObjectData = null;
-            let tempObj = null;
-            
-            for (let ii = 0; ii < Math.min(intersects.length, 10); ii++) {
-                let candidate = intersects[ii].object;
-                while (candidate && candidate !== scene) {
-                    if (candidate.name === 'sunGlowSprite' || (candidate.parent && candidate.parent.type === 'Lensflare')) {
-                        candidate = null; // skip glow/lens
-                        break;
-                    }
-                    if (candidate.userData && candidate.userData.displayName) {
-                        clickedObjectData = candidate.userData;
-                        tempObj = candidate;
-                        break;
-                    }
-                    candidate = candidate.parent;
-                }
-                if (clickedObjectData) break;
-            }
-
-                if (clickedObjectData) {
-                    const data = clickedObjectData;
+        function selectObject(tempObj, data, options = {}) {
                     document.getElementById('info-title').innerText = data.displayName;
                     document.getElementById('info-name').innerText = `Name: ${data.displayName}`;
                     document.getElementById('info-type').innerText = `Type: ${data.type || 'Unknown'}`;
@@ -3402,6 +3393,16 @@ self.onmessage = function(e) {
                         tempObj.userData._lastPos = targetPosition.clone();
                     }
 
+                    // 找到对应的天体条目，预测 1.5 秒（镜头飞行时长）后的位置作为瞄准点
+                    let aimPosition = targetPosition;
+                    let entryMesh = tempObj;
+                    const isEntryNode = node => celestialObjects.some(o => o.mesh === node || o.axialTiltGroup === node);
+                    while (entryMesh && !isEntryNode(entryMesh)) entryMesh = entryMesh.parent;
+                    const targetEntry = entryMesh ? celestialObjects.find(o => o.mesh === entryMesh || o.axialTiltGroup === entryMesh) : null;
+                    if (targetEntry && targetEntry.pivot) {
+                        aimPosition = predictWorldPosition(targetEntry, 1.5);
+                    }
+
                     // ✨ Phase 3.x：先停掉旧 tween，避免新旧 tween 同时改 camera.position 互相打架
                     // （之前点击太阳偶尔进入太阳内部就是这个 bug 导致的）
                     activeCameraTweens.forEach(t => t.stop());
@@ -3424,7 +3425,7 @@ self.onmessage = function(e) {
                     const offset = camera.position.clone().sub(controls.target).normalize();
                     if (offset.length() < 0.1) offset.set(0, 0, 1);
                     offset.multiplyScalar(distance);
-                    const newCamPos = targetPosition.clone().add(offset);
+                    const newCamPos = aimPosition.clone().add(offset);
 
                     const camTween = new TWEEN.Tween(camera.position)
                         .to({ x: newCamPos.x, y: newCamPos.y, z: newCamPos.z }, 1500)
@@ -3433,15 +3434,80 @@ self.onmessage = function(e) {
                         .start();
 
                     const targetTween = new TWEEN.Tween(controls.target)
-                        .to({ x: targetPosition.x, y: targetPosition.y, z: targetPosition.z }, 1500)
+                        .to({ x: aimPosition.x, y: aimPosition.y, z: aimPosition.z }, 1500)
                         .easing(TWEEN.Easing.Quadratic.InOut)
                         .start();
 
                     activeCameraTweens.push(camTween, targetTween);
+        }
 
-                } else {
-                    // 点击空白处，不做处理
+        function onPointerUp(event) { // Updated to show more specific data
+            // Ignore if it's a drag (10px tolerance)
+            const deltaX = Math.abs(event.clientX - pointerDownPosition.x);
+            const deltaY = Math.abs(event.clientY - pointerDownPosition.y);
+            if (deltaX > 10 || deltaY > 10) return;
+
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            // 先过滤掉轨道圆环（isMoonOrbit/isPlanetOrbit），否则聚焦状态下圆环会把前 10 个命中名额占满，点击永远落空
+            const intersects = raycaster.intersectObjects(scene.children, true)
+                .filter(hit => !(hit.object.userData && (hit.object.userData.isMoonOrbit || hit.object.userData.isPlanetOrbit)));
+
+            // 瞄准精度评分：射线离天体中心越近（相对它的点击半径）越优先。
+            // 这样点到卫星旁边的小目标时，不会被行星的大体积/大辅助球抢先。
+            let clickedObjectData = null;
+            let tempObj = null;
+            let bestScore = Infinity;
+            let beltPick = null;
+            const pickCenter = new THREE.Vector3();
+
+            for (let ii = 0; ii < Math.min(intersects.length, 20); ii++) {
+                const hitObject = intersects[ii].object;
+                let candidate = hitObject;
+                let zoneRadius = 0;
+                while (candidate && candidate !== scene) {
+                    if (candidate.name === 'sunGlowSprite' || (candidate.parent && candidate.parent.type === 'Lensflare')) {
+                        candidate = null; // skip glow/lens
+                        break;
+                    }
+                    // 透明点击辅助球：相机在球内时跳过，否则聚焦状态下每次点击都会先命中它、镜头被拉回当前天体
+                    if (candidate.name && candidate.name.endsWith('_hitzone')) {
+                        zoneRadius = (candidate.geometry && candidate.geometry.parameters) ? candidate.geometry.parameters.radius : 0;
+                        candidate.getWorldPosition(pickCenter);
+                        if (camera.position.distanceTo(pickCenter) < zoneRadius) {
+                            candidate = null;
+                            break;
+                        }
+                    }
+                    if (candidate.userData && candidate.userData.displayName) break;
+                    candidate = candidate.parent;
                 }
+                if (!candidate || !candidate.userData || !candidate.userData.displayName) continue;
+
+                // 小行星带/柯伊伯带的粒子点没有明确"中心"，只在没有更好候选时兜底
+                if (hitObject.isPoints) {
+                    if (!beltPick) beltPick = { mesh: candidate, data: candidate.userData };
+                    continue;
+                }
+
+                candidate.getWorldPosition(pickCenter);
+                const clickRadius = Math.max(zoneRadius || candidate.userData.radius || 1, 0.05);
+                const score = raycaster.ray.distanceSqToPoint(pickCenter) / (clickRadius * clickRadius);
+                if (score < bestScore) {
+                    bestScore = score;
+                    tempObj = candidate;
+                    clickedObjectData = candidate.userData;
+                }
+            }
+
+            if (!clickedObjectData && beltPick) {
+                tempObj = beltPick.mesh;
+                clickedObjectData = beltPick.data;
+            }
+
+            if (clickedObjectData) selectObject(tempObj, clickedObjectData);
         }
 
         function applyRendererPixelRatio() {
@@ -3517,6 +3583,49 @@ self.onmessage = function(e) {
  
         }
 
+        // 快进预测某个天体 secondsAhead 秒后的世界坐标（算完立即还原，不影响真实状态）。
+        // 用于镜头飞行终点：瞄准"目标将要到达的位置"，否则飞卫星这类快目标时落点总是落后。
+        function predictWorldPosition(entry, secondsAhead) {
+            const savedRotations = celestialObjects.map(o => o.pivot.rotation.y);
+            celestialObjects.forEach(o => {
+                o.pivot.rotation.y += o.speed * secondsAhead * ORBIT_SPEED_MULTIPLIER;
+                updateOrbitalPosition(o);
+            });
+            const pos = new THREE.Vector3();
+            entry.mesh.getWorldPosition(pos);
+            celestialObjects.forEach((o, i) => {
+                o.pivot.rotation.y = savedRotations[i];
+                updateOrbitalPosition(o);
+            });
+            return pos;
+        }
+
+        // 根据 pivot 的轨道角度把一个天体摆到当前轨道位置上（animate 每帧调用，初始化聚焦前也会先用一次）
+        function updateOrbitalPosition(obj) {
+            const M = obj.pivot.rotation.y; // Mean Anomaly
+            const e = obj.eccentricity || 0;
+            const a = obj.orbitRadius; // Scene orbit radius
+
+            let r = a; // Distance from focus (sun/parent)
+            let M_wrapped = M % (2 * Math.PI);
+            if (M_wrapped < 0) M_wrapped += 2 * Math.PI;
+            let trueAnomaly = M_wrapped;
+
+            if (e > 0.0001) {
+                let E = M_wrapped; // Eccentric Anomaly
+                for (let i = 0; i < 7; i++) { E = M_wrapped + e * Math.sin(E); }
+                r = a * (1 - e * Math.cos(E));
+                trueAnomaly = 2 * Math.atan2(Math.sqrt(1 + e) * Math.sin(E / 2), Math.sqrt(1 - e) * Math.cos(E / 2));
+            }
+
+            // 真实物理还原：由于 pivot 随着 M 旋转，我们算出基于焦点真实极坐标的偏差来放置对象
+            const positionedObject = obj.axialTiltGroup || obj.mesh;
+            if (positionedObject) {
+                positionedObject.position.x = r * Math.cos(trueAnomaly - M);
+                positionedObject.position.z = -r * Math.sin(trueAnomaly - M);
+            }
+        }
+
         function animate(frameTimestamp = performance.now()) { /* ... NO CHANGE in core logic, but relies on correct celestialObjects data ... */
             if (document.hidden) {
                 animationFrameId = null;
@@ -3535,33 +3644,11 @@ self.onmessage = function(e) {
                 shaderUniforms.time.value = elapsedTime;
             }
 
-            const baseOrbitSpeedMultiplier = 2.5;
             const baseRotationSpeedMultiplier = 2;
 
             celestialObjects.forEach(obj => {
-                obj.pivot.rotation.y += obj.speed * delta * baseOrbitSpeedMultiplier;
-                const M = obj.pivot.rotation.y; // Mean Anomaly
-                const e = obj.eccentricity || 0;
-                const a = obj.orbitRadius; // Scene orbit radius
-
-                let r = a; // Distance from focus (sun/parent)
-                let M_wrapped = M % (2 * Math.PI);
-                if (M_wrapped < 0) M_wrapped += 2 * Math.PI;
-                let trueAnomaly = M_wrapped;
-
-                if (e > 0.0001) {
-                    let E = M_wrapped; // Eccentric Anomaly
-                    for (let i = 0; i < 7; i++) { E = M_wrapped + e * Math.sin(E); }
-                    r = a * (1 - e * Math.cos(E));
-                    trueAnomaly = 2 * Math.atan2(Math.sqrt(1 + e) * Math.sin(E / 2), Math.sqrt(1 - e) * Math.cos(E / 2));
-                }
-                
-                // 真实物理还原：由于 pivot 随着 M 旋转，我们算出基于焦点真实极坐标的偏差来放置对象
-                const positionedObject = obj.axialTiltGroup || obj.mesh;
-                if (positionedObject) {
-                    positionedObject.position.x = r * Math.cos(trueAnomaly - M);
-                    positionedObject.position.z = -r * Math.sin(trueAnomaly - M);
-                }
+                obj.pivot.rotation.y += obj.speed * delta * ORBIT_SPEED_MULTIPLIER;
+                updateOrbitalPosition(obj);
 
 
                 if (obj.mesh) { // Self-rotation
