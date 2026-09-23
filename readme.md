@@ -109,6 +109,17 @@ The public page is `https://www.3dsolarsystem.net/mars-expedition.html` (the nam
 - Five discoveries — layered mesa, basalt boulder (3D specimen viewer), dune field, weather mast, degraded crater rim. The weather mast and crater are on foot only. Progress saves under `mzu-mars-discoveries-v1`.
 - Files mirror the lunar set: `mars-expedition.html`, `mars.js`, `mars-terrain.js`, `mars-expedition.js`, `mars-audio.js`. `moon-discoveries.js` and `moon.css` are shared — the discoveries module accepts optional `expedition`, `terrain`, and `strings` parameters.
 
+## Venus expedition
+
+The public page is `https://www.3dsolarsystem.net/venus-expedition.html` (the name avoids colliding with the existing `venus.html` orbital detail page). It is listed in `sitemap.xml`, linked from the homepage and generated planet pages, and carries the same indexable metadata as the other expeditions.
+
+- The same first-person engine, retuned for Venus: gravity is **8.87 m/s²** (G toggles Earth's 9.8 m/s²) — about 91% of Earth, so the 2.6 m/s takeoff gives roughly a 0.38-metre hop, almost like home. That similarity is itself a discovery.
+- The environment differs deliberately: Venus has no visible sky — thick sulfuric-acid clouds admit only a dim, directionless amber glow where the Sun stands. Distance fog is dense and orange; visibility is short. Terrain is volcanic, not cratered: fractured basalt slabs, a lava channel, a pancake dome, and ridged tessera-like highlands, inspired by Venera surface photos and Magellan radar maps.
+- Audio differs too: a 92-atmosphere CO₂ sky carries sound far better than Mars — a low continuous rumble, slow heavy wind-pressure swells, and rare muffled thunder. Thunder events drive a brief lightning brightening of the cloud deck through an `onThunder` hook.
+- The sky has no moons and no other bodies — Venus has no moons and the overcast hides everything. Only the Sun's brighter patch of haze is clickable; it links back to `index.html?focus=Sun`.
+- Five discoveries — basalt slab field, Venera-13-inspired lander, lava channel, pancake dome, tessera highland. The pancake dome and tessera highland are on foot only. Progress saves under `mzu-venus-discoveries-v1`.
+- Files mirror the other expeditions: `venus-expedition.html`, `venus.js`, `venus-terrain.js`, `venus-expedition.js`, `venus-audio.js`. `moon-discoveries.js` and `moon.css` remain shared.
+
 After changes, run:
 
 ```bash
@@ -123,6 +134,10 @@ node --check mars.js
 node --check mars-terrain.js
 node --check mars-expedition.js
 node --check mars-audio.js
+node --check venus.js
+node --check venus-terrain.js
+node --check venus-expedition.js
+node --check venus-audio.js
 ```
 
 Route verification includes both directions of every route segment at all three terrain detail levels, distant/airborne discovery rejection, duplicate prevention, and invalid saved-data handling. Browser checks should cover walking the complete route with scene obstacles, specimen rotation/zoom, quick-travel without automatic progress, refresh persistence, storage-disabled fallback, and touch discovery controls.

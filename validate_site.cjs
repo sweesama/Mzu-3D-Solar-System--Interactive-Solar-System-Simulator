@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const root = __dirname;
-const pages = ['index', 'mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'moon', 'mars-expedition'];
+const pages = ['index', 'mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'moon', 'mars-expedition', 'venus-expedition'];
 const errors = [];
 const titles = new Set();
 const canonicals = new Set();
@@ -127,6 +127,65 @@ for (const segments of [192, 288, 384]) {
 }
 const marsDirection = marsExpedition.guidance({ x: 0, z: 6 }, 0);
 assert.ok(marsDirection.distance > 0 && Number.isFinite(marsDirection.x));
+const venus = loadBrowserModule('venus-terrain.js', 'VenusTerrain');
+assert.equal(venus.GRAVITY, 8.87);
+assert.equal(venus.noise(12.5, -9.1), venus.noise(12.5, -9.1));
+const venusSurface = venus.createSurface(960, 192);
+for (const [x, z] of [[0, 6], [-70, -50], [60, 90], [-40, 130], [110, -80], [300, 0]]) {
+  assert.ok(Number.isFinite(venus.sampleSurface(venusSurface, x, z)), 'Venus terrain must have finite heights');
+}
+const venusJumper = venus.createWalker(flat, { x: 0, z: 0 });
+venus.updateWalker(flat, venusJumper, { jump: true }, 0.5, []);
+assert.ok(Math.abs(venusJumper.y - (venus.JUMP_SPEED * 0.5 - 0.5 * venus.GRAVITY * 0.5 ** 2)) < 1e-9, 'Venus jump must follow a ballistic arc in metres');
+for (let i = 0; i < 240; i++) venus.updateWalker(flat, venusJumper, {}, 1 / 60, []);
+assert.equal(venusJumper.grounded, true, 'Venus landing must settle on the terrain');
+const venusAudio = loadBrowserModule('venus-audio.js', 'VenusAudio');
+const silentVenusAudio = venusAudio.create();
+assert.equal(typeof silentVenusAudio.start, 'function');
+silentVenusAudio.step(1); silentVenusAudio.jump(); silentVenusAudio.land(1); silentVenusAudio.chime(); silentVenusAudio.setEnabled(false);
+const venusExpedition = loadBrowserModule('venus-expedition.js', 'VenusExpedition');
+assert.equal(venusExpedition.discoveries.length, 5);
+assert.equal(venusExpedition.parseProgress('not-json').length, 0);
+assert.equal(venusExpedition.parseProgress('["invalid"]').length, 0);
+assert.equal(venusExpedition.parseProgress(JSON.stringify([venusExpedition.discoveries[0].id])).length, 1);
+for (const [index, discovery] of venusExpedition.discoveries.entries()) {
+  assert.ok(venusExpedition.canDiscover({ x: discovery.x, z: discovery.z, grounded: true }, index), `Venus discovery ${discovery.id} must be discoverable at its coordinates`);
+  assert.equal(venusExpedition.canDiscover({ x: discovery.x, z: discovery.z, grounded: false }, index), false);
+}
+assert.equal(venusExpedition.canDiscover({ x: 0, z: 6, grounded: true }, 0), venusExpedition.discoveries[0].radius >= Math.hypot(0 - venusExpedition.discoveries[0].x, 6 - venusExpedition.discoveries[0].z));
+for (const segments of [192, 288, 384]) {
+  const routeSurface = venus.createSurface(960, segments);
+  for (const [from, to] of venusExpedition.edges) {
+    const a = venusExpedition.nodes[from], b = venusExpedition.nodes[to];
+    for (const [start, end] of [[a, b], [b, a]]) {
+      const distance = Math.hypot(end.x - start.x, end.z - start.z);
+      let p = start;
+      for (let d = 0; d < distance; d += 0.25) {
+        const fraction = Math.min(1, (d + 0.25) / distance);
+        const next = { x: start.x + (end.x - start.x) * fraction, z: start.z + (end.z - start.z) * fraction };
+        const actual = venus.move(routeSurface, p, next.x - p.x, next.z - p.z, []);
+        assert.ok(Math.hypot(actual.x - next.x, actual.z - next.z) < 0.001, `Venus route ${from}-${to} must be walkable at ${segments} segments`);
+        p = next;
+      }
+    }
+  }
+}
+const venusDirection = venusExpedition.guidance({ x: 0, z: 6 }, 0);
+assert.ok(venusDirection.distance > 0 && Number.isFinite(venusDirection.x));
+const venusHtml = fs.readFileSync(path.join(root, 'venus-expedition.html'), 'utf8');
+assert.match(venusHtml, /id="discover-button"/);
+assert.match(venusHtml, /id="discovery-dialog"/);
+assert.match(venusHtml, /venus-expedition\.js/);
+assert.match(venusHtml, /venus-terrain\.js/);
+assert.match(venusHtml, /venus-audio\.js/);
+assert.match(venusHtml, /moon-discoveries\.js/);
+assert.match(venusHtml, /venus\.js/);
+assert.match(venusHtml, /id="visor"/);
+assert.match(venusHtml, /id="gravity-button"/);
+assert.match(venusHtml, /id="touch-pad"/);
+assert.match(venusHtml, /id="return-orbit"/);
+assert.match(venusHtml, /index\.html\?focus=Venus/);
+assert.match(fs.readFileSync(path.join(root, 'index.html'), 'utf8'), /href="venus-expedition\.html"/);
 const marsHtml = fs.readFileSync(path.join(root, 'mars-expedition.html'), 'utf8');
 assert.match(marsHtml, /id="discover-button"/);
 assert.match(marsHtml, /id="discovery-dialog"/);
@@ -212,20 +271,23 @@ for (const page of pages) {
   }
   if (page === 'moon' && !/Moon/i.test(heading)) errors.push(`${file}: heading must identify the Moon expedition`);
   if (page === 'mars-expedition' && !/Mars/i.test(heading)) errors.push(`${file}: heading must identify the Mars expedition`);
+  if (page === 'venus-expedition' && !/Venus/i.test(heading)) errors.push(`${file}: heading must identify the Venus expedition`);
   if (/id="seo-content"|SEO Content for Crawlers|style="display:\s*none/i.test(html)) errors.push(`${file}: hidden crawler-only content found`);
   if (/GA_MEASUREMENT_ID|ca-pub-XXXXXXXXXX/i.test(html)) errors.push(`${file}: analytics or advertising placeholder found`);
   if (/\b(ultimate|professional-grade|smooth 60fps|ultra-realistic|therapeutic solar system)\b/i.test(html)) errors.push(`${file}: unsupported marketing claim found`);
-  if (page !== 'moon' && page !== 'mars-expedition' && !/data-focus="Mercury"[\s\S]*data-focus="Neptune"/i.test(html)) errors.push(`${file}: planet navigation is incomplete`);
-  const qualityId = page === 'moon' || page === 'mars-expedition' ? 'moon-quality' : 'quality-select';
+  const isExpedition = page === 'moon' || page === 'mars-expedition' || page === 'venus-expedition';
+  if (!isExpedition && !/data-focus="Mercury"[\s\S]*data-focus="Neptune"/i.test(html)) errors.push(`${file}: planet navigation is incomplete`);
+  const qualityId = isExpedition ? 'moon-quality' : 'quality-select';
   if (!new RegExp(`<select id="${qualityId}"[\\s\\S]*value="auto"[\\s\\S]*value="high"[\\s\\S]*value="balanced"[\\s\\S]*value="low"`, 'i').test(html)) {
     errors.push(`${file}: accessible quality selector is incomplete`);
   }
-  const engine = page === 'moon' ? 'moon' : page === 'mars-expedition' ? 'mars' : 'main';
+  const engine = page === 'moon' ? 'moon' : page === 'mars-expedition' ? 'mars' : page === 'venus-expedition' ? 'venus' : 'main';
   if (!new RegExp(`<script src="quality-policy\\.js"></script>[\\s\\S]*<script src="${engine}\\.js"></script>`, 'i').test(html)) {
     errors.push(`${file}: quality policy must load before the scene engine`);
   }
-  if (page !== 'moon' && page !== 'mars-expedition' && !/href="moon\.html"/.test(html)) errors.push(`${file}: missing Moon expedition link`);
-  if (page !== 'moon' && page !== 'mars-expedition' && !/href="mars-expedition\.html"/.test(html)) errors.push(`${file}: missing Mars expedition link`);
+  if (!isExpedition && !/href="moon\.html"/.test(html)) errors.push(`${file}: missing Moon expedition link`);
+  if (!isExpedition && !/href="mars-expedition\.html"/.test(html)) errors.push(`${file}: missing Mars expedition link`);
+  if (!isExpedition && !/href="venus-expedition\.html"/.test(html)) errors.push(`${file}: missing Venus expedition link`);
 
   const jsonLd = capture(html, /<script id="app-structured-data" type="application\/ld\+json">([\s\S]*?)<\/script>/i, 'structured data', file);
   if (jsonLd) {

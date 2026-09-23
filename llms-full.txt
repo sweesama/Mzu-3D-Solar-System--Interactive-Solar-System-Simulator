@@ -13,6 +13,7 @@ The scene is not a real-time model of the current Solar System. It does not calc
 - Home explorer: https://www.3dsolarsystem.net/
 - Mercury: https://www.3dsolarsystem.net/mercury.html
 - Venus: https://www.3dsolarsystem.net/venus.html
+- Venus expedition: https://www.3dsolarsystem.net/venus-expedition.html
 - Earth: https://www.3dsolarsystem.net/earth.html
 - Mars: https://www.3dsolarsystem.net/mars.html
 - Jupiter: https://www.3dsolarsystem.net/jupiter.html
@@ -41,6 +42,12 @@ Discovery progress is stored locally in the visitor's browser when storage is av
 ## Mars surface expedition
 
 https://www.3dsolarsystem.net/mars-expedition.html is a separate first-person Martian exploration experience built on the same engine as the Moon expedition. Visitors walk with WASD or arrow keys, jump with Space, follow a guided route, and record five discoveries using E or a touch-friendly button — three are served by quick travel, two can only be reached on foot. Walking leaves boot prints and landing kicks up dust; mostly a deep silence prevails, broken by an occasional faint synthesized gust, matching what Perseverance's microphones recorded. Pressing G compares Earth gravity (9.8 m/s²) with Martian gravity (3.71 m/s²) using the same takeoff push. The butterscotch sky, dust haze, blue-tinged solar halo, layered mesa, dune field, and weather-mast prop are artistic reconstructions informed by rover imagery, not survey data.
+
+Discovery progress is stored locally in the visitor's browser when storage is available. No account or AI API access is required. The initial interface is English, with an optional Chinese interface.
+
+## Venus surface expedition
+
+https://www.3dsolarsystem.net/venus-expedition.html is a separate first-person Venusian exploration experience built on the same engine as the Moon and Mars expeditions. Visitors walk with WASD or arrow keys, jump with Space, follow a guided route, and record five discoveries using E or a touch-friendly button — three are served by quick travel, two can only be reached on foot. Pressing G compares Earth gravity (9.8 m/s²) with Venusian gravity (8.87 m/s²) — about 91% of Earth, so a jump feels almost like home. The dense orange sky hides the Sun except for a brighter patch of haze; the volcanic terrain includes fractured basalt slabs, a lava channel, a pancake dome, and ridged tessera-like highlands. A Venera-13-inspired lander honours the Soviet probes that photographed the surface. The dense atmosphere carries a low rumble, slow heavy wind swells, and rare muffled thunder paired with a brief brightening of the clouds. Terrain, props, and observation points are artistic reconstructions informed by Venera photos and Magellan radar maps, not survey data.
 
 Discovery progress is stored locally in the visitor's browser when storage is available. No account or AI API access is required. The initial interface is English, with an optional Chinese interface.
 

@@ -7,6 +7,7 @@
 - [Interactive explorer](https://www.3dsolarsystem.net/): Rotate, zoom, select objects, follow a planet tour, and share a focused view.
 - [Mercury](https://www.3dsolarsystem.net/mercury.html)
 - [Venus](https://www.3dsolarsystem.net/venus.html)
+- [Venus expedition](https://www.3dsolarsystem.net/venus-expedition.html): Walk and jump through an artistic volcanic plain under a crushing orange sky in near-Earth gravity, discover five observation points, inspect a 3D specimen, and keep a journal in your browser.
 - [Earth](https://www.3dsolarsystem.net/earth.html)
 - [Moon expedition](https://www.3dsolarsystem.net/moon.html): Walk and jump through an artistic lunar landscape leaving footprints, discover five observation points, inspect a 3D rock, and keep a journal in your browser.
 - [Mars](https://www.3dsolarsystem.net/mars.html)
