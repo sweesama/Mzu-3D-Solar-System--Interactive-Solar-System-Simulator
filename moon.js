@@ -18,7 +18,7 @@
             controlsText: 'You are exploring on foot as an astronaut. Walk with W A S D or the arrow keys; Shift gives a brisker pace. Press Space to jump, then wait to land before jumping again. Momentum carries you forward in the air. Drag to look, including down at your boots. Touchscreens have direction and Jump buttons. G compares Earth gravity; M toggles suit sounds. H hides notes; P opens photo mode; Esc closes it.',
             scienceTitle: 'Science meets imagination', scienceText: "Impact craters, airless skies, subdued rock colors, and hard sunlight are inspired by lunar science. Terrain, rock placement, and observation points are procedural art, not survey data. Earth's apparent size and placement are composed for this scene, not calculated for a real date or location.",
             soundText: "In this near vacuum there is no wind to hear; the sounds come from inside the suit — a quiet life-support hum, footfalls conducted through the body, and a radio chime for each discovery. Jumps use a constant lunar surface gravity of 1.62 m/s²; press G to feel Earth's 9.8 m/s² with the same takeoff push. The chosen 1.8 m/s takeoff gives about 1 metre of rise and 2.2 seconds in the air on level ground. Pace, takeoff strength, and camera motion are comfort settings, not a full spacesuit simulation.",
-            assetText: "Earth imagery: Solar System Scope, CC BY 4.0, using the site's existing textures. Lunar terrain and rock textures are generated locally in your browser.",
+            assetText: "Earth imagery: Solar System Scope, CC BY 4.0, using the site's existing textures. Boulder and lunar module models: NASA 3D Resources. Terrain and scatter textures are generated locally in your browser.",
             featuresTitle: 'What you are seeing', features: [
                 ['Glass-bead soil', 'The regolith glints — Apollo crews called the soil "sparkly". Watch for bright specks near your boots.'],
                 ['Micro-craters', 'The ground is peppered with centimetre-scale pits from endless micrometeorite rain.'],
@@ -33,7 +33,7 @@
                 ['A history of impacts', 'The raised rim and sunken bowl tell the same story: an impact scattered rock outward. Without wind or rain, these scars can remain for billions of years.', 'LANDSCAPE', 'Impact crater'],
                 ['Written in stone', 'Impacts break, scatter, and bury rock. Look closely at the angular boulders and the fine blanket of regolith beneath them. Nothing here is shaped by a breeze.', 'SURFACE', 'Rock & regolith'],
                 ['Everything we call home', 'From much of the near side, Earth stays in roughly the same part of the sky. The Moon turns once per orbit, keeping nearly the same face toward home.', 'ROTATION', 'Tidally locked'],
-                ['Listening to the Moon', 'Apollo crews left seismometers that recorded moonquakes and meteoroid impacts for years. This small station is an artistic prop honouring those instruments.', 'INSTRUMENT', 'Seismic station'],
+                ['Eagle has landed', 'Between 1969 and 1972, six Apollo crews landed on the Moon. Their lunar modules\u2019 descent stages still rest on the surface today. This module is a real model from NASA\u2019s 3D archive, placed here as a tribute.', 'SPACECRAFT', 'Lunar module'],
                 ['Where sunlight never rests', 'The bowl below holds pockets of deep shadow. Near the real lunar poles, some crater floors have not seen the Sun for billions of years — and may preserve water ice.', 'LIGHT', 'Shadowed hollow']
             ]
         },
@@ -49,7 +49,7 @@
             controlsText: '你是一位徒步探索的宇航员。W A S D 或方向键行走，Shift 快步，空格跳跃，落地后才能再次起跳。腾空时保留起跳时的水平惯性，不能像飞行器一样转向。拖动画面观察，也可以低头看看自己的靴子。触屏有方向按钮和跳跃键。G 对比地球重力，M 开关宇航服声音。H 隐藏手记，P 进入摄影，Esc 退出摄影。',
             scienceTitle: '科学与想象的交界', scienceText: '撞击坑、漆黑天空、低饱和度岩石和强烈日照来自月球科学常识。地形、岩石分布与观察点由程序创作，并非实测地形。地球在天空中的位置和视觉大小经过构图处理，不对应真实日期或坐标。',
             soundText: '接近真空的环境里没有风声；你听到的来自宇航服内部——维生风扇的低鸣、经身体传导的脚步，以及记录发现时的无线电提示音。跳跃使用月面平均重力 1.62 m/s²；按 G 可用相同的起跳力度感受地球 9.8 m/s² 的重力。设定的起跳速度为 1.8 m/s，在平地约跳高 1 米、腾空 2.2 秒。步速、起跳力度和镜头起伏经过舒适性设计，不是完整的宇航服物理模拟。',
-            assetText: '地球影像：Solar System Scope，CC BY 4.0，复用网站已有贴图。月面地形与岩石纹理由浏览器本地生成。',
+            assetText: '地球影像：Solar System Scope，CC BY 4.0，复用网站已有贴图。巨石与登月舱模型：NASA 三维模型库。地形与散布纹理由浏览器本地生成。',
             featuresTitle: '你眼前的景观', features: [
                 ['玻璃微珠月壤', '月壤会闪光——阿波罗宇航员形容它"亮晶晶的"。注意你靴边零星的光点。'],
                 ['微小撞击坑', '地面布满厘米级小坑，来自永不停歇的微陨石雨。'],
@@ -64,7 +64,7 @@
                 ['撞击留下的岁月', '隆起的边缘与下陷的坑底，记录着一次猛烈撞击。没有风雨侵蚀，这样的痕迹可以留存数十亿年。', '地貌类型', '撞击坑'],
                 ['石头里的故事', '撞击打碎、抛散并掩埋岩石。看看这些棱角分明的石块，以及覆盖地面的细碎月壤。这里没有微风雕刻的痕迹。', '地表组成', '岩石与月壤'],
                 ['我们称之为家园', '在月球正面许多地方，地球大致停留在天空的同一片区域。月球绕地球一周时也恰好自转一周，始终以近乎同一面朝向家园。', '自转特点', '潮汐锁定'],
-                ['倾听月球', '阿波罗宇航员留下的月震仪曾持续工作多年，记录月震与陨石撞击。这座小小的科考站是致敬那些仪器的艺术道具。', '仪器类型', '月震仪'],
+                ['鹰已着陆', '1969 至 1972 年间，六艘阿波罗登月舱降落月面，它们的下降级至今仍留在那里。这台登月舱是 NASA 公开模型库的真实三维模型，在此作为致敬摆放。', '航天器', '登月舱'],
                 ['阳光照不到的地方', '脚下的坑底藏着深深的阴影。在真实的月球两极，一些坑底数十亿年未见阳光——那里可能保存着水冰。', '光照特点', '阴影坑']
             ]
         }
@@ -708,6 +708,33 @@
         scene.add(station);
         obstacles.push({ x, z, radius: 1 });
     }
+    function loadSceneModel(url) {
+        return new Promise(resolve => {
+            if (!THREE.GLTFLoader) return resolve(null);
+            new THREE.GLTFLoader().load(url, gltf => resolve(gltf.scene), undefined, () => resolve(null));
+        });
+    }
+    async function buildLander() {
+        const x = 32, z = -60;
+        const model = await loadSceneModel('models/lunar-module.glb');
+        if (!model) { buildInstrument(); return; }
+        const box = new THREE.Box3().setFromObject(model);
+        const size = new THREE.Vector3();
+        box.getSize(size);
+        if (!size.y || !isFinite(size.y)) { buildInstrument(); return; }
+        model.scale.setScalar(7.2 / size.y);
+        box.setFromObject(model);
+        const center = new THREE.Vector3();
+        box.getCenter(center);
+        model.position.set(-center.x, -box.min.y + 0.02, -center.z);
+        model.traverse(o => { if (o.isMesh) o.castShadow = o.receiveShadow = true; });
+        const group = new THREE.Group();
+        group.add(model);
+        group.position.set(x, LunarTerrain.sampleSurface(surface, x, z), z);
+        group.rotation.y = 2.2;
+        scene.add(group);
+        obstacles.push({ x, z, radius: 4 });
+    }
     const rand = LunarTerrain.random(4451);
     function updateGravityButton() {
         $('gravity-button').textContent = t(gravity === LunarTerrain.GRAVITY ? 'gravityCompare' : 'gravityLunar');
@@ -998,7 +1025,7 @@
             buildRocks(texture, rockModels);
             buildAstronaut(texture);
             buildFootprints();
-            buildInstrument();
+            buildLander();
             walker = LunarTerrain.createWalker(surface, position);
             await buildSky();
             updateCamera();

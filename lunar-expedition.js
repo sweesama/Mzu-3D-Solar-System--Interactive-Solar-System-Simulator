@@ -8,7 +8,7 @@
         Object.freeze({ id: 'crater', x: -12, z: 6, radius: 4, node: 1, markerHeight: 1.4 }),
         Object.freeze({ id: 'boulder', x: -43, z: 13, radius: 9.5, node: 2, markerHeight: 4.5 }),
         Object.freeze({ id: 'earth', x: 110, z: 20, radius: 5, node: 7, markerHeight: 1.4 }),
-        Object.freeze({ id: 'station', x: 32, z: -60, radius: 5, node: 14, markerHeight: 1.9 }),
+        Object.freeze({ id: 'station', x: 32, z: -60, radius: 6, node: 14, markerHeight: 4.2 }),
         Object.freeze({ id: 'shadow', x: 141, z: -52, radius: 5, node: 16, markerHeight: 1.6 })
     ]);
     const nodes = Object.freeze([
