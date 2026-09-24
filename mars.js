@@ -39,7 +39,7 @@
                 ['Layers of deep time', 'The mesa wall ahead is banded like a sedimentary stack. On the real Mars, such layers record lakes, floods, and ash over billions of years.', 'LANDSCAPE', 'Layered mesa'],
                 ['Basalt under the dust', 'This dark boulder represents volcanic basalt — the rock beneath most Martian dust. Rotate it in the specimen viewer to inspect its texture.', 'SURFACE', 'Rock & regolith'],
                 ['The wind still works here', 'These dunes are shaped by real physics: thin air can still move sand. Martian dunes migrate a little every year.', 'ATMOSPHERE', 'Active dunes'],
-                ['A quiet weather mast', 'Orbiters and landers have measured Martian wind, temperature, and pressure for decades. This mast is an artistic prop honouring instruments like those on Viking and InSight.', 'INSTRUMENT', 'Weather mast'],
+                ['A rover at rest', 'Since 1997, NASA has driven five rovers across Mars. Perseverance landed in 2021 and still explores Jezero crater today. This rover is a real model from NASA\u2019s 3D archive, parked here as a tribute.', 'SPACECRAFT', 'Mars rover'],
                 ['A softened crater', 'Unlike the Moon, Mars craters erode — wind and dust soften their rims over time. Look into the bowl and compare it with lunar craters.', 'LANDSCAPE', 'Degraded crater']
             ]
         },
@@ -76,7 +76,7 @@
                 ['沉积的时光', '眼前的平顶山壁像一层层堆叠的沉积物。在真实的火星上，这样的岩层记录着湖泊、洪水与火山灰的数十亿年历史。', '地貌类型', '层状平顶山'],
                 ['尘埃下的玄武岩', '这块深色巨石代表火山玄武岩——火星尘埃之下最常见的岩石。可以在查看器中旋转它，观察表面质感。', '地表组成', '岩石与风化层'],
                 ['风仍在工作', '这些沙丘由真实的物理过程塑造：稀薄的空气依然能搬运沙粒。火星上的沙丘每年都在缓慢移动。', '大气作用', '活动沙丘'],
-                ['安静的气象站', '轨道器和着陆器数十年来一直在测量火星的风、温度和气压。这座气象桅杆是致敬海盗号、洞察号等仪器的艺术道具。', '仪器类型', '气象桅杆'],
+                ['歇脚的火星车', '1997 年至今，NASA 已有五辆火星车驶上火星。毅力号 2021 年着陆，至今仍在耶泽罗陨击坑工作。这辆火星车是 NASA 公开模型库的真实三维模型，在此作为致敬停放。', '航天器', '火星车'],
                 ['被磨平的环形山', '与月球不同，火星环形山会被侵蚀——风和尘埃随时间磨平坑缘。看看这个坑的坑底，和月球的环形山比较一下。', '地貌类型', '退化环形山']
             ]
         }
@@ -85,14 +85,14 @@
         en: {
             fieldRoute: 'YOUR FIELD ROUTE', allFound: 'All five discoveries are in your journal. Stay a little longer.', discover: 'Discover · E', review: 'Read again · E', chooseStop: 'Next stop', rotateRock: 'Drag or use arrow keys to rotate', continueRoute: 'Continue exploring', takePhoto: 'Frame a photograph', discoveryDisclaimer: 'This is an imagined site, not a surveyed landing site or an identified Martian sample.',
             savedHere: 'Journal saved on this device.', visitOnly: 'Journal kept for this visit only.', follow: 'Follow the amber guide dots', closeEnough: 'You are here. Press E or Discover.', landFirst: 'Land before recording a discovery.', approach: 'Walk closer to this discovery.', recorded: 'DISCOVERY RECORDED', journal: 'FROM YOUR FIELD JOURNAL', away: 'm to the stop', ready: 'Ready to discover', quick: 'Quick travel — discovery not automatic', unavailable: 'The 3D specimen viewer is unavailable.', routeHelp: 'Follow the amber guide dots and distance arrow. Walk up to a stop and press E or Discover to add it to your journal. The numbered buttons offer quick travel, not automatic discoveries. Guide dots are interface aids, not structures on Mars. H hides or restores the route card.',
-            teasers: ['Walk west to the layered mesa and look up at its banded wall.', 'Approach the dark boulder, then turn it around in the specimen viewer.', 'Enter the dune field and look for ripples shaped by Martian wind.', 'Walk south-east from arrival to find a small weather mast standing on the plain.', 'Hike east to the rim of a worn crater and look into its bowl.'],
-            details: ['Sedimentary layers like these form when water, wind, or ash deposits material over long periods. On Mars they record environments that changed over billions of years. This mesa is an artistic example, not a reconstruction of a named formation.', 'Beneath the red dust, much of the Martian surface is dark basalt from ancient volcanism. Rovers have studied such rocks up close. Shape alone cannot tell us this model’s composition or age. Rotate the representative rock to examine its surface.', 'Martian dunes migrate measurably — orbiters have photographed them shifting over years. Thin air still moves sand, just slowly and differently than on Earth. This field is an artistic arrangement.', 'Viking landers measured Martian weather starting in 1976; InSight tracked wind, pressure, and temperature until 2022. This mast honours those instruments; its readings are imagined, not real data.', 'Unlike lunar craters, Martian craters erode under wind and dust — rims soften and bowls fill over millions of years. This worn crater is a modest artistic echo of that process.']
+            teasers: ['Walk west to the layered mesa and look up at its banded wall.', 'Approach the dark boulder, then turn it around in the specimen viewer.', 'Enter the dune field and look for ripples shaped by Martian wind.', 'Walk south-east from arrival to find a Mars rover parked on the plain.', 'Hike east to the rim of a worn crater and look into its bowl.'],
+            details: ['Sedimentary layers like these form when water, wind, or ash deposits material over long periods. On Mars they record environments that changed over billions of years. This mesa is an artistic example, not a reconstruction of a named formation.', 'Beneath the red dust, much of the Martian surface is dark basalt from ancient volcanism. Rovers have studied such rocks up close. Shape alone cannot tell us this model’s composition or age. Rotate the representative rock to examine its surface.', 'Martian dunes migrate measurably — orbiters have photographed them shifting over years. Thin air still moves sand, just slowly and differently than on Earth. This field is an artistic arrangement.', 'Five NASA rovers have driven on Mars since 1997 — Sojourner, Spirit, Opportunity, Curiosity, and Perseverance, which landed in 2021 and still works in Jezero crater. This model comes from NASA\u2019s open 3D model archive; its placement on this plain is artistic, not a surveyed rover site.', 'Unlike lunar craters, Martian craters erode under wind and dust — rims soften and bowls fill over millions of years. This worn crater is a modest artistic echo of that process.']
         },
         zh: {
             fieldRoute: '你的探索路线', allFound: '五个发现都已记入手记。不妨再多停留一会儿。', discover: '记录发现 · E', review: '重读手记 · E', chooseStop: '换一站', rotateRock: '拖动或使用方向键旋转岩石', continueRoute: '继续探索', takePhoto: '构图拍照', discoveryDisclaimer: '这是虚构场景，并非真实着陆点测绘，也不是已鉴定的火星样本。',
             savedHere: '手记已保存在此设备。', visitOnly: '手记仅在本次浏览中保留。', follow: '沿淡金色引导点前进', closeEnough: '已抵达，按 E 或点击记录发现。', landFirst: '请先落地，再记录发现。', approach: '请走近这个发现点。', recorded: '新的发现已记录', journal: '你的探索手记', away: '米到达此站', ready: '可以记录发现', quick: '快捷移动，不会自动完成发现', unavailable: '三维岩石查看器暂时不可用。', routeHelp: '跟随淡金色引导点和距离箭头，走近后按 E 或点击记录发现。底部编号可以快捷移动，但不会自动完成发现。引导点只是界面辅助，并非火星表面的真实设施。H 可隐藏或恢复路线卡片。',
-            teasers: ['向西走到层状平顶山，抬头看看带状岩壁。', '走近那块深色巨石，在查看器中转动并观察它。', '走进沙丘区，寻找火星风吹出的波纹。', '从抵达点向东南走，找一座立在平原上的小型气象桅杆。', '徒步到东侧一座风化环形山的坑缘，俯视它的坑底。'],
-            details: ['这样的沉积岩层是水、风或火山灰在漫长岁月中逐层堆积形成的。在火星上，它们记录着数十亿年间不断变迁的环境。这座平顶山是艺术示例，并不对应某个真实命名的地层。', '红色尘埃之下，火星表面大多是远古火山活动形成的深色玄武岩。探测车曾近距离研究过这类岩石。仅凭外形无法判断这个模型的成分或年龄。可以旋转这块代表性岩石，仔细观察表面。', '火星沙丘确实在移动——轨道器拍到过它们逐年变化。稀薄的空气依然能搬运沙粒，只是比地球慢。这片沙丘是艺术化布置。', '1976 年起，海盗号着陆器开始测量火星气象；洞察号直到 2022 年都在记录风、气压和温度。这座桅杆致敬那些仪器，读数是虚构的。', '与月球环形山不同，火星环形山会在风和尘埃作用下被侵蚀——坑缘随数百万年逐渐软化、坑底被填平。这座风化环形山是对这一过程的朴素艺术再现。']
+            teasers: ['向西走到层状平顶山，抬头看看带状岩壁。', '走近那块深色巨石，在查看器中转动并观察它。', '走进沙丘区，寻找火星风吹出的波纹。', '从抵达点向东南走，找一辆停在平原上的火星车。', '徒步到东侧一座风化环形山的坑缘，俯视它的坑底。'],
+            details: ['这样的沉积岩层是水、风或火山灰在漫长岁月中逐层堆积形成的。在火星上，它们记录着数十亿年间不断变迁的环境。这座平顶山是艺术示例，并不对应某个真实命名的地层。', '红色尘埃之下，火星表面大多是远古火山活动形成的深色玄武岩。探测车曾近距离研究过这类岩石。仅凭外形无法判断这个模型的成分或年龄。可以旋转这块代表性岩石，仔细观察表面。', '火星沙丘确实在移动——轨道器拍到过它们逐年变化。稀薄的空气依然能搬运沙粒，只是比地球慢。这片沙丘是艺术化布置。', '1997 年至今，旅居者号、勇气号、机遇号、好奇号、毅力号五辆 NASA 火星车先后驶上火星；毅力号 2021 年着陆，至今仍在耶泽罗陨击坑工作。这台模型来自 NASA 开放三维模型库，停放位置是艺术创作，并非真实车址。', '与月球环形山不同，火星环形山会在风和尘埃作用下被侵蚀——坑缘随数百万年逐渐软化、坑底被填平。这座风化环形山是对这一过程的朴素艺术再现。']
         }
     };
     let language = parameters.get('lang') === 'zh' ? 'zh' : 'en';
@@ -355,10 +355,25 @@
         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
         return texture;
     }
+    function createGltfLoader() {
+        const loader = new THREE.GLTFLoader();
+        if (THREE.DRACOLoader) {
+            const draco = new THREE.DRACOLoader();
+            draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/draco/gltf/');
+            loader.setDRACOLoader(draco);
+        }
+        return loader;
+    }
+    function loadSceneModel(url) {
+        return new Promise(resolve => {
+            if (!THREE.GLTFLoader) return resolve(null);
+            createGltfLoader().load(url, gltf => resolve(gltf.scene), undefined, () => resolve(null));
+        });
+    }
     function loadRockModel(url) {
         return new Promise(resolve => {
             if (!THREE.GLTFLoader) return resolve(null);
-            new THREE.GLTFLoader().load(url, gltf => {
+            createGltfLoader().load(url, gltf => {
                 let mesh = null;
                 gltf.scene.traverse(o => { if (!mesh && o.isMesh) mesh = o; });
                 if (!mesh) return resolve(null);
@@ -772,6 +787,31 @@
         scene.add(station);
         obstacles.push({ x, z, radius: 1 });
     }
+    async function buildRover() {
+        const x = 31, z = -63;
+        const model = await loadSceneModel('models/perseverance.glb');
+        if (!model) { buildInstrument(); return; }
+        const box = new THREE.Box3().setFromObject(model);
+        const size = new THREE.Vector3();
+        box.getSize(size);
+        if (!size.y || !isFinite(size.y)) { buildInstrument(); return; }
+        model.scale.setScalar(2.2 / size.y);
+        box.setFromObject(model);
+        const center = new THREE.Vector3();
+        box.getCenter(center);
+        model.position.set(-center.x, -box.min.y + 0.02, -center.z);
+        model.traverse(o => { if (o.isMesh) o.castShadow = o.receiveShadow = true; });
+        const group = new THREE.Group();
+        group.add(model);
+        const ground = MarsTerrain.sampleSurface(surface, x, z);
+        group.position.set(x, ground, z);
+        group.rotation.y = 2.2;
+        scene.add(group);
+        stationBeacon = new THREE.Mesh(new THREE.SphereGeometry(0.05, 12, 10), new THREE.MeshBasicMaterial({ color: 0xff6a3d, transparent: true, opacity: 0.9 }));
+        stationBeacon.position.set(x, ground + 2.45, z);
+        scene.add(stationBeacon);
+        obstacles.push({ x, z, radius: 2.4 });
+    }
     const rand = MarsTerrain.random(4451);
     function updateGravityButton() {
         $('gravity-button').textContent = t(gravity === MarsTerrain.GRAVITY ? 'gravityCompare' : 'gravityMars');
@@ -1147,7 +1187,7 @@
             buildRocks(texture, rockModels);
             buildAstronaut(texture);
             buildFootprints();
-            buildInstrument();
+            buildRover();
             buildDustDevil();
             walker = MarsTerrain.createWalker(surface, position);
             await buildSky();

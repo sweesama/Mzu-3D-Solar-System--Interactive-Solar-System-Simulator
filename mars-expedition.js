@@ -8,7 +8,7 @@
         Object.freeze({ id: 'strata', x: -85, z: -69, radius: 5, node: 5, markerHeight: 2.4 }),
         Object.freeze({ id: 'boulder', x: -43, z: 14, radius: 9.5, node: 2, markerHeight: 4.5 }),
         Object.freeze({ id: 'dunes', x: -78, z: 108, radius: 6, node: 8, markerHeight: 1.6 }),
-        Object.freeze({ id: 'station', x: 31, z: -63, radius: 5, node: 14, markerHeight: 2.1 }),
+        Object.freeze({ id: 'station', x: 31, z: -63, radius: 5, node: 14, markerHeight: 1.6 }),
         Object.freeze({ id: 'crater', x: 106, z: 101, radius: 6, node: 12, markerHeight: 1.7 })
     ]);
     const nodes = Object.freeze([

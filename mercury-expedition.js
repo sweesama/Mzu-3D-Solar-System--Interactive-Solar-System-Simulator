@@ -7,7 +7,7 @@
     const discoveries = Object.freeze([
         Object.freeze({ id: 'crater', x: -31, z: -25, radius: 6, node: 2, markerHeight: 1.4 }),
         Object.freeze({ id: 'boulder', x: -37, z: -16, radius: 6, node: 18, markerHeight: 2.6 }),
-        Object.freeze({ id: 'beacon', x: 28, z: -30, radius: 5, node: 6, markerHeight: 1.9 }),
+        Object.freeze({ id: 'beacon', x: 28, z: -30, radius: 6, node: 6, markerHeight: 1.6 }),
         Object.freeze({ id: 'hollows', x: 92, z: 96, radius: 6, node: 9, markerHeight: 1.2 }),
         Object.freeze({ id: 'scarp', x: 62, z: -72, radius: 6, node: 5, markerHeight: 1.8 })
     ]);

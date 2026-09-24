@@ -95,7 +95,7 @@
     };
     let language = parameters.get('lang') === 'zh' ? 'zh' : 'en';
     let stationIndex = 0, exploring = false, photoMode = false, ready = false;
-    let renderer, scene, camera, surface, sunlight, walker, astronaut, animationId = null;
+    let renderer, scene, camera, surface, sunlight, walker, astronaut, orbiter, animationId = null;
     let motionEnabled = !matchMedia('(prefers-reduced-motion: reduce)').matches;
     let yaw = -0.12, pitch = -0.06, lastTime = 0, frameCount = 0, sampleTime = 0, pixelRelief = 0, cameraTween = null;
     let noticeTimer, lastBoundaryNotice = 0, drag = null;
@@ -547,6 +547,40 @@
         skyBodies.push(proxy);
         return Promise.resolve();
     }
+    function createGltfLoader() {
+        const loader = new THREE.GLTFLoader();
+        if (THREE.DRACOLoader) {
+            const draco = new THREE.DRACOLoader();
+            draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/draco/gltf/');
+            loader.setDRACOLoader(draco);
+        }
+        return loader;
+    }
+    function loadSceneModel(url) {
+        return new Promise(resolve => {
+            if (!THREE.GLTFLoader) return resolve(null);
+            createGltfLoader().load(url, gltf => resolve(gltf.scene), undefined, () => resolve(null));
+        });
+    }
+    async function buildOrbiter() {
+        const model = await loadSceneModel('models/galileo.glb');
+        if (!model) return;
+        const box = new THREE.Box3().setFromObject(model);
+        const size = new THREE.Vector3();
+        box.getSize(size);
+        if (!size.y || !isFinite(size.y)) return;
+        model.scale.setScalar(7 / Math.max(size.x, size.y, size.z));
+        box.setFromObject(model);
+        const center = new THREE.Vector3();
+        box.getCenter(center);
+        model.position.set(-center.x, -center.y, -center.z);
+        model.traverse(o => { if (o.isMesh) o.castShadow = false; });
+        orbiter = new THREE.Group();
+        orbiter.add(model);
+        orbiter.position.set(6, 276, -9);
+        orbiter.rotation.set(0.35, 0.7, 0.15);
+        scene.add(orbiter);
+    }
     function buildAstronaut(texture) {
         const hull = new THREE.MeshStandardMaterial({ color: 0x6e6a5e, roughness: 0.55, metalness: 0.6 });
         const dark = new THREE.MeshStandardMaterial({ color: 0x1d1f21, roughness: 0.85, metalness: 0.25 });
@@ -769,6 +803,7 @@
         }
         if (exploring && dt > 0) {
             updateDust(dt);
+            if (orbiter) { orbiter.rotation.y += dt * 0.1; orbiter.position.y += dt * 0.12; }
             flashTimer -= dt;
             boltTimer -= dt;
             if (skyMaterial) {
@@ -984,6 +1019,7 @@
             buildPuffs();
             buildCrystalStorm();
             buildAstronaut(texture);
+            buildOrbiter();
             walker = JupiterAtmo.createWalker(surface, position);
             walker.y = stations[0].y || 260;
             await buildSky();

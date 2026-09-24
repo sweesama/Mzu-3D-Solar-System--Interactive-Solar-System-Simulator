@@ -38,7 +38,7 @@
             notes: [
                 ['A mountain born of impact', 'The peak in the middle of this crater was pushed up when the compressed floor rebounded — a signature of large impacts everywhere, but especially crisp on airless worlds.', 'LANDSCAPE', 'Central-peak crater'],
                 ['A block thrown by impact', 'This angular block is ejecta — rock blasted out of the crater and dropped here. Rotate it in the specimen viewer; its sharp edges have survived billions of years with no wind to soften them.', 'SURFACE', 'Ejecta block'],
-                ['A listener in the glare', 'No probe has ever landed on Mercury — orbiters like MESSENGER studied it from above. This solar-powered relay beacon is an imagined prop, not a real mission.', 'INSTRUMENT', 'Relay beacon'],
+                ['A listener in the glare', 'No probe has ever landed on Mercury — MESSENGER studied it from orbit between 2011 and 2015. This relay satellite is a real MESSENGER model from NASA\u2019s 3D archive; its placement here is imagined, not a real mission.', 'SPACECRAFT', 'Relay satellite'],
                 ['Mercury’s hollows', 'These shallow, bright-rimmed pits exist nowhere else we know. They may form as volatile material in the rock evaporates under the relentless Sun.', 'SURFACE', 'Hollows field'],
                 ['A wrinkle from a shrinking world', 'This long ridge is a lobate scarp — a cliff pushed up as Mercury’s interior cooled and the whole planet contracted. No other planet wears them so prominently.', 'LANDSCAPE', 'Lobate scarp']
             ]
@@ -75,7 +75,7 @@
             notes: [
                 ['撞击诞生的山峰', '坑中央的山峰是受压坑底反弹抬升的结果——大撞击的标志性产物，在没有大气的星球上保存得格外清晰。', '地貌类型', '中央峰陨击坑'],
                 ['被抛出的大岩块', '这块棱角分明的巨石是溅射物——撞击时从坑中炸飞出来、落在这里的岩石。在查看器中旋转它；没有风的打磨，它的棱角保存了几十亿年。', '地表组成', '溅射岩块'],
-                ['烈日下的倾听者', '迄今没有探测器在水星着陆——信使号等轨道器从空中研究它。这座太阳能中继信标是想象出来的道具，并非真实任务。', '仪器类型', '中继信标'],
+                ['烈日下的倾听者', '迄今没有探测器在水星着陆——信使号在 2011 至 2015 年间从轨道研究它。这颗中继卫星是 NASA 公开模型库的真实信使号模型，落地摆放是想象，并非真实任务。', '航天器', '中继卫星'],
                 ['水星的凹陷', '这些浅浅的亮边浅坑在别处从未见过——可能是岩石中的挥发性物质在烈日下蒸发逸散形成的。', '地表组成', '凹陷群'],
                 ['星球收缩的皱纹', '这道长脊是叶状悬崖——水星内部冷却、整颗行星收缩时把地壳推起来的断崖。没有哪颗行星像水星这样布满这种皱脊。', '地貌类型', '叶状悬崖']
             ]
@@ -85,14 +85,14 @@
         en: {
             fieldRoute: 'YOUR FIELD ROUTE', allFound: 'All five discoveries are in your journal. Stay a little longer.', discover: 'Discover · E', review: 'Read again · E', chooseStop: 'Next stop', rotateRock: 'Drag or use arrow keys to rotate', continueRoute: 'Continue exploring', takePhoto: 'Frame a photograph', discoveryDisclaimer: 'This is an imagined site, not a surveyed landing site or an identified Mercurian sample.',
             savedHere: 'Journal saved on this device.', visitOnly: 'Journal kept for this visit only.', follow: 'Follow the amber guide dots', closeEnough: 'You are here. Press E or Discover.', landFirst: 'Land before recording a discovery.', approach: 'Walk closer to this discovery.', recorded: 'DISCOVERY RECORDED', journal: 'FROM YOUR FIELD JOURNAL', away: 'm to the stop', ready: 'Ready to discover', quick: 'Quick travel — discovery not automatic', unavailable: 'The 3D specimen viewer is unavailable.', routeHelp: 'Follow the amber guide dots and distance arrow. Walk up to a stop and press E or Discover to add it to your journal. The numbered buttons offer quick travel, not automatic discoveries. Guide dots are interface aids, not structures on Mercury. H hides or restores the route card.',
-            teasers: ['Walk south-west to the crater rim and look for the mountain inside its bowl.', 'Approach the angular block beside the crater, then turn it around in the specimen viewer.', 'Walk east from arrival to find a small relay beacon standing in the glare.', 'Cross the plain north-east to a cluster of shallow, bright pits.', 'Hike south-east and climb the long cliff ridge — a wrinkle from a shrinking planet.'],
-            details: ['Central peaks rise when a crater floor, compressed by the impact, springs back — the whole bowl rebounds like a slow splash frozen in rock. This crater is an artistic example, not a reconstruction of a named formation.', 'Ejecta blocks are fragments hurled out by the impact that dug the crater. On an airless world they keep their sharp edges for ages — nothing rounds them off. Rotate the representative rock to examine its surface.', 'Mercury has never hosted a lander — it is a hard place to reach and a harder place to survive. This beacon honours the orbiters that mapped it: Mariner 10, MESSENGER, and BepiColombo on its way. Its readings are imagined, not real data.', 'MESSENGER found these bright, shallow depressions and named them “hollows” — they may form as sunlight bakes volatile substances out of the rock. They are young and still forming today, geologically speaking.', 'Lobate scarps are Mercury’s signature: as the planet’s huge core cooled and shrank, the crust cracked and one side thrust up over the other — cliffs hundreds of kilometres long. This ridge is a modest artistic echo.']
+            teasers: ['Walk south-west to the crater rim and look for the mountain inside its bowl.', 'Approach the angular block beside the crater, then turn it around in the specimen viewer.', 'Walk east from arrival to find a relay satellite standing in the glare.', 'Cross the plain north-east to a cluster of shallow, bright pits.', 'Hike south-east and climb the long cliff ridge — a wrinkle from a shrinking planet.'],
+            details: ['Central peaks rise when a crater floor, compressed by the impact, springs back — the whole bowl rebounds like a slow splash frozen in rock. This crater is an artistic example, not a reconstruction of a named formation.', 'Ejecta blocks are fragments hurled out by the impact that dug the crater. On an airless world they keep their sharp edges for ages — nothing rounds them off. Rotate the representative rock to examine its surface.', 'Mercury has never hosted a lander — it is a hard place to reach and a harder place to survive. MESSENGER orbited it from 2011 to 2015, and BepiColombo is on its way. This model comes from NASA\u2019s open 3D archive; its placement on the surface is artistic, not a real mission.', 'MESSENGER found these bright, shallow depressions and named them “hollows” — they may form as sunlight bakes volatile substances out of the rock. They are young and still forming today, geologically speaking.', 'Lobate scarps are Mercury’s signature: as the planet’s huge core cooled and shrank, the crust cracked and one side thrust up over the other — cliffs hundreds of kilometres long. This ridge is a modest artistic echo.']
         },
         zh: {
             fieldRoute: '你的探索路线', allFound: '五个发现都已记入手记。不妨再多停留一会儿。', discover: '记录发现 · E', review: '重读手记 · E', chooseStop: '换一站', rotateRock: '拖动或使用方向键旋转岩石', continueRoute: '继续探索', takePhoto: '构图拍照', discoveryDisclaimer: '这是虚构场景，并非真实着陆点测绘，也不是已鉴定的水星样本。',
             savedHere: '手记已保存在此设备。', visitOnly: '手记仅在本次浏览中保留。', follow: '沿淡金色引导点前进', closeEnough: '已抵达，按 E 或点击记录发现。', landFirst: '请先落地，再记录发现。', approach: '请走近这个发现点。', recorded: '新的发现已记录', journal: '你的探索手记', away: '米到达此站', ready: '可以记录发现', quick: '快捷移动，不会自动完成发现', unavailable: '三维岩石查看器暂时不可用。', routeHelp: '跟随淡金色引导点和距离箭头，走近后按 E 或点击记录发现。底部编号可以快捷移动，但不会自动完成发现。引导点只是界面辅助，并非水星表面的真实设施。H 可隐藏或恢复路线卡片。',
-            teasers: ['向西南走到陨坑边缘，找找坑底中央的那座山。', '走近陨坑旁那块棱角分明的大岩块，在查看器中转动并观察它。', '从抵达点向东走，在烈日下找一座小型中继信标。', '穿过平原向东北走，找一片浅浅的亮色坑群。', '徒步东南，爬上那道长长的崖脊——一颗收缩星球留下的皱纹。'],
-            details: ['中央峰的形成原理是：撞击瞬间坑底被压缩，随后像慢动作的回弹一样隆起——整座坑底仿佛一朵被冻住的浪花。这座陨坑是艺术示例，不对应某个真实命名地貌。', '溅射岩块是挖掘陨坑的那次撞击抛出的碎片。在没有大气的星球上，它们的锋利棱角能保存几十亿年——没有任何东西磨圆它们。可以旋转这块代表性岩石，仔细观察表面。', '水星从来没有迎来过着陆器——抵达它难，活下来更难。这座信标致敬那些环绕它的轨道器：水手 10 号、信使号，以及正在路上的贝皮科伦坡。读数是虚构的。', '信使号发现了这些明亮的浅坑并命名为"凹陷"——可能是阳光把岩石中的挥发性物质烤了出来。从地质尺度看，它们很年轻，至今仍在形成。', '叶状悬崖是水星的招牌：行星巨大的内核冷却收缩，地壳开裂、一侧推覆到另一侧之上——绵延数百公里的断崖。这道山脊是朴素的艺术再现。']
+            teasers: ['向西南走到陨坑边缘，找找坑底中央的那座山。', '走近陨坑旁那块棱角分明的大岩块，在查看器中转动并观察它。', '从抵达点向东走，在烈日下找一颗中继卫星。', '穿过平原向东北走，找一片浅浅的亮色坑群。', '徒步东南，爬上那道长长的崖脊——一颗收缩星球留下的皱纹。'],
+            details: ['中央峰的形成原理是：撞击瞬间坑底被压缩，随后像慢动作的回弹一样隆起——整座坑底仿佛一朵被冻住的浪花。这座陨坑是艺术示例，不对应某个真实命名地貌。', '溅射岩块是挖掘陨坑的那次撞击抛出的碎片。在没有大气的星球上，它们的锋利棱角能保存几十亿年——没有任何东西磨圆它们。可以旋转这块代表性岩石，仔细观察表面。', '水星从来没有迎来过着陆器——抵达它难，活下来更难。信使号在 2011 至 2015 年间环绕它测绘，贝皮科伦坡正在路上。这台模型来自 NASA 开放三维模型库，落在表面是艺术创作，并非真实任务。', '信使号发现了这些明亮的浅坑并命名为"凹陷"——可能是阳光把岩石中的挥发性物质烤了出来。从地质尺度看，它们很年轻，至今仍在形成。', '叶状悬崖是水星的招牌：行星巨大的内核冷却收缩，地壳开裂、一侧推覆到另一侧之上——绵延数百公里的断崖。这道山脊是朴素的艺术再现。']
         }
     };
     let language = parameters.get('lang') === 'zh' ? 'zh' : 'en';
@@ -317,10 +317,25 @@
         far.receiveShadow = true;
         scene.add(far);
     }
+    function createGltfLoader() {
+        const loader = new THREE.GLTFLoader();
+        if (THREE.DRACOLoader) {
+            const draco = new THREE.DRACOLoader();
+            draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/draco/gltf/');
+            loader.setDRACOLoader(draco);
+        }
+        return loader;
+    }
+    function loadSceneModel(url) {
+        return new Promise(resolve => {
+            if (!THREE.GLTFLoader) return resolve(null);
+            createGltfLoader().load(url, gltf => resolve(gltf.scene), undefined, () => resolve(null));
+        });
+    }
     function loadRockModel(url) {
         return new Promise(resolve => {
             if (!THREE.GLTFLoader) return resolve(null);
-            new THREE.GLTFLoader().load(url, gltf => {
+            createGltfLoader().load(url, gltf => {
                 let mesh = null;
                 gltf.scene.traverse(o => { if (!mesh && o.isMesh) mesh = o; });
                 if (!mesh) return resolve(null);
@@ -726,6 +741,31 @@
         scene.add(station);
         obstacles.push({ x, z, radius: 1 });
     }
+    async function buildRelay() {
+        const x = 28, z = -30;
+        const model = await loadSceneModel('models/messenger.glb');
+        if (!model) { buildInstrument(); return; }
+        const box = new THREE.Box3().setFromObject(model);
+        const size = new THREE.Vector3();
+        box.getSize(size);
+        if (!size.y || !isFinite(size.y)) { buildInstrument(); return; }
+        model.scale.setScalar(2.4 / size.y);
+        box.setFromObject(model);
+        const center = new THREE.Vector3();
+        box.getCenter(center);
+        model.position.set(-center.x, -box.min.y + 0.02, -center.z);
+        model.traverse(o => { if (o.isMesh) o.castShadow = o.receiveShadow = true; });
+        const group = new THREE.Group();
+        group.add(model);
+        const ground = MercuryTerrain.sampleSurface(surface, x, z);
+        group.position.set(x, ground, z);
+        group.rotation.y = 2.2;
+        scene.add(group);
+        stationBeacon = new THREE.Mesh(new THREE.SphereGeometry(0.05, 12, 10), new THREE.MeshBasicMaterial({ color: 0xff6a3d, transparent: true, opacity: 0.9 }));
+        stationBeacon.position.set(x, ground + 2.6, z);
+        scene.add(stationBeacon);
+        obstacles.push({ x, z, radius: 2.6 });
+    }
     const rand = MercuryTerrain.random(4451);
     function updateGravityButton() {
         $('gravity-button').textContent = t(gravity === MercuryTerrain.GRAVITY ? 'gravityCompare' : 'gravityMercury');
@@ -1055,7 +1095,7 @@
             buildRocks(texture, rockModels);
             buildAstronaut(texture);
             buildFootprints();
-            buildInstrument();
+            buildRelay();
             walker = MercuryTerrain.createWalker(surface, position);
             await buildSky();
             updateCamera();

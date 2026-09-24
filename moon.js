@@ -324,7 +324,7 @@
     function loadRockModel(url) {
         return new Promise(resolve => {
             if (!THREE.GLTFLoader) return resolve(null);
-            new THREE.GLTFLoader().load(url, gltf => {
+            createGltfLoader().load(url, gltf => {
                 let mesh = null;
                 gltf.scene.traverse(o => { if (!mesh && o.isMesh) mesh = o; });
                 if (!mesh) return resolve(null);
@@ -708,10 +708,19 @@
         scene.add(station);
         obstacles.push({ x, z, radius: 1 });
     }
+    function createGltfLoader() {
+        const loader = new THREE.GLTFLoader();
+        if (THREE.DRACOLoader) {
+            const draco = new THREE.DRACOLoader();
+            draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/draco/gltf/');
+            loader.setDRACOLoader(draco);
+        }
+        return loader;
+    }
     function loadSceneModel(url) {
         return new Promise(resolve => {
             if (!THREE.GLTFLoader) return resolve(null);
-            new THREE.GLTFLoader().load(url, gltf => resolve(gltf.scene), undefined, () => resolve(null));
+            createGltfLoader().load(url, gltf => resolve(gltf.scene), undefined, () => resolve(null));
         });
     }
     async function buildLander() {
