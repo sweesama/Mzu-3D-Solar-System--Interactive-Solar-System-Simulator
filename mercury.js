@@ -360,9 +360,12 @@
         const transform = new THREE.Object3D();
         const color = new THREE.Color();
         const craters = MercuryTerrain.craters;
-        for (let group = 0; group < 4; group++) {
-            const count = Math.floor(profile.rocks / 4);
-            const rocks = new THREE.InstancedMesh(rockGeometry(group * 19 + 8, 1), material, count);
+        const useModels = rockModels && rockModels.length;
+        const groups = useModels ? rockModels.length : 4;
+        for (let group = 0; group < groups; group++) {
+            const count = Math.floor(profile.rocks / groups);
+            const model = useModels ? rockModels[group % rockModels.length] : null;
+            const rocks = new THREE.InstancedMesh(model ? model.geometry : rockGeometry(group * 19 + 8, 1), model ? (model.material || material) : material, count);
             for (let i = 0; i < count; i++) {
                 let x, z;
                 if (rand() < 0.55) {
@@ -378,12 +381,22 @@
                 while (stations.some(s => Math.hypot(x - s.x, z - s.z) < size + 4) || expedition.isOnRoute({ x, z }, size * 1.5 + 0.5)) {
                     x = (rand() - 0.5) * 760; z = (rand() - 0.5) * 760;
                 }
-                transform.position.set(x, MercuryTerrain.sampleSurface(surface, x, z) + size * 0.12, z);
-                transform.scale.set(size * (0.8 + rand() * 0.7), size, size * (0.8 + rand() * 0.5));
-                transform.rotation.set((rand() - 0.5) * 0.9, rand() * Math.PI * 2, (rand() - 0.5) * 0.9);
+                if (model) {
+                    const s = size * 1.9;
+                    const lift = -model.geometry.boundingBox.min.y * s;
+                    transform.position.set(x, MercuryTerrain.sampleSurface(surface, x, z) + lift * 0.38, z);
+                    transform.scale.setScalar(s);
+                    transform.rotation.set((rand() - 0.5) * 0.9, rand() * Math.PI * 2, (rand() - 0.5) * 0.9);
+                    color.setScalar(0.78 + rand() * 0.22);
+                } else {
+                    transform.position.set(x, MercuryTerrain.sampleSurface(surface, x, z) + size * 0.12, z);
+                    transform.scale.set(size * (0.8 + rand() * 0.7), size, size * (0.8 + rand() * 0.5));
+                    transform.rotation.set((rand() - 0.5) * 0.9, rand() * Math.PI * 2, (rand() - 0.5) * 0.9);
+                    color.setScalar(0.5 + rand() * 0.4);
+                }
                 transform.updateMatrix();
                 rocks.setMatrixAt(i, transform.matrix);
-                rocks.setColorAt(i, color.setScalar(0.5 + rand() * 0.4));
+                rocks.setColorAt(i, color);
                 if (size > 0.5) obstacles.push({ x, z, radius: size * 1.5 });
             }
             rocks.castShadow = quality !== 'low';
@@ -413,16 +426,24 @@
             if (x === -37 && z === -16) featuredRock = rock;
             obstacles.push({ x, z, radius: size * 1.45 });
         }
-        const gravel = new THREE.InstancedMesh(rockGeometry(84, 0), material, profile.gravel);
+        const gravelModel = useModels ? rockModels[0] : null;
+        const gravel = new THREE.InstancedMesh(gravelModel ? gravelModel.geometry : rockGeometry(84, 0), gravelModel ? (gravelModel.material || material) : material, profile.gravel);
         for (let i = 0; i < profile.gravel; i++) {
             const x = (rand() - 0.5) * 530, z = (rand() - 0.5) * 530;
             const size = 0.03 + rand() * 0.17;
-            transform.position.set(x, MercuryTerrain.sampleSurface(surface, x, z) + size * 0.1, z);
-            transform.scale.set(size * 1.7, size, size);
+            if (gravelModel) {
+                const s = size * 1.9;
+                const lift = -gravelModel.geometry.boundingBox.min.y * s;
+                transform.position.set(x, MercuryTerrain.sampleSurface(surface, x, z) + lift * 0.38, z);
+                transform.scale.setScalar(s);
+            } else {
+                transform.position.set(x, MercuryTerrain.sampleSurface(surface, x, z) + size * 0.1, z);
+                transform.scale.set(size * 1.7, size, size);
+            }
             transform.rotation.set(0, rand() * Math.PI * 2, 0);
             transform.updateMatrix();
             gravel.setMatrixAt(i, transform.matrix);
-            gravel.setColorAt(i, color.setScalar(0.45 + rand() * 0.5));
+            gravel.setColorAt(i, color.setScalar(gravelModel ? 0.8 + rand() * 0.2 : 0.45 + rand() * 0.5));
         }
         gravel.receiveShadow = true;
         gravel.frustumCulled = false;
