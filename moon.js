@@ -289,6 +289,38 @@
         far.receiveShadow = true;
         scene.add(far);
     }
+    function rockTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = 256;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#8d897e';
+        ctx.fillRect(0, 0, 256, 256);
+        for (let i = 0; i < 5200; i++) {
+            const v = 110 + Math.random() * 90;
+            ctx.fillStyle = `rgba(${v},${v * 0.98},${v * 0.92},${0.16 + Math.random() * 0.2})`;
+            ctx.fillRect(Math.random() * 256, Math.random() * 256, 1 + Math.random() * 2, 1 + Math.random() * 2);
+        }
+        for (let i = 0; i < 170; i++) {
+            const x = Math.random() * 256, y = Math.random() * 256, r = 0.7 + Math.random() * 3.4;
+            const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+            g.addColorStop(0, 'rgba(28,26,24,0.85)');
+            g.addColorStop(0.7, 'rgba(48,45,42,0.4)');
+            g.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = g;
+            ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
+        }
+        ctx.strokeStyle = 'rgba(30,28,26,0.5)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 26; i++) {
+            let x = Math.random() * 256, y = Math.random() * 256;
+            ctx.beginPath(); ctx.moveTo(x, y);
+            for (let s = 0; s < 4; s++) { x += (Math.random() - 0.5) * 26; y += (Math.random() - 0.5) * 26; ctx.lineTo(x, y); }
+            ctx.stroke();
+        }
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        return texture;
+    }
     function rockGeometry(seed, detail) {
         const geometry = new THREE.IcosahedronGeometry(1, detail);
         const p = geometry.attributes.position;
@@ -296,9 +328,12 @@
         for (let i = 0; i < p.count; i++) {
             const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
             const n = LunarTerrain.noise(x * 3 + seed, z * 3 + y * 2);
-            const f = 0.8 + n * 0.35;
-            p.setXYZ(i, x * f, y * (0.63 + n * 0.25), z * f);
-            const shade = 0.74 + LunarTerrain.noise(x * 8 + seed, y * 8 + z * 2) * 0.22;
+            const n2 = LunarTerrain.noise(x * 7 - seed, y * 7 + z * 4);
+            const ridge = Math.abs(LunarTerrain.noise(x * 4 + y * 2 + seed, z * 4) - 0.5) * 2;
+            const f = 0.72 + n * 0.3 + n2 * 0.12 - ridge * 0.16;
+            p.setXYZ(i, x * f, y * (0.58 + n * 0.24), z * f);
+            const dustCap = THREE.MathUtils.clamp(y * 1.1 + 0.15, 0, 1);
+            const shade = (0.58 + LunarTerrain.noise(x * 8 + seed, y * 8 + z * 2) * 0.3) * (1 + dustCap * 0.24);
             c.set([shade, shade * 0.97, shade * 0.92], i * 3);
         }
         geometry.setAttribute('color', new THREE.BufferAttribute(c, 3));
@@ -307,15 +342,16 @@
         const normal = new THREE.Vector3(), radial = new THREE.Vector3();
         for (let i = 0; i < p.count; i++) {
             normal.fromBufferAttribute(normals, i);
-            radial.set(p.getX(i), p.getY(i) * 1.7, p.getZ(i)).normalize();
-            normal.lerp(radial, 0.62).normalize();
+            radial.set(p.getX(i), p.getY(i) * 1.6, p.getZ(i)).normalize();
+            normal.lerp(radial, 0.28).normalize();
             normals.setXYZ(i, normal.x, normal.y, normal.z);
         }
         return geometry;
     }
     function buildRocks(texture) {
         const rand = LunarTerrain.random(19690720);
-        const material = new THREE.MeshStandardMaterial({ map: texture, bumpMap: texture, bumpScale: 0.07, roughness: 0.98, vertexColors: true });
+        const rockTex = rockTexture();
+        const material = new THREE.MeshStandardMaterial({ map: rockTex, bumpMap: rockTex, bumpScale: 0.16, roughness: 1, vertexColors: true, flatShading: true });
         const transform = new THREE.Object3D();
         const color = new THREE.Color();
         for (let group = 0; group < 4; group++) {
@@ -327,8 +363,8 @@
                 while (stations.some(s => Math.hypot(x - s.x, z - s.z) < size + 4) || expedition.isOnRoute({ x, z }, size * 1.5 + 0.5)) {
                     x = (rand() - 0.5) * 760; z = (rand() - 0.5) * 760;
                 }
-                transform.position.set(x, LunarTerrain.sampleSurface(surface, x, z) + size * 0.22, z);
-                transform.scale.set(size * (0.8 + rand() * 0.7), size, size * (0.8 + rand() * 0.5));
+                transform.position.set(x, LunarTerrain.sampleSurface(surface, x, z) + size * 0.12, z);
+                transform.scale.set(size * (0.75 + rand() * 0.9), size * (0.62 + rand() * 0.55), size * (0.75 + rand() * 0.65));
                 transform.rotation.set((rand() - 0.5) * 0.4, rand() * Math.PI * 2, (rand() - 0.5) * 0.4);
                 transform.updateMatrix();
                 rocks.setMatrixAt(i, transform.matrix);
@@ -345,8 +381,8 @@
         const heroes = [[-7, 68, 1.1], [12, 48, 2.2], [21, 50, 1.1], [-43, 13, 3.4], [-47, 8, 1.3], [-42, 18, 0.7], [90, 26, 1.5], [7, 20, 0.9], [-17, 40, 1.9]];
         for (const [x, z, size] of heroes) {
             const rock = new THREE.Mesh(rockGeometry(x + 100, 2), material);
-            rock.scale.set(size * 1.25, size, size);
-            rock.position.set(x, LunarTerrain.sampleSurface(surface, x, z) + size * 0.3, z);
+            rock.scale.set(size * (1.1 + rand() * 0.5), size * (0.78 + rand() * 0.35), size);
+            rock.position.set(x, LunarTerrain.sampleSurface(surface, x, z) + size * 0.2, z);
             rock.rotation.y = rand() * 6;
             rock.castShadow = rock.receiveShadow = true;
             scene.add(rock);
@@ -362,8 +398,8 @@
         for (let i = 0; i < profile.gravel; i++) {
             const x = (rand() - 0.5) * 530, z = (rand() - 0.5) * 530;
             const size = 0.03 + rand() * 0.17;
-            transform.position.set(x, LunarTerrain.sampleSurface(surface, x, z) + size * 0.1, z);
-            transform.scale.set(size * 1.7, size, size);
+            transform.position.set(x, LunarTerrain.sampleSurface(surface, x, z) + size * 0.05, z);
+            transform.scale.set(size * (1.3 + rand() * 0.8), size * (0.6 + rand() * 0.5), size);
             transform.rotation.set(0, rand() * Math.PI * 2, 0);
             transform.updateMatrix();
             gravel.setMatrixAt(i, transform.matrix);
