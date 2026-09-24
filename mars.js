@@ -323,6 +323,38 @@
         far.receiveShadow = true;
         scene.add(far);
     }
+    function rockTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = 256;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#6a5648';
+        ctx.fillRect(0, 0, 256, 256);
+        for (let i = 0; i < 5200; i++) {
+            const r = 95 + Math.random() * 80, g = r * 0.78, b = r * 0.6;
+            ctx.fillStyle = `rgba(${r},${g},${b},${0.16 + Math.random() * 0.2})`;
+            ctx.fillRect(Math.random() * 256, Math.random() * 256, 1 + Math.random() * 2, 1 + Math.random() * 2);
+        }
+        for (let i = 0; i < 160; i++) {
+            const x = Math.random() * 256, y = Math.random() * 256, r = 0.7 + Math.random() * 3.2;
+            const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+            g.addColorStop(0, 'rgba(30,24,20,0.85)');
+            g.addColorStop(0.7, 'rgba(52,42,35,0.4)');
+            g.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = g;
+            ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
+        }
+        ctx.strokeStyle = 'rgba(36,28,24,0.5)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 24; i++) {
+            let x = Math.random() * 256, y = Math.random() * 256;
+            ctx.beginPath(); ctx.moveTo(x, y);
+            for (let s = 0; s < 4; s++) { x += (Math.random() - 0.5) * 26; y += (Math.random() - 0.5) * 26; ctx.lineTo(x, y); }
+            ctx.stroke();
+        }
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        return texture;
+    }
     function rockGeometry(seed, detail) {
         const geometry = new THREE.IcosahedronGeometry(1, detail);
         const p = geometry.attributes.position;
@@ -330,10 +362,12 @@
         for (let i = 0; i < p.count; i++) {
             const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
             const n = MarsTerrain.noise(x * 3 + seed, z * 3 + y * 2);
-            const f = 0.86 + n * 0.2;
-            p.setXYZ(i, x * f, y * (0.72 + n * 0.16), z * f);
-            const shade = 0.46 + MarsTerrain.noise(x * 8 + seed, y * 8 + z * 2) * 0.2;
-            const dustTop = Math.max(0, y) * 0.11;
+            const n2 = MarsTerrain.noise(x * 7 - seed, y * 7 + z * 4);
+            const ridge = Math.abs(MarsTerrain.noise(x * 4 + y * 2 + seed, z * 4) - 0.5) * 2;
+            const f = 0.74 + n * 0.28 + n2 * 0.12 - ridge * 0.15;
+            p.setXYZ(i, x * f, y * (0.6 + n * 0.24), z * f);
+            const shade = 0.44 + MarsTerrain.noise(x * 8 + seed, y * 8 + z * 2) * 0.24;
+            const dustTop = Math.max(0, y) * 0.13;
             c.set([shade + dustTop, (shade + dustTop) * 0.8, (shade + dustTop) * 0.64], i * 3);
         }
         geometry.setAttribute('color', new THREE.BufferAttribute(c, 3));
@@ -342,15 +376,16 @@
         const normal = new THREE.Vector3(), radial = new THREE.Vector3();
         for (let i = 0; i < p.count; i++) {
             normal.fromBufferAttribute(normals, i);
-            radial.set(p.getX(i), p.getY(i) * 1.7, p.getZ(i)).normalize();
-            normal.lerp(radial, 0.72).normalize();
+            radial.set(p.getX(i), p.getY(i) * 1.6, p.getZ(i)).normalize();
+            normal.lerp(radial, 0.28).normalize();
             normals.setXYZ(i, normal.x, normal.y, normal.z);
         }
         return geometry;
     }
     function buildRocks(texture) {
         const rand = MarsTerrain.random(19690720);
-        const material = new THREE.MeshStandardMaterial({ map: texture, bumpMap: texture, bumpScale: 0.07, roughness: 0.98, vertexColors: true });
+        const rockTex = rockTexture();
+        const material = new THREE.MeshStandardMaterial({ map: rockTex, bumpMap: rockTex, bumpScale: 0.15, roughness: 1, vertexColors: true, flatShading: true });
         const transform = new THREE.Object3D();
         const color = new THREE.Color();
         for (let group = 0; group < 4; group++) {
@@ -363,8 +398,8 @@
                     x = (rand() - 0.5) * 760; z = (rand() - 0.5) * 760;
                 }
                 const ventifact = size > 0.35 && rand() < 0.4;
-                transform.position.set(x, MarsTerrain.sampleSurface(surface, x, z) + size * 0.22, z);
-                transform.scale.set(size * (0.8 + rand() * 0.7) * (ventifact ? 1.5 + rand() * 0.4 : 1), size * (ventifact ? 0.78 : 1), size * (0.8 + rand() * 0.5));
+                transform.position.set(x, MarsTerrain.sampleSurface(surface, x, z) + size * 0.12, z);
+                transform.scale.set(size * (0.75 + rand() * 0.85) * (ventifact ? 1.5 + rand() * 0.4 : 1), size * (0.62 + rand() * 0.5), size * (0.75 + rand() * 0.6));
                 transform.rotation.set((rand() - 0.5) * 0.4, ventifact ? -0.9 + (rand() - 0.5) * 0.4 : rand() * Math.PI * 2, (rand() - 0.5) * 0.4);
                 transform.updateMatrix();
                 rocks.setMatrixAt(i, transform.matrix);
@@ -379,8 +414,8 @@
         const heroes = [[-7, 68, 1.1], [12, 48, 2.2], [21, 50, 1.1], [-43, 14, 3.4], [-47, 8, 1.3], [-42, 19, 0.7], [90, 26, 1.5], [7, 20, 0.9], [-17, 40, 1.9]];
         for (const [x, z, size] of heroes) {
             const rock = new THREE.Mesh(rockGeometry(x + 100, 2), material);
-            rock.scale.set(size * 1.25, size, size);
-            rock.position.set(x, MarsTerrain.sampleSurface(surface, x, z) + size * 0.3, z);
+            rock.scale.set(size * (1.15 + rand() * 0.4), size * (0.78 + rand() * 0.32), size);
+            rock.position.set(x, MarsTerrain.sampleSurface(surface, x, z) + size * 0.18, z);
             rock.rotation.y = rand() * 6;
             rock.castShadow = rock.receiveShadow = true;
             scene.add(rock);
@@ -391,8 +426,8 @@
         for (let i = 0; i < profile.gravel; i++) {
             const x = (rand() - 0.5) * 530, z = (rand() - 0.5) * 530;
             const size = 0.03 + rand() * 0.17;
-            transform.position.set(x, MarsTerrain.sampleSurface(surface, x, z) + size * 0.1, z);
-            transform.scale.set(size * 1.7, size, size);
+            transform.position.set(x, MarsTerrain.sampleSurface(surface, x, z) + size * 0.05, z);
+            transform.scale.set(size * (1.3 + rand() * 0.8), size * (0.6 + rand() * 0.5), size);
             transform.rotation.set(0, rand() * Math.PI * 2, 0);
             transform.updateMatrix();
             gravel.setMatrixAt(i, transform.matrix);

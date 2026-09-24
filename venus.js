@@ -316,6 +316,34 @@
         far.receiveShadow = true;
         scene.add(far);
     }
+    function rockTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = 256;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#4d443c';
+        ctx.fillRect(0, 0, 256, 256);
+        for (let i = 0; i < 4800; i++) {
+            const v = 60 + Math.random() * 70;
+            ctx.fillStyle = `rgba(${v},${v * 0.9},${v * 0.78},${0.16 + Math.random() * 0.22})`;
+            ctx.fillRect(Math.random() * 256, Math.random() * 256, 1 + Math.random() * 2, 1 + Math.random() * 2);
+        }
+        ctx.strokeStyle = 'rgba(24,20,17,0.6)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 34; i++) {
+            let x = Math.random() * 256, y = Math.random() * 256;
+            ctx.beginPath(); ctx.moveTo(x, y);
+            for (let s = 0; s < 5; s++) { x += (Math.random() - 0.5) * 30; y += (Math.random() - 0.5) * 30; ctx.lineTo(x, y); }
+            ctx.stroke();
+        }
+        for (let i = 0; i < 90; i++) {
+            const x = Math.random() * 256, y = Math.random() * 256, r = 0.6 + Math.random() * 2.4;
+            ctx.fillStyle = 'rgba(20,17,15,0.7)';
+            ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
+        }
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        return texture;
+    }
     function rockGeometry(seed, detail) {
         const sides = 6 + ((seed + detail) % 3);
         const geometry = new THREE.CylinderGeometry(1, 1.06, 0.22, sides, 1, false);
@@ -363,7 +391,8 @@
     }
     function buildRocks(texture) {
         const rand = VenusTerrain.random(19690720);
-        const material = new THREE.MeshStandardMaterial({ map: texture, bumpMap: texture, bumpScale: 0.07, roughness: 0.98, vertexColors: true });
+        const rockTex = rockTexture();
+        const material = new THREE.MeshStandardMaterial({ map: rockTex, bumpMap: rockTex, bumpScale: 0.14, roughness: 1, vertexColors: true, flatShading: true });
         const transform = new THREE.Object3D();
         const color = new THREE.Color();
         for (let group = 0; group < 4; group++) {
