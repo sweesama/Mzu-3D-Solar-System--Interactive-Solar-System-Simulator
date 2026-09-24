@@ -291,17 +291,17 @@
     }
     function rockTexture() {
         const canvas = document.createElement('canvas');
-        canvas.width = canvas.height = 256;
+        canvas.width = canvas.height = 512;
         const ctx = canvas.getContext('2d');
         ctx.fillStyle = '#8d897e';
-        ctx.fillRect(0, 0, 256, 256);
-        for (let i = 0; i < 5200; i++) {
+        ctx.fillRect(0, 0, 512, 512);
+        for (let i = 0; i < 20000; i++) {
             const v = 110 + Math.random() * 90;
             ctx.fillStyle = `rgba(${v},${v * 0.98},${v * 0.92},${0.16 + Math.random() * 0.2})`;
-            ctx.fillRect(Math.random() * 256, Math.random() * 256, 1 + Math.random() * 2, 1 + Math.random() * 2);
+            ctx.fillRect(Math.random() * 512, Math.random() * 512, 1 + Math.random() * 2.4, 1 + Math.random() * 2.4);
         }
-        for (let i = 0; i < 170; i++) {
-            const x = Math.random() * 256, y = Math.random() * 256, r = 0.7 + Math.random() * 3.4;
+        for (let i = 0; i < 620; i++) {
+            const x = Math.random() * 512, y = Math.random() * 512, r = 0.7 + Math.random() * 4.5;
             const g = ctx.createRadialGradient(x, y, 0, x, y, r);
             g.addColorStop(0, 'rgba(28,26,24,0.85)');
             g.addColorStop(0.7, 'rgba(48,45,42,0.4)');
@@ -310,16 +310,35 @@
             ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
         }
         ctx.strokeStyle = 'rgba(30,28,26,0.5)';
-        ctx.lineWidth = 1;
-        for (let i = 0; i < 26; i++) {
-            let x = Math.random() * 256, y = Math.random() * 256;
+        ctx.lineWidth = 1.4;
+        for (let i = 0; i < 60; i++) {
+            let x = Math.random() * 512, y = Math.random() * 512;
             ctx.beginPath(); ctx.moveTo(x, y);
-            for (let s = 0; s < 4; s++) { x += (Math.random() - 0.5) * 26; y += (Math.random() - 0.5) * 26; ctx.lineTo(x, y); }
+            for (let s = 0; s < 5; s++) { x += (Math.random() - 0.5) * 36; y += (Math.random() - 0.5) * 36; ctx.lineTo(x, y); }
             ctx.stroke();
         }
         const texture = new THREE.CanvasTexture(canvas);
         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
         return texture;
+    }
+    function loadRockModel(url) {
+        return new Promise(resolve => {
+            if (!THREE.GLTFLoader) return resolve(null);
+            new THREE.GLTFLoader().load(url, gltf => {
+                let mesh = null;
+                gltf.scene.traverse(o => { if (!mesh && o.isMesh) mesh = o; });
+                if (!mesh) return resolve(null);
+                const geometry = mesh.geometry.clone();
+                geometry.computeBoundingBox();
+                geometry.center();
+                const size = new THREE.Vector3();
+                geometry.boundingBox.getSize(size);
+                const norm = 1 / Math.max(size.x, size.y, size.z);
+                geometry.scale(norm, norm, norm);
+                if (mesh.material && mesh.material.map) { mesh.material.map.anisotropy = 4; }
+                resolve({ geometry, material: mesh.material || null });
+            }, undefined, () => resolve(null));
+        });
     }
     function rockGeometry(seed, detail) {
         const geometry = new THREE.IcosahedronGeometry(1, detail);
@@ -348,7 +367,7 @@
         }
         return geometry;
     }
-    function buildRocks(texture) {
+    function buildRocks(texture, rockModels) {
         const rand = LunarTerrain.random(19690720);
         const rockTex = rockTexture();
         const material = new THREE.MeshStandardMaterial({ map: rockTex, bumpMap: rockTex, bumpScale: 0.16, roughness: 1, vertexColors: true, flatShading: true });
@@ -380,10 +399,19 @@
         const filletMaterial = new THREE.MeshStandardMaterial({ map: texture, roughness: 1, color: 0xb3aea2 });
         const heroes = [[-7, 68, 1.1], [12, 48, 2.2], [21, 50, 1.1], [-43, 13, 3.4], [-47, 8, 1.3], [-42, 18, 0.7], [90, 26, 1.5], [7, 20, 0.9], [-17, 40, 1.9]];
         for (const [x, z, size] of heroes) {
-            const rock = new THREE.Mesh(rockGeometry(x + 100, 2), material);
-            rock.scale.set(size * (1.1 + rand() * 0.5), size * (0.78 + rand() * 0.35), size);
-            rock.position.set(x, LunarTerrain.sampleSurface(surface, x, z) + size * 0.2, z);
-            rock.rotation.y = rand() * 6;
+            const model = rockModels && rockModels.length ? rockModels[Math.floor(rand() * rockModels.length)] : null;
+            let rock;
+            if (model) {
+                rock = new THREE.Mesh(model.geometry, model.material || material);
+                rock.scale.setScalar(size * 2.1);
+                rock.rotation.set((rand() - 0.5) * 0.45, rand() * 6, (rand() - 0.5) * 0.45);
+                rock.position.set(x, LunarTerrain.sampleSurface(surface, x, z) + size * 0.66, z);
+            } else {
+                rock = new THREE.Mesh(rockGeometry(x + 100, 2), material);
+                rock.scale.set(size * (1.1 + rand() * 0.5), size * (0.78 + rand() * 0.35), size);
+                rock.rotation.y = rand() * 6;
+                rock.position.set(x, LunarTerrain.sampleSurface(surface, x, z) + size * 0.2, z);
+            }
             rock.castShadow = rock.receiveShadow = true;
             scene.add(rock);
             const fillet = new THREE.Mesh(filletGeometry, filletMaterial);
@@ -942,7 +970,8 @@
             const texture = makeTexture();
             buildTerrain(texture);
             await new Promise(resolve => setTimeout(resolve, 20));
-            buildRocks(texture);
+            const rockModels = (await Promise.all([loadRockModel('models/bennu.glb'), loadRockModel('models/itokawa.glb')])).filter(Boolean);
+            buildRocks(texture, rockModels);
             buildAstronaut(texture);
             buildFootprints();
             buildInstrument();
