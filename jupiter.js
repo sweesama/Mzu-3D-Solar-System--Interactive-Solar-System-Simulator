@@ -1,0 +1,846 @@
+(function () {
+    'use strict';
+    const $ = id => document.getElementById(id);
+    const parameters = new URLSearchParams(location.search);
+    const expedition = window.JupiterExpedition;
+    if (!expedition) { $('loading-label').textContent = 'The expedition guide could not load. Please reload this page.'; return; }
+    const dictionary = {
+        en: {
+            expeditions: 'EXPEDITIONS', fullscreen: 'Full screen', return: 'Return to orbit', destination: 'JUPITER', surfaceMode: 'ATMOSPHERIC DESCENT',
+            chapter: 'EXPEDITION 005 / THE FALLING PROBE', title: 'Descend into\nJupiter.', intro: 'Ride an imagined probe down through Jupiter’s cloud decks — banded haze above, a giant storm to the west, and lightning far below.', begin: 'Begin descent', arrivalHint: 'No download. Just a little curiosity.',
+            fieldNotes: 'FIELD NOTES', reconstruction: 'An imagined site, informed by Jupiter science.', gravity: 'GRAVITY', atmosphere: 'ATMOSPHERE', vacuum: 'H₂ / He · hydrogen', temperature: 'CLOUD TOP', tempValue: 'about −110°C', distance: 'ALTITUDE',
+            walkingHint: 'W A S D to drift · drag to look · Space to fire the ascent thruster · G gravity · M sound', touchHint: 'Arrows to drift · drag to look · tap Burn to rise', station0: 'Entry point', station1: 'Crystal field', station2: 'Storm rim',
+            astronaut: 'PROBE', jump: 'Burn', grounded: 'Descending', airborne: 'Descending', motionOn: 'Camera motion: On', motionOff: 'Camera motion: Off', motionHint: 'Disable camera drift for a steadier view.',
+            guide: 'Field guide', photo: 'Photo mode', quality: 'Quality', auto: 'Auto', high: 'High', balanced: 'Balanced', low: 'Low', artNote: 'SCIENCE-INSPIRED ARTISTIC RECONSTRUCTION · NOT A SCANNED ATMOSPHERE',
+            capture: 'Save photograph', exitPhoto: 'Exit photo mode', loading: 'Preparing the Jovian atmosphere…', fieldGuide: 'THE EXPEDITION FIELD GUIDE', guideTitle: 'There is no ground here.',
+            guideIntro: 'This is a small, freely explorable column of atmosphere, not a whole-planet simulation. The five observation points are different views of the same descent; two of them lie deeper and can only be reached by sinking on your own.', controlsTitle: 'Moving around',
+            gravityCompare: 'Compare Earth gravity · G', gravityMercury: 'Back to Jupiter gravity · G', gravityHint: 'Same probe, different pull. Jupiter’s gravity is 24.79 m/s² — with G the descent quickens, just as the same parachute would fail harder on Jupiter.', soundOn: 'Probe sounds: On', soundOff: 'Probe sounds: Off', soundHint: 'Wind rushing past the hull, a deep rumble, radio static, and muffled thunder from storms below. M toggles.', gravityMercuryTag: 'Jupiter gravity — 24.79 m/s².', gravityEarth: 'Earth gravity — 9.8 m/s². The same probe sinks gentler.', mercuryTag: 'JUPITER', earthTag: 'EARTH',
+            controlsText: 'You are a descending probe, not a walker — there is no surface to stand on. The probe sinks on its own; hold Space to fire the ascent thruster and climb. W A S D or the arrow keys drift sideways; Shift drifts faster. Drag to look. Touchscreens have direction and Burn buttons. G compares Earth gravity; M toggles sound. H hides notes; P opens photo mode; Esc closes it.',
+            scienceTitle: 'Science meets imagination', scienceText: 'Jupiter has no surface — its hydrogen atmosphere simply thickens downward until it behaves like a hot metallic ocean. The Galileo probe descended into these clouds in 1995 and transmitted for about an hour. The ammonia cirrus, the great storm vortex, the deeper ammonium-sulfide haze, and the lightning flashes are artistic reconstructions, not survey data.',
+            soundText: 'The probe sinks at a comfortable terminal-velocity drift — real descent profiles are far harsher. Press G to feel how much faster the same probe would sink under Earth’s gentler gravity... inverted: under Jupiter’s 24.79 m/s² the sink rate more than doubles. Wind rush follows your descent rate; the crackles honour Jupiter’s powerful radio emissions.',
+            assetText: 'No external imagery on this page — clouds, the storm, and the sky are generated locally in your browser.',
+            skyEyebrow: 'IN THE JOVIAN SKY', sunName: 'The Sun', earthName: 'Earth', venusName: 'Venus',
+            sunText: 'From Jupiter the Sun is five times farther than from Earth — a small fierce disc, about a fifth as wide as we see it, giving roughly 4% of Earth’s daylight. Artistic rendering, not an accurate ephemeris.',
+            earthText: 'From Jupiter, Earth never strays far from the Sun — a pale point lost in the haze most days. Its placement here is artistic.',
+            venusText: 'Venus hugs the Sun even tighter than Earth when seen from Jupiter — a faint spark in the bright haze. Artistic placement.',
+            viewOrbit: 'See it in the Solar System', keepExploring: 'Keep exploring', skyHint: 'Click the small Sun in the sky to learn about it — you can then visit it in the Solar System view.',
+            featuresTitle: 'What you are seeing', features: [
+                ['A five-times-smaller Sun', 'Jupiter orbits 5.2 times farther from the Sun than Earth — sunlight here is only about 4% as strong, a bright pinprick in the haze.'],
+                ['Banded sky above', 'Look up through the thinning haze — the cloud bands of a giant planet wrap the whole sky.'],
+                ['Ammonia cirrus', 'High, thin white wisps — ice crystals of ammonia, the same chemistry as household cleaner, frozen hard at −110°C.'],
+                ['The great vortex', 'A storm larger than Earth churns to the west — the Great Red Spot’s artistic echo, with a raised collar of cloud around its rim.'],
+                ['Drifting ice crystals', 'Ammonia snow grains glitter past the probe — rotate one in the specimen viewer.'],
+                ['Lightning below', 'Deep flashes inside the brown layer — Jupiter’s storms make lightning ten times stronger than Earth’s.'],
+                ['The darkening deep', 'Descend far enough and the haze swallows the light — pressure and temperature climb until no probe survives.']
+            ],
+            error: 'The 3D scene could not start. Try reloading in a browser with WebGL enabled.', lost: 'The graphics connection was interrupted. Reload this page to resume.', boundary: 'You have reached the edge of this descent corridor. Try another observation point.', saved: 'Photograph saved.', saveFailed: 'This browser could not save the photograph.', fullscreenFailed: 'Full screen is not available in this browser.', textureFailed: 'A texture was unavailable; a simpler material is shown instead.', adjusted: 'Render resolution reduced to keep exploring smoothly.',
+            notes: [
+                ['The veil of ammonia', 'Thin white cirrus marks the ammonia ice deck — the highest of Jupiter’s three cloud layers and the one we see in photographs.', 'ATMOSPHERE', 'Ammonia cirrus'],
+                ['A frozen crystal', 'This tumbling grain is ammonia ice — rotate it in the specimen viewer. Jupiter’s white zones are made of trillions like it.', 'AEROSOL', 'Ice crystal'],
+                ['The storm that outlives nations', 'The rim of the great vortex — a hurricane wider than Earth that has raged for centuries. Winds circle its collar at over 300 km/h.', 'STORM', 'Great vortex rim'],
+                ['Flash in the deep', 'Lightning flickers inside the ammonium-hydrosulfide layer — storms here are powered by water, like ours, but vastly stronger.', 'STORM', 'Lightning shelf'],
+                ['Where signals fade', 'Down here sunlight dies, pressure mounts, and temperature climbs past what electronics can stand. The Galileo probe went silent somewhere like this in 1995.', 'DESCENT', 'The abyss']
+            ]
+        },
+        zh: {
+            expeditions: '星际探索', fullscreen: '全屏', return: '返回太阳系', destination: '木星', surfaceMode: '大气层下降', chapter: '探索 005 / 坠落中的探测器', title: '坠入木星。',
+            intro: '乘上一台想象的探测器，穿过木星的层层云带——上方是条带状的霾，西侧是巨型风暴，深处有闪电。', begin: '开始下降', arrivalHint: '无需下载，带上好奇心就好。', fieldNotes: '探索手记', reconstruction: '受木星科学启发的虚构地点。',
+            gravity: '木星引力', atmosphere: '大气环境', vacuum: '氢 / 氦', temperature: '云顶温度', tempValue: '约 −110°C', distance: '当前高度', walkingHint: 'W A S D 漂移 · 拖动转头 · 空格点火上升 · G 引力 · M 声音', touchHint: '方向按钮漂移 · 拖动画面转头 · 点击推进上升',
+            astronaut: '探测器视角', jump: '推进', grounded: '下降中', airborne: '下降中', motionOn: '镜头起伏：开', motionOff: '镜头起伏：关', motionHint: '关闭镜头漂移可获得更平稳的视角。',
+            station0: '进入点', station1: '冰晶区', station2: '风暴边缘', guide: '探索指南', photo: '摄影模式', quality: '画质', auto: '自动', high: '高', balanced: '均衡', low: '低',
+            artNote: '科学启发的艺术重建 · 非真实大气测绘', capture: '保存照片', exitPhoto: '退出摄影', loading: '正在准备木星大气…', fieldGuide: '木星探索指南', guideTitle: '这里没有地面。',
+            guideIntro: '这是一段可以自由漫游的大气柱，而非完整木星。五个观察点位于同一次下降的不同高度；其中两处更深，只能靠你自己沉下去。', controlsTitle: '如何移动',
+            gravityCompare: '对比地球引力 · G', gravityMercury: '恢复木星引力 · G', gravityHint: '同一台探测器，不同的引力。木星引力 24.79 m/s²——按 G 感受同样降落伞在木星上失效得更快。', soundOn: '探测器声音：开', soundOff: '探测器声音：关', soundHint: '掠过舱体的呼啸风、低沉轰鸣、射电杂音，以及深处风暴的闷雷。M 切换。', gravityMercuryTag: '木星引力 — 24.79 m/s²。', gravityEarth: '地球引力 — 9.8 m/s²。同一台探测器下沉得更缓。', mercuryTag: '木星', earthTag: '地球',
+            controlsText: '你是一台正在下降的探测器，不是步行者——这里没有可以站立的表面。探测器会自行下沉；按住空格点火上升。W A S D 或方向键侧向漂移，Shift 漂得更快。拖动画面观察。触屏有方向按钮和推进键。G 对比地球引力，M 开关声音。H 隐藏手记，P 进入摄影，Esc 退出摄影。',
+            scienceTitle: '科学与想象的交界', scienceText: '木星没有表面——氢大气越往下越稠，最终变成炽热的金属海洋。1995 年伽利略探测器曾坠入这样的云层，传回了约一小时的信号。氨冰卷云、巨型风暴涡旋、更深处的硫化铵霾、以及闪电闪光都是艺术重建，并非实测数据。',
+            soundText: '探测器以舒适的终端速度下沉——真实的下降剖面要严酷得多。按 G 感受：在木星 24.79 m/s² 的引力下，同一台探测器的下沉速率会翻倍还多。呼啸声跟随下沉速率变化；断断续续的杂音致敬木星强大的射电辐射。',
+            assetText: '本页不使用外部影像——云层、风暴和天空均由浏览器本地生成。',
+            skyEyebrow: '木星天空中', sunName: '太阳', earthName: '地球', venusName: '金星',
+            sunText: '从木星看，太阳比地球上看远五倍——一个刺目的小圆盘，视直径只有地球上的约五分之一，光照强度只有地球白天的约 4%。艺术呈现，并非精确星历。',
+            earthText: '从木星看，地球永远紧挨着太阳——大多数时候只是霾中一个苍白的光点。位置经过艺术处理。',
+            venusText: '从木星看，金星比地球更贴近太阳——亮霾里一颗微弱的火星。位置经过艺术处理。',
+            viewOrbit: '在太阳系中查看它', keepExploring: '继续探索', skyHint: '点击天空中那颗小小的太阳可以了解它，然后还能跳到太阳系视角。',
+            featuresTitle: '你眼前的景观', features: [
+                ['小五倍的太阳', '木星距太阳是地球的 5.2 倍——这里的光照只有地球的约 4%，霾中一枚刺目的针尖。'],
+                ['头顶的条带天空', '抬头穿过稀薄的霾——巨行星的云带环绕整片天空。'],
+                ['氨冰卷云', '高处稀薄的白色云丝——氨结晶，就是家用清洁剂里那种成分，在 −110°C 冻成冰。'],
+                ['巨型风暴涡旋', '西侧翻腾着比地球还大的风暴——大红斑的艺术再现，边缘有一圈抬升的云领。'],
+                ['飘浮的冰晶', '氨雪粒在探测器旁闪亮掠过——可以在查看器中旋转一粒。'],
+                ['深处的闪电', '棕色云层内部明灭的闪光——木星风暴的闪电比地球强十倍。'],
+                ['渐暗的深处', '沉得够深，光会被霾吞没——气压和温度持续攀升，直到没有探测器能幸存。']
+            ],
+            error: '三维场景未能启动，请在支持 WebGL 的浏览器中重新加载。', lost: '图形连接中断，请重新加载页面继续。', boundary: '已到达本次下降走廊的边缘，可以前往另一个观察点。', saved: '照片已保存。', saveFailed: '当前浏览器无法保存照片。', fullscreenFailed: '当前浏览器无法进入全屏。', textureFailed: '纹理暂时不可用，已显示简化材质。', adjusted: '已适当降低渲染分辨率，让探索更流畅。',
+            notes: [
+                ['氨的面纱', '薄薄的白色卷云标志着氨冰云层——木星三层云里最高的一层，也是我们照片里看到的那层。', '大气现象', '氨冰卷云'],
+                ['一粒冻结的晶体', '这颗翻滚的小颗粒是氨冰——在查看器中旋转它。木星的白色亮带由数以万亿计这样的颗粒组成。', '气溶胶', '冰晶'],
+                ['比国家更长寿的风暴', '巨型涡旋的边缘——一场比地球还宽、已经肆虐了几个世纪的飓风。环领上的风速超过每小时 300 公里。', '风暴类型', '涡旋边缘'],
+                ['深处的一闪', '硫化铵云层内部明灭的闪电——这里的风暴由水驱动，和地球类似，但强大得多。', '风暴类型', '闪电层'],
+                ['信号消失之处', '这里阳光熄灭、气压攀升、温度高到电子设备无法承受。1995 年伽利略探测器就在类似的地方归于沉默。', '下降阶段', '深渊']
+            ]
+        }
+    };
+    const discoveryStrings = {
+        en: {
+            fieldRoute: 'YOUR DESCENT ROUTE', allFound: 'All five discoveries are in your journal. Stay a little longer.', discover: 'Discover · E', review: 'Read again · E', chooseStop: 'Next stop', rotateRock: 'Drag or use arrow keys to rotate', continueRoute: 'Continue exploring', takePhoto: 'Frame a photograph', discoveryDisclaimer: 'This is an imagined site, not a surveyed descent track or an identified Jovian sample.',
+            savedHere: 'Journal saved on this device.', visitOnly: 'Journal kept for this visit only.', follow: 'Follow the amber guide dots', closeEnough: 'You are here. Press E or Discover.', landFirst: 'Match the layer before recording.', approach: 'Drift closer to this discovery.', recorded: 'DISCOVERY RECORDED', journal: 'FROM YOUR FIELD JOURNAL', away: 'm to the stop', ready: 'Ready to discover', quick: 'Quick travel — discovery not automatic', unavailable: 'The 3D specimen viewer is unavailable.', routeHelp: 'Follow the amber guide dots and distance arrow. Drift to a stop and press E or Discover to add it to your journal. The numbered buttons offer quick travel, not automatic discoveries. Guide dots are interface aids, not structures in the atmosphere. H hides or restores the route card.',
+            teasers: ['Drift south-west from entry to the thin ammonia cirrus veil.', 'A tumbling ice crystal drifts near the crystal field — approach it and turn it in the specimen viewer.', 'Ride west to the rim of the great storm vortex and look into its eye.', 'Sink below the deck north-west to where the flashes live.', 'Let yourself sink far south — down where the light dies.'],
+            details: ['Jupiter’s visible face is ammonia ice cirrus at about −110°C — the topmost of three stacked cloud decks. Below it lie ammonium hydrosulfide and then water clouds. This veil is an artistic rendering of that top deck.', 'Ammonia snow and ice grains populate the white zones. A real crystal is micrometres across — this one is scaled up so you can hold it. Rotate it to inspect the facets.', 'The Great Red Spot is a storm wider than Earth, first recorded in the 1800s and probably older. Its rim collar rises above the surrounding deck and the windspeeds exceed 300 km/h. This vortex is an artistic echo, not a scan.', 'Juno detected lightning flashes throughout Jupiter’s water-bearing layers — shallow flashes and deep bolts alike, some ten times stronger than Earth’s. The flickers here honour those storms.', 'The Galileo atmospheric probe transmitted for about an hour in 1995 before pressure and heat ended it. There is no floor down there — the haze simply gets hotter and denser until it becomes metallic hydrogen. This descent is artistic, not a mission replay.']
+        },
+        zh: {
+            fieldRoute: '你的下降路线', allFound: '五个发现都已记入手记。不妨再多停留一会儿。', discover: '记录发现 · E', review: '重读手记 · E', chooseStop: '换一站', rotateRock: '拖动或使用方向键旋转冰晶', continueRoute: '继续探索', takePhoto: '构图拍照', discoveryDisclaimer: '这是虚构场景，并非真实下降轨迹测绘，也不是已鉴定的木星样本。',
+            savedHere: '手记已保存在此设备。', visitOnly: '手记仅在本次浏览中保留。', follow: '沿淡金色引导点漂移', closeEnough: '已抵达，按 E 或点击记录发现。', landFirst: '请对齐这一层再记录发现。', approach: '请漂近这个发现点。', recorded: '新的发现已记录', journal: '你的探索手记', away: '米到达此站', ready: '可以记录发现', quick: '快捷移动，不会自动完成发现', unavailable: '三维查看器暂时不可用。', routeHelp: '跟随淡金色引导点和距离箭头，漂近后按 E 或点击记录发现。底部编号可以快捷移动，但不会自动完成发现。引导点只是界面辅助，并非大气中的真实设施。H 可隐藏或恢复路线卡片。',
+            teasers: ['从进入点向西南漂到那片稀薄的氨卷云纱。', '冰晶区附近有一粒翻滚的冰晶——靠近它，在查看器中转动观察。', '向西漂到巨型风暴涡旋的边缘，俯视它的风暴眼。', '向西北沉到云层下方，去闪光出没的地方。', '让自己向南方深处沉下去——沉到光消失的地方。'],
+            details: ['木星可见的"脸"是约 −110°C 的氨冰卷云——三层叠置云带里最上面的一层。它之下是硫化铵云，再往下是水云。这片云纱是对顶层云的艺术再现。', '白色亮带里充满了氨雪和冰晶颗粒。真实的冰晶只有微米级——这一粒被放大了以便观察。旋转它，看看晶面。', '大红斑是比地球还宽的风暴，1800 年代就有记录，可能更古老。它的边缘环领高出周围云层，风速超过每小时 300 公里。这个涡旋是艺术再现，并非测绘。', '朱诺号在木星含水云层各处都探测到了闪电——浅层闪光和深层巨闪都有，有些比地球闪电强十倍。这里的明灭正是致敬那些风暴。', '1995 年伽利略大气探测器传回了约一小时的信号，然后被压力和高温终结。更深处没有"底"——霾只会越来越热、越来越稠，最终变成金属氢。这段下降是艺术演绎，不是任务回放。']
+        }
+    };
+    let language = parameters.get('lang') === 'zh' ? 'zh' : 'en';
+    let stationIndex = 0, exploring = false, photoMode = false, ready = false;
+    let renderer, scene, camera, surface, sunlight, walker, astronaut, animationId = null;
+    let motionEnabled = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let yaw = -0.12, pitch = -0.06, lastTime = 0, frameCount = 0, sampleTime = 0, pixelRelief = 0, cameraTween = null;
+    let noticeTimer, lastBoundaryNotice = 0, drag = null;
+    let gravity = JupiterAtmo.GRAVITY, audio = null, soundEnabled = true;
+    const dust = { bursts: [], texture: null };
+    const keys = new Set(), touchKeys = new Set(), obstacles = [];
+    const stations = expedition.stations;
+    let discoveryUI = null, featuredRock = null;
+    const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
+    let skyPivot = null, earthPivot = null, crystalField = [], skyMaterial = null, ambientLight = null, flashTimer = 6, thrustActive = false;
+    const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
+    const position = { x: stations[0].x, z: stations[0].z };
+    const touchDevice = matchMedia('(pointer: coarse)').matches;
+    const policy = window.SolarQualityPolicy;
+    let savedQuality = '';
+    try { savedQuality = localStorage.getItem(policy?.QUALITY_STORAGE_KEY || 'mzu-solar-quality') || ''; } catch (error) { savedQuality = ''; }
+    const preference = policy ? policy.normalizePreference(parameters.get('quality')) || policy.normalizePreference(savedQuality) || 'auto' : 'balanced';
+    let quality = preference === 'auto' && policy ? policy.chooseAutomaticQuality({
+        deviceMemory: navigator.deviceMemory, hardwareThreads: navigator.hardwareConcurrency,
+        compactViewport: innerWidth < 768, viewportPixels: innerWidth * innerHeight * Math.min(devicePixelRatio, 2) ** 2, saveData: navigator.connection?.saveData
+    }) : preference;
+    if (!['high', 'balanced', 'low'].includes(quality)) quality = 'balanced';
+    const profiles = {
+        high: { segments: 384, rocks: 2200, gravel: 6500, texture: 1024, shadows: 2048, ratio: 1.75 },
+        balanced: { segments: 288, rocks: 1300, gravel: 3800, texture: 512, shadows: 1024, ratio: 1.5 },
+        low: { segments: 192, rocks: 600, gravel: 1400, texture: 512, shadows: 512, ratio: 1 }
+    };
+    const profile = profiles[quality];
+    const t = key => dictionary[language][key];
+    function applyLanguage() {
+        document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en';
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+            const value = t(element.dataset.i18n);
+            if (value) element.textContent = value;
+        });
+        document.querySelector('h1').style.whiteSpace = 'pre-line';
+        $('language-button').textContent = language === 'zh' ? 'EN' : '中文';
+        $('walking-hint').textContent = t(touchDevice ? 'touchHint' : 'walkingHint');
+        updateMotionButton();
+        updateGravityButton();
+        updateSoundButton();
+        $('gravity-mode').textContent = t(gravity === JupiterAtmo.GRAVITY ? 'mercuryTag' : 'earthTag');
+        if (walker) $('movement-state').textContent = t(walker.grounded ? 'grounded' : 'airborne');
+        const featureList = $('feature-list');
+        if (featureList) {
+            featureList.innerHTML = '';
+            for (const [name, text] of (t('features') || [])) {
+                const li = document.createElement('li'), strong = document.createElement('strong'), span = document.createElement('span');
+                strong.textContent = name; span.textContent = text;
+                li.append(strong, span); featureList.appendChild(li);
+            }
+        }
+        updateNotes();
+    }
+    function updateNotes() {
+        if (discoveryUI) discoveryUI.setLanguage(language);
+    }
+    function notify(key) {
+        $('notice').textContent = t(key);
+        $('notice').classList.add('visible');
+        clearTimeout(noticeTimer);
+        noticeTimer = setTimeout(() => $('notice').classList.remove('visible'), 4200);
+    }
+    function fail(key, error) {
+        ready = false;
+        if (animationId !== null) cancelAnimationFrame(animationId);
+        animationId = null;
+        $('loading-overlay').hidden = false;
+        $('loading-label').textContent = t(key);
+        document.querySelector('.loading-orbit').style.animation = 'none';
+        document.querySelectorAll('.station-button, #begin-button, #photo-button').forEach(button => { button.disabled = true; });
+        if (error) console.error('Jupiter expedition:', error);
+    }
+    function makeTexture() {
+        const size = profile.texture;
+        const pixels = new Uint8Array(size * size * 4);
+        const rand = JupiterAtmo.random(817);
+        const fields = [8, 32, 128].map(count => ({ count, data: Float32Array.from({ length: count * count }, () => rand()) }));
+        function tileNoise(u, v, field) {
+            const x = u * field.count, z = v * field.count, ix = Math.floor(x), iz = Math.floor(z);
+            let fx = x - ix, fz = z - iz;
+            fx = fx * fx * (3 - 2 * fx); fz = fz * fz * (3 - 2 * fz);
+            const at = (a, b) => field.data[(b % field.count) * field.count + a % field.count];
+            return (at(ix, iz) * (1 - fx) + at(ix + 1, iz) * fx) * (1 - fz) + (at(ix, iz + 1) * (1 - fx) + at(ix + 1, iz + 1) * fx) * fz;
+        }
+        for (let z = 0; z < size; z++) {
+            for (let x = 0; x < size; x++) {
+                const u = x / size, v = z / size;
+                const grain = (rand() - 0.5) * 17;
+                const cloud = (tileNoise(u, v, fields[0]) - 0.5) * 33 + (tileNoise(u, v, fields[1]) - 0.5) * 27 + (tileNoise(u, v, fields[2]) - 0.5) * 20;
+                const ripple = Math.sin((u * 46 + tileNoise(u, v, fields[1]) * 4.5) * Math.PI) * 4;
+                const value = Math.max(48, Math.min(190, 118 + grain + cloud + ripple + (rand() > 0.999 ? -35 : 0)));
+                const i = (z * size + x) * 4;
+                pixels[i] = Math.min(255, value * 1.08); pixels[i + 1] = value * 0.94; pixels[i + 2] = value * 0.72; pixels[i + 3] = 255;
+            }
+        }
+        const texture = new THREE.DataTexture(pixels, size, size, THREE.RGBAFormat);
+        texture.encoding = THREE.sRGBEncoding;
+        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        texture.magFilter = THREE.LinearFilter;
+        texture.minFilter = THREE.LinearMipmapLinearFilter;
+        texture.generateMipmaps = true;
+        texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+        texture.needsUpdate = true;
+        return texture;
+    }
+    const terrainNoiseShader = `
+        float lunarHash(vec2 p) { return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453); }
+        float lunarNoise(vec2 p) {
+            vec2 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
+            return mix(mix(lunarHash(i),lunarHash(i+vec2(1.0,0.0)),f.x),mix(lunarHash(i+vec2(0.0,1.0)),lunarHash(i+vec2(1.0,1.0)),f.x),f.y);
+        }
+    `;
+    function groundMaterial(texture, repeats) {
+        const map = texture.clone();
+        map.repeat.set(repeats, repeats);
+        map.needsUpdate = true;
+        const material = new THREE.MeshStandardMaterial({ map, bumpMap: map, bumpScale: 0.055, roughness: 1, metalness: 0, vertexColors: true });
+        material.onBeforeCompile = shader => {
+            shader.vertexShader = 'varying vec3 vGroundPosition;\n' + shader.vertexShader;
+            shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvGroundPosition = position;');
+            shader.fragmentShader = 'varying vec3 vGroundPosition;\n' + terrainNoiseShader + shader.fragmentShader;
+            shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
+                float broad = lunarNoise(vGroundPosition.xz * 0.038) - 0.5;
+                float fine = lunarNoise(vGroundPosition.xz * 1.8) - 0.5;
+                float detailFade = 1.0 - smoothstep(25.0, 130.0, distance(cameraPosition, vGroundPosition));
+                diffuseColor.rgb *= 0.94 + broad * 0.22 + fine * 0.06 * detailFade;
+                diffuseColor.rgb *= 1.0 + sin(vGroundPosition.y * 3.1) * 0.055;
+            `);
+        };
+        return material;
+    }
+    function mountainMaterial() {
+        const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(0x8d8177).convertSRGBToLinear(), roughness: 1, metalness: 0, vertexColors: true });
+        material.extensions = { derivatives: true };
+        material.onBeforeCompile = shader => {
+            shader.vertexShader = 'varying vec3 vMountainPosition;\n' + shader.vertexShader;
+            shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvMountainPosition = position;');
+            shader.fragmentShader = 'varying vec3 vMountainPosition;\n' + terrainNoiseShader + `
+                float rockRelief(vec2 p) {
+                    return lunarNoise(p * 0.067) * 2.8 + lunarNoise(p * 0.19) * 0.45;
+                }
+            ` + shader.fragmentShader;
+            shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
+                vec2 rockPoint = vMountainPosition.xz + vMountainPosition.y * vec2(0.35, 0.17);
+                float footprint = max(length(dFdx(rockPoint)), length(dFdy(rockPoint)));
+                float rockDetail = 1.0 - smoothstep(2.0, 7.0, footprint);
+                float largePatches = lunarNoise(rockPoint * 0.011);
+                float fracturedRock = lunarNoise(rockPoint * 0.063 + vec2(largePatches * 3.0));
+                float grains = mix(0.5, lunarNoise(rockPoint * 0.29), rockDetail);
+                float crevices = smoothstep(0.35, 0.62, fracturedRock);
+                diffuseColor.rgb *= 0.54 + largePatches * 0.44 + crevices * 0.3 + grains * 0.16;
+            `);
+            shader.fragmentShader = shader.fragmentShader.replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
+                float reliefX = (rockRelief(rockPoint + vec2(1.0, 0.0)) - rockRelief(rockPoint - vec2(1.0, 0.0))) * 0.5;
+                float reliefZ = (rockRelief(rockPoint + vec2(0.0, 1.0)) - rockRelief(rockPoint - vec2(0.0, 1.0))) * 0.5;
+                vec3 reliefNormal = mat3(viewMatrix) * vec3(reliefX, 0.0, reliefZ);
+                normal = normalize(normal - reliefNormal * (0.4 + rockDetail * 0.6));
+            `);
+        };
+        return material;
+    }
+    function buildTerrain(texture) {
+        surface = JupiterAtmo.createSurface(960, profile.segments);
+        const geometry = new THREE.PlaneGeometry(surface.size, surface.size, surface.segments, surface.segments);
+        geometry.rotateX(-Math.PI / 2);
+        const positions = geometry.attributes.position;
+        const colors = new Float32Array(positions.count * 3);
+        const cream = new THREE.Color(0xe8dcc0), tan = new THREE.Color(0xc4a075), brown = new THREE.Color(0x8a6248), rust = new THREE.Color(0xa8503c), pale = new THREE.Color(0xf2ece0);
+        const c1 = new THREE.Color(), c2 = new THREE.Color();
+        for (let i = 0; i < positions.count; i++) {
+            const px = positions.getX(i), pz = positions.getZ(i);
+            positions.setY(i, surface.heights[i]);
+            const n = JupiterAtmo.noise(px * 0.085, pz * 0.085);
+            const patch = JupiterAtmo.noise(px * 0.011 + 7, pz * 0.011 - 3);
+            const band = Math.sin(pz * 0.055 + JupiterAtmo.noise(px * 0.012, pz * 0.004) * 2.2);
+            c1.copy(band > 0 ? cream : tan).lerp(band > 0 ? pale : brown, Math.abs(band) * 0.6);
+            const sd = JupiterAtmo.stormDistance(px, pz);
+            if (sd < 1.7) {
+                const s = THREE.MathUtils.clamp(1.7 - sd, 0, 1);
+                const ring = Math.exp(-Math.pow((sd - 0.8) / 0.3, 2));
+                c2.copy(rust).lerp(pale, ring * 0.55);
+                c1.lerp(c2, Math.min(1, s * 0.8 + ring * 0.35));
+            }
+            const shade = 0.62 + n * 0.22 + patch * 0.1;
+            colors.set([c1.r * shade, c1.g * shade, c1.b * shade], i * 3);
+        }
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        geometry.computeVertexNormals();
+        const ground = new THREE.Mesh(geometry, groundMaterial(texture, 240));
+        ground.receiveShadow = true;
+        ground.castShadow = true;
+        scene.add(ground);
+        const farGeometry = new THREE.PlaneGeometry(6400, 6400, quality === 'low' ? 160 : 260, quality === 'low' ? 160 : 260);
+        farGeometry.rotateX(-Math.PI / 2);
+        const farPositions = farGeometry.attributes.position;
+        const farColors = new Float32Array(farPositions.count * 3);
+        for (let i = 0; i < farPositions.count; i++) {
+            const x = farPositions.getX(i), z = farPositions.getZ(i);
+            const n = JupiterAtmo.noise(x * 0.003 + 3, z * 0.003 - 1);
+            const billow = JupiterAtmo.noise(x * 0.009, z * 0.009) * 26 + n * 60;
+            farPositions.setY(i, JupiterAtmo.height(x, z) - 2 + billow);
+            const band = Math.sin(z * 0.0045 + JupiterAtmo.noise(x * 0.001, z * 0.0008) * 3);
+            const color = 0.6 + n * 0.2 + band * 0.1;
+            farColors.set([color, color * 0.88, color * 0.66], i * 3);
+        }
+        const outerIndices = [];
+        const indices = farGeometry.index.array;
+        for (let i = 0; i < indices.length; i += 3) {
+            const outside = [indices[i], indices[i + 1], indices[i + 2]].some(index => Math.max(Math.abs(farPositions.getX(index)), Math.abs(farPositions.getZ(index))) >= 430);
+            if (outside) outerIndices.push(indices[i], indices[i + 1], indices[i + 2]);
+        }
+        farGeometry.setIndex(outerIndices);
+        farGeometry.setAttribute('color', new THREE.BufferAttribute(farColors, 3));
+        farGeometry.computeVertexNormals();
+        const farMaterial = mountainMaterial();
+        const far = new THREE.Mesh(farGeometry, farMaterial);
+        far.receiveShadow = true;
+        scene.add(far);
+    }
+    function crystalGeometry(seed) {
+        const geometry = new THREE.OctahedronGeometry(1, 0);
+        const p = geometry.attributes.position;
+        for (let i = 0; i < p.count; i++) {
+            const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+            const f = 0.8 + JupiterAtmo.noise(x * 3 + seed, y * 3 + z * 2) * 0.35;
+            p.setXYZ(i, x * f, y * (1.35 + JupiterAtmo.noise(x * 2, z * 2 + seed) * 0.4), z * f);
+        }
+        geometry.computeVertexNormals();
+        return geometry;
+    }
+    function buildRocks() {
+        const rand = JupiterAtmo.random(19690720);
+        const material = new THREE.MeshStandardMaterial({ color: 0xf4f9ff, roughness: 0.25, metalness: 0.1, transparent: true, opacity: 0.92, flatShading: true, emissive: 0x223040, emissiveIntensity: 0.35 });
+        const transform = new THREE.Object3D();
+        crystalField = [];
+        for (let group = 0; group < 3; group++) {
+            const count = Math.floor(profile.rocks / 3);
+            const mesh = new THREE.InstancedMesh(crystalGeometry(group * 13 + 5), material, count);
+            const items = [];
+            for (let i = 0; i < count; i++) {
+                let x = (rand() - 0.5) * 640, z = (rand() - 0.5) * 640;
+                const size = 0.25 + Math.pow(rand(), 2.4) * 1.4;
+                const y = JupiterAtmo.sampleSurface(surface, x, z) + 14 + rand() * 80;
+                const drift = { x, y, z, size, spin: rand() * Math.PI * 2, spinRate: (rand() - 0.5) * 0.5, bob: rand() * Math.PI * 2 };
+                items.push(drift);
+                transform.position.set(x, y, z);
+                transform.scale.setScalar(size);
+                transform.rotation.set(rand() * 3, rand() * 3, rand() * 3);
+                transform.updateMatrix();
+                mesh.setMatrixAt(i, transform.matrix);
+            }
+            mesh.frustumCulled = false;
+            scene.add(mesh);
+            crystalField.push({ mesh, items });
+        }
+        featuredRock = new THREE.Mesh(crystalGeometry(77), material.clone());
+        featuredRock.scale.set(1.6, 2.1, 1.6);
+        featuredRock.position.set(62, JupiterAtmo.sampleSurface(surface, 62, 84) + 26, 84);
+        scene.add(featuredRock);
+    }
+    function buildSky() {
+        skyMaterial = new THREE.ShaderMaterial({
+            side: THREE.BackSide, depthWrite: false, depthTest: false,
+            uniforms: { darkening: { value: 0 }, flash: { value: 0 } },
+            vertexShader: 'varying vec3 vP; void main(){vP=position; vec4 mv=modelViewMatrix*vec4(position,1.0); gl_Position=projectionMatrix*mv; gl_Position.z=gl_Position.w;}',
+            fragmentShader: `uniform float darkening; uniform float flash; varying vec3 vP;
+                float h21(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+                float n2(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(h21(i),h21(i+vec2(1,0)),f.x),mix(h21(i+vec2(0,1)),h21(i+vec2(1,1)),f.x),f.y);}
+                void main(){
+                    vec3 dir = normalize(vP);
+                    float up = clamp(dir.y, -1.0, 1.0);
+                    float bandNoise = n2(vec2(dir.x * 4.0 + dir.z * 3.0, up * 9.0)) * 0.9;
+                    float band = sin(up * 22.0 + bandNoise * 3.0);
+                    vec3 cream = vec3(0.82, 0.74, 0.60), tan_ = vec3(0.62, 0.47, 0.33), brown = vec3(0.34, 0.24, 0.17);
+                    vec3 sky = mix(tan_, cream, smoothstep(-0.4, 0.7, band));
+                    sky = mix(brown, sky, smoothstep(-0.25, 0.5, up));
+                    sky = mix(sky, vec3(0.10, 0.09, 0.11), smoothstep(0.55, 0.95, up));
+                    sky = mix(sky, vec3(0.16, 0.11, 0.08), smoothstep(-0.15, -0.8, up));
+                    sky += flash * vec3(0.5, 0.55, 0.7);
+                    sky *= 1.0 - darkening * 0.82;
+                    gl_FragColor = vec4(sky, 1.0);
+                }`
+        });
+        const sky = new THREE.Mesh(new THREE.SphereGeometry(6800, 32, 24), skyMaterial);
+        sky.frustumCulled = false;
+        sky.renderOrder = -1;
+        scene.add(sky);
+        skyPivot = new THREE.Group();
+        scene.add(skyPivot);
+        const sun = new THREE.Mesh(new THREE.SphereGeometry(7, 24, 18), new THREE.MeshBasicMaterial({ color: 0xfff4e0 }));
+        sun.position.copy(sunlight.position).normalize().multiplyScalar(2100);
+        skyPivot.add(sun);
+        const haloCanvas = document.createElement('canvas');
+        haloCanvas.width = haloCanvas.height = 128;
+        const haloContext = haloCanvas.getContext('2d');
+        const gradient = haloContext.createRadialGradient(64, 64, 2, 64, 64, 64);
+        gradient.addColorStop(0, 'rgba(255,248,235,0.9)');
+        gradient.addColorStop(0.25, 'rgba(255,240,215,0.35)');
+        gradient.addColorStop(1, 'rgba(255,230,195,0)');
+        haloContext.fillStyle = gradient;
+        haloContext.fillRect(0, 0, 128, 128);
+        const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(haloCanvas), transparent: true, opacity: 0.85, depthWrite: false }));
+        halo.scale.set(90, 90, 1);
+        halo.position.copy(sun.position);
+        skyPivot.add(halo);
+        const proxy = new THREE.Mesh(new THREE.SphereGeometry(140, 8, 6), new THREE.MeshBasicMaterial({ visible: false }));
+        proxy.position.copy(sun.position);
+        proxy.userData.body = 'sun';
+        skyPivot.add(proxy);
+        skyBodies.push(proxy);
+        return Promise.resolve();
+    }
+    function buildAstronaut(texture) {
+        const hull = new THREE.MeshStandardMaterial({ color: 0x6e6a5e, roughness: 0.55, metalness: 0.6 });
+        const dark = new THREE.MeshStandardMaterial({ color: 0x1d1f21, roughness: 0.85, metalness: 0.25 });
+        astronaut = new THREE.Group();
+        const shield = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.38, 0.07, 20), dark);
+        shield.position.set(0, -1.05, -0.55);
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(0.38, 0.022, 8, 24), hull);
+        ring.rotation.x = Math.PI / 2;
+        ring.position.set(0, -0.98, -0.55);
+        const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.5, 6), hull);
+        mast.position.set(0.24, -0.55, -0.45);
+        mast.rotation.z = -0.35;
+        const boom = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.007, 0.45, 6), hull);
+        boom.position.set(-0.24, -0.68, -0.4);
+        boom.rotation.z = 0.5;
+        boom.rotation.x = -0.3;
+        const antenna = new THREE.Mesh(new THREE.SphereGeometry(0.032, 10, 8), hull);
+        antenna.position.set(0.32, -0.28, -0.5);
+        astronaut.add(shield, ring, mast, boom, antenna);
+        astronaut.userData.legs = [];
+        astronaut.visible = false;
+        scene.add(astronaut);
+    }
+    function dustTexture() {
+        if (dust.texture) return dust.texture;
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = 32;
+        const context = canvas.getContext('2d');
+        const gradient = context.createRadialGradient(16, 16, 0, 16, 16, 16);
+        gradient.addColorStop(0, 'rgba(255,255,255,0.85)');
+        gradient.addColorStop(0.5, 'rgba(255,255,255,0.3)');
+        gradient.addColorStop(1, 'rgba(255,255,255,0)');
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, 32, 32);
+        dust.texture = new THREE.CanvasTexture(canvas);
+        return dust.texture;
+    }
+    function spawnDust(x, y, z, count, energy) {
+        const positions = new Float32Array(count * 3);
+        const velocities = new Float32Array(count * 3);
+        for (let i = 0; i < count; i++) {
+            const angle = rand() * Math.PI * 2, spread = energy * (0.3 + rand() * 0.9);
+            positions[i * 3] = x; positions[i * 3 + 1] = y; positions[i * 3 + 2] = z;
+            velocities[i * 3] = Math.cos(angle) * spread + walker.vx * 0.3;
+            velocities[i * 3 + 1] = energy * (0.5 + rand() * 0.9);
+            velocities[i * 3 + 2] = Math.sin(angle) * spread + walker.vz * 0.3;
+        }
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const material = new THREE.PointsMaterial({ size: 0.06 + energy * 0.05, map: dustTexture(), color: 0xdce8f2, transparent: true, opacity: 0.6, depthWrite: false, sizeAttenuation: true });
+        const points = new THREE.Points(geometry, material);
+        points.frustumCulled = false;
+        scene.add(points);
+        dust.bursts.push({ points, velocities, age: 0, life: 1.15 + energy * 0.4 });
+        if (dust.bursts.length > 24) {
+            const old = dust.bursts.shift();
+            scene.remove(old.points);
+            old.points.geometry.dispose(); old.points.material.dispose();
+        }
+    }
+    function updateDust(dt) {
+        for (let i = dust.bursts.length - 1; i >= 0; i--) {
+            const burst = dust.bursts[i];
+            burst.age += dt;
+            const attribute = burst.points.geometry.attributes.position;
+            for (let j = 0; j < attribute.count; j++) {
+                let px = attribute.getX(j) + (burst.velocities[j * 3] + 0.14) * dt;
+                let py = attribute.getY(j) + burst.velocities[j * 3 + 1] * dt;
+                let pz = attribute.getZ(j) + (burst.velocities[j * 3 + 2] + 0.06) * dt;
+                burst.velocities[j * 3 + 1] -= gravity * 0.12 * dt;
+                attribute.setXYZ(j, px, py, pz);
+            }
+            attribute.needsUpdate = true;
+            burst.points.material.opacity = Math.max(0, 0.65 * (1 - burst.age / burst.life));
+            if (burst.age >= burst.life) {
+                scene.remove(burst.points);
+                burst.points.geometry.dispose(); burst.points.material.dispose();
+                dust.bursts.splice(i, 1);
+            }
+        }
+    }
+    const rand = JupiterAtmo.random(4451);
+    function updateGravityButton() {
+        $('gravity-button').textContent = t(gravity === JupiterAtmo.GRAVITY ? 'gravityCompare' : 'gravityMercury');
+        $('gravity-button').setAttribute('aria-pressed', String(gravity !== JupiterAtmo.GRAVITY));
+    }
+    function updateSoundButton() {
+        $('sound-button').textContent = t(soundEnabled ? 'soundOn' : 'soundOff');
+        $('sound-button').setAttribute('aria-pressed', String(soundEnabled));
+    }
+    function toggleGravity() {
+        gravity = gravity === JupiterAtmo.GRAVITY ? JupiterAtmo.EARTH_GRAVITY : JupiterAtmo.GRAVITY;
+        $('gravity-value').textContent = gravity.toFixed(2);
+        $('gravity-mode').textContent = t(gravity === JupiterAtmo.GRAVITY ? 'mercuryTag' : 'earthTag');
+        updateGravityButton();
+        notify(gravity === JupiterAtmo.GRAVITY ? 'gravityMercuryTag' : 'gravityEarth');
+    }
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        try { localStorage.setItem('mzu-jupiter-sound', soundEnabled ? 'on' : 'off'); } catch (error) { }
+        if (audio) audio.setEnabled(soundEnabled);
+        updateSoundButton();
+    }
+    function pickSkyBody(x, y) {
+        skyPointer.set(x / innerWidth * 2 - 1, 1 - y / innerHeight * 2);
+        skyRay.setFromCamera(skyPointer, camera);
+        const hits = skyRay.intersectObjects(skyBodies, false);
+        return hits.length ? hits[0].object.userData.body : null;
+    }
+    function lookAtBody(body) {
+        const proxy = skyBodies.find(item => item.userData.body === body);
+        if (!proxy || !camera) return;
+        const dx = proxy.position.x - position.x, dz = proxy.position.z - position.z;
+        const targetYaw = Math.atan2(-dx, -dz);
+        const targetPitch = THREE.MathUtils.clamp(Math.atan2(proxy.position.y - camera.position.y, Math.hypot(dx, dz)), -1.45, 1.2);
+        const delta = THREE.MathUtils.euclideanModulo(targetYaw - yaw + Math.PI, Math.PI * 2) - Math.PI;
+        cameraTween = { fromYaw: yaw, fromPitch: pitch, toYaw: yaw + delta, toPitch: targetPitch, t: 0, body };
+    }
+    function showMoonlet(body) {
+        clearMovement();
+        $('moonlet-title').textContent = t(`${body}Name`);
+        $('moonlet-text').textContent = t(`${body}Text`);
+        const focusNames = { sun: 'Sun', earth: 'Earth', venus: 'Venus' };
+        $('moonlet-link').href = `index.html?focus=${focusNames[body] || 'Jupiter'}`;
+        $('moonlet-dialog').showModal();
+    }
+    function updateCamera() {
+        if (!walker) return;
+        const headMotion = motionEnabled && !photoMode && exploring;
+        const bob = headMotion ? Math.sin(walker.stride * 0.7) * 0.05 : 0;
+        const roll = headMotion ? Math.sin(walker.stride * 0.4) * 0.004 : 0;
+        camera.position.set(position.x, walker.y + bob, position.z);
+        camera.rotation.set(pitch, yaw, roll, 'YXZ');
+        if (astronaut) {
+            astronaut.visible = exploring;
+            astronaut.position.set(position.x, walker.y, position.z);
+            astronaut.rotation.y = yaw;
+        }
+        $('movement-state').textContent = walker.thrusting ? t('jump') : t('grounded');
+        $('heading').textContent = `${String(Math.round((-yaw * 180 / Math.PI + 360) % 360)).padStart(3, '0')}°`;
+        $('distance-value').textContent = `${Math.round(walker.y)} m · ${walker.vy >= 0 ? '↑' : '↓'}${Math.abs(walker.vy).toFixed(1)} m/s`;
+    }
+    function clearMovement() {
+        keys.clear(); touchKeys.clear(); drag = null;
+    }
+    function updateMotionButton() {
+        $('motion-button').textContent = t(motionEnabled ? 'motionOn' : 'motionOff');
+        $('motion-button').setAttribute('aria-pressed', String(motionEnabled));
+    }
+    function enter() {
+        if (!ready) return;
+        exploring = true;
+        $('visor').hidden = false;
+        if (audio) audio.start();
+        $('arrival-card').hidden = true;
+        $('field-card').hidden = false;
+        $('reticle').hidden = false;
+        $('walking-hint').hidden = false;
+        $('locomotion-status').hidden = false;
+        $('touch-pad').hidden = !touchDevice;
+        updateCamera();
+        sunlight.shadow.needsUpdate = true;
+        $('moon-canvas').focus({ preventScroll: true });
+    }
+    function relocate(index) {
+        if (!ready) return;
+        clearMovement();
+        stationIndex = index;
+        const station = stations[index];
+        position.x = station.x; position.z = station.z;
+        walker = JupiterAtmo.createWalker(surface, position);
+        if (station.y !== undefined) walker.y = station.y;
+        yaw = station.yaw; pitch = station.pitch;
+        updateCamera();
+        updateNotes();
+        if (discoveryUI) discoveryUI.select(index);
+        document.querySelectorAll('[data-station]').forEach(button => {
+            button.classList.toggle('selected', Number(button.dataset.station) === index);
+            button.setAttribute('aria-pressed', String(Number(button.dataset.station) === index));
+        });
+        enter();
+        sunlight.shadow.needsUpdate = true;
+    }
+    function setPhoto(enabled) {
+        if (!ready) return;
+        photoMode = enabled;
+        clearMovement();
+        updateCamera();
+        document.body.classList.toggle('photo-mode', enabled);
+        $('photo-controls').hidden = !enabled;
+        if (discoveryUI) discoveryUI.update(0);
+        $('moon-canvas').focus({ preventScroll: true });
+    }
+    function frame(now) {
+        if (!ready || document.hidden) { animationId = null; return; }
+        animationId = requestAnimationFrame(frame);
+        const dt = Math.min((now - (lastTime || now)) / 1000, 0.1);
+        lastTime = now;
+        if (exploring && !photoMode && !isDialogOpen() && dt > 0) {
+            const forward = Number(keys.has('KeyW') || keys.has('ArrowUp') || touchKeys.has('forward')) - Number(keys.has('KeyS') || keys.has('ArrowDown') || touchKeys.has('back'));
+            const right = Number(keys.has('KeyD') || keys.has('ArrowRight') || touchKeys.has('right')) - Number(keys.has('KeyA') || keys.has('ArrowLeft') || touchKeys.has('left'));
+            const burn = keys.has('Space') || touchKeys.has('burn');
+            JupiterAtmo.updateWalker(surface, walker, { forward, right, yaw, fast: keys.has('ShiftLeft') || keys.has('ShiftRight'), jump: burn }, dt, obstacles, gravity);
+            position.x = walker.x; position.z = walker.z;
+            if (walker.thrusting && !thrustActive) { thrustActive = true; if (audio) audio.jump(); }
+            if (!walker.thrusting) thrustActive = false;
+            if (walker.thrusting && Math.random() < 0.5) spawnDust(position.x + (rand() - 0.5), walker.y - 1.2, position.z + (rand() - 0.5), 2, 0.3);
+            if (audio) audio.setDescent(walker.vy);
+            if (Math.hypot(position.x, position.z) > JupiterAtmo.WALK_RADIUS - 1 && now - lastBoundaryNotice > 5000) { notify('boundary'); lastBoundaryNotice = now; }
+            sunlight.shadow.needsUpdate = true;
+            updateCamera();
+        }
+        if (cameraTween && dt > 0) {
+            cameraTween.t = Math.min(1, cameraTween.t + dt / 1.15);
+            const ease = cameraTween.t * cameraTween.t * (3 - 2 * cameraTween.t);
+            yaw = cameraTween.fromYaw + (cameraTween.toYaw - cameraTween.fromYaw) * ease;
+            pitch = cameraTween.fromPitch + (cameraTween.toPitch - cameraTween.fromPitch) * ease;
+            updateCamera();
+            if (cameraTween.t >= 1) { const target = cameraTween.body; cameraTween = null; showMoonlet(target); }
+        }
+        if (exploring && dt > 0) {
+            updateDust(dt);
+            flashTimer -= dt;
+            if (skyMaterial) {
+                skyMaterial.uniforms.flash.value = Math.max(0, skyMaterial.uniforms.flash.value - dt * 2.4);
+                const depth = THREE.MathUtils.clamp((0 - walker.y) / (0 - JupiterAtmo.MIN_ALTITUDE + 60), 0, 1);
+                skyMaterial.uniforms.darkening.value = depth;
+                if (ambientLight) ambientLight.intensity = 1.4 * (1 - depth * 0.75);
+                sunlight.intensity = 2.6 * (1 - depth * 0.8);
+                scene.fog.density = 0.0016 + depth * 0.012;
+            }
+            if (flashTimer <= 0) {
+                flashTimer = 4 + rand() * 9;
+                if (skyMaterial) skyMaterial.uniforms.flash.value = 0.4 + rand() * 0.7;
+                if (audio && rand() < 0.8) audio.thunder();
+            }
+            for (const field of crystalField) field.mesh.rotation.y += dt * 0.008;
+            if (featuredRock) { featuredRock.rotation.y += dt * 0.5; featuredRock.rotation.x += dt * 0.2; }
+        }
+        if (Math.hypot(sunlight.target.position.x - position.x, sunlight.target.position.z - position.z) > 20) {
+            sunlight.target.position.set(position.x, 0, position.z);
+            sunlight.position.set(position.x - 180, 105, position.z - 160);
+            sunlight.shadow.needsUpdate = true;
+        }
+        if (discoveryUI) discoveryUI.update(now);
+        renderer.render(scene, camera);
+        if (!sampleTime) sampleTime = now;
+        frameCount++;
+        if (now - sampleTime > 6000) {
+            const fps = frameCount * 1000 / (now - sampleTime);
+            if (preference === 'auto' && fps < 27 && pixelRelief < 2) {
+                pixelRelief++;
+                renderer.setPixelRatio(Math.max(0.75, Math.min(devicePixelRatio, profile.ratio) * (1 - pixelRelief * 0.2)));
+                notify('adjusted');
+            }
+            frameCount = 0; sampleTime = now;
+        }
+    }
+    function bindInput() {
+        const canvas = $('moon-canvas');
+        canvas.addEventListener('pointerdown', event => {
+            if (!ready || event.button !== 0) return;
+            drag = { id: event.pointerId, x: event.clientX, y: event.clientY, startX: event.clientX, startY: event.clientY, moved: false };
+            try { canvas.setPointerCapture(event.pointerId); } catch (error) { }
+            canvas.focus({ preventScroll: true });
+        });
+        canvas.addEventListener('pointermove', event => {
+            if (!drag || drag.id !== event.pointerId) return;
+            cameraTween = null;
+            yaw = THREE.MathUtils.euclideanModulo(yaw - (event.clientX - drag.x) * 0.003 + Math.PI, Math.PI * 2) - Math.PI;
+            pitch = THREE.MathUtils.clamp(pitch - (event.clientY - drag.y) * 0.003, -1.45, 1.2);
+            drag.moved ||= Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) > 6;
+            drag.x = event.clientX; drag.y = event.clientY;
+            sunlight.shadow.needsUpdate = true;
+            updateCamera();
+        });
+        const endDrag = () => { drag = null; };
+        canvas.addEventListener('pointerup', event => {
+            const clicked = drag && drag.id === event.pointerId && !drag.moved;
+            endDrag();
+            if (!clicked || !exploring || photoMode || isDialogOpen()) return;
+            const body = pickSkyBody(event.clientX, event.clientY);
+            if (body) lookAtBody(body);
+            else if (discoveryUI) discoveryUI.hitRock(event.clientX, event.clientY);
+        });
+        canvas.addEventListener('pointercancel', endDrag);
+        canvas.addEventListener('lostpointercapture', endDrag);
+        const movementCodes = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ShiftLeft', 'ShiftRight'];
+        document.addEventListener('keydown', event => {
+            if (event.code === 'Escape' && isDialogOpen()) {
+                event.preventDefault();
+                for (const id of ['guide-dialog', 'discovery-dialog', 'moonlet-dialog']) { const dialog = $(id); if (dialog.open) dialog.close(); }
+                canvas.focus({ preventScroll: true });
+                return;
+            }
+            if (event.code === 'Escape' && photoMode) { setPhoto(false); return; }
+            if ((event.target instanceof Element && event.target.matches('input, textarea, select, button, a')) || isDialogOpen()) return;
+            if (movementCodes.includes(event.code) && exploring && !photoMode) { event.preventDefault(); keys.add(event.code); }
+            if (event.code === 'Space' && exploring && !photoMode) {
+                event.preventDefault();
+                keys.add('Space');
+            }
+            if (event.repeat) return;
+            if (event.code === 'KeyE' && discoveryUI) discoveryUI.interact();
+            if (event.code === 'KeyP') setPhoto(!photoMode);
+            if (event.code === 'KeyH' && exploring && !photoMode) $('field-card').hidden = !$('field-card').hidden;
+            if (event.code === 'KeyG' && exploring && !photoMode) toggleGravity();
+            if (event.code === 'KeyM') toggleSound();
+        });
+        document.addEventListener('keyup', event => keys.delete(event.code));
+        document.querySelectorAll('[data-move]').forEach(button => {
+            button.addEventListener('pointerdown', event => {
+                event.preventDefault();
+                button.setPointerCapture(event.pointerId);
+                touchKeys.add(button.dataset.move);
+            });
+            for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) button.addEventListener(name, () => touchKeys.delete(button.dataset.move));
+        });
+        window.addEventListener('blur', clearMovement);
+        document.addEventListener('visibilitychange', () => {
+            clearMovement();
+            if (document.hidden) {
+                if (audio) audio.suspend();
+                if (animationId !== null) cancelAnimationFrame(animationId);
+                animationId = null;
+            } else if (ready && animationId === null) {
+                if (audio && exploring) audio.start();
+                lastTime = 0; sampleTime = 0; frameCount = 0;
+                animationId = requestAnimationFrame(frame);
+            }
+        });
+        window.addEventListener('resize', () => {
+            if (!renderer) return;
+            camera.aspect = innerWidth / innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(innerWidth, innerHeight);
+        });
+        canvas.addEventListener('webglcontextlost', event => { event.preventDefault(); fail('lost'); });
+    }
+    async function init() {
+        try {
+            if (!window.THREE || !window.JupiterAtmo) throw new Error('Required 3D dependencies are unavailable');
+            renderer = new THREE.WebGLRenderer({ canvas: $('moon-canvas'), antialias: quality !== 'low', powerPreference: 'high-performance' });
+            renderer.setSize(innerWidth, innerHeight);
+            renderer.setPixelRatio(Math.min(devicePixelRatio, profile.ratio));
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 0.95;
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x6b5a44);
+            scene.fog = new THREE.FogExp2(0x8a7454, 0.0028);
+            camera = new THREE.PerspectiveCamera(58, innerWidth / innerHeight, 0.08, 7200);
+            ambientLight = new THREE.AmbientLight(0xcbb894, 1.4);
+            scene.add(ambientLight);
+            scene.add(new THREE.HemisphereLight(0xd8c8a8, 0x4a3a28, 0.8));
+            sunlight = new THREE.DirectionalLight(0xfff4e0, 2.6);
+            sunlight.position.set(-180, 105, -160);
+            sunlight.castShadow = true;
+            sunlight.shadow.mapSize.set(profile.shadows, profile.shadows);
+            Object.assign(sunlight.shadow.camera, { left: -145, right: 145, top: 145, bottom: -145, near: 1, far: 650 });
+            sunlight.shadow.bias = -0.00018;
+            sunlight.shadow.normalBias = 0.08;
+            sunlight.shadow.autoUpdate = false;
+            sunlight.shadow.needsUpdate = true;
+            scene.add(sunlight, sunlight.target);
+            await new Promise(resolve => setTimeout(resolve, 30));
+            const texture = makeTexture();
+            buildTerrain(texture);
+            await new Promise(resolve => setTimeout(resolve, 20));
+            buildRocks();
+            buildAstronaut(texture);
+            walker = JupiterAtmo.createWalker(surface, position);
+            walker.y = stations[0].y || 260;
+            await buildSky();
+            updateCamera();
+            renderer.render(scene, camera);
+            if (typeof window.createMoonDiscoveries !== 'function') throw new Error('Discovery interface is unavailable');
+            discoveryUI = window.createMoonDiscoveries({ scene, camera, surface, rock: featuredRock, getWalker: () => walker, isExploring: () => exploring, isPhotoMode: () => photoMode, clearMovement, onPhoto: () => setPhoto(true), onDiscover: () => { if (audio) audio.chime(); }, getNotes: () => t('notes'), language, expedition: window.JupiterExpedition, terrain: JupiterAtmo, strings: discoveryStrings });
+            ready = true;
+            $('loading-overlay').hidden = true;
+            document.querySelectorAll('.station-button, #begin-button, #photo-button').forEach(button => { button.disabled = false; });
+            bindInput();
+            animationId = requestAnimationFrame(frame);
+        } catch (error) { fail('error', error); }
+    }
+    $('language-button').addEventListener('click', () => { language = language === 'en' ? 'zh' : 'en'; applyLanguage(); });
+    $('begin-button').addEventListener('click', enter);
+    document.querySelectorAll('[data-station]').forEach(button => button.addEventListener('click', () => relocate(Number(button.dataset.station))));
+    $('help-button').addEventListener('click', () => { clearMovement(); $('guide-dialog').showModal(); });
+    $('jump-button').addEventListener('pointerdown', event => { event.preventDefault(); try { event.target.setPointerCapture(event.pointerId); } catch (e) { } touchKeys.add('burn'); });
+    for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) $('jump-button').addEventListener(name, () => touchKeys.delete('burn'));
+    $('motion-button').addEventListener('click', () => { motionEnabled = !motionEnabled; updateMotionButton(); if (ready) updateCamera(); });
+    $('sound-button').addEventListener('click', toggleSound);
+    $('gravity-button').addEventListener('click', toggleGravity);
+    $('guide-dialog').addEventListener('close', () => { if (ready) $('moon-canvas').focus({ preventScroll: true }); });
+    $('moonlet-dialog').addEventListener('close', () => { if (ready) $('moon-canvas').focus({ preventScroll: true }); });
+    $('photo-button').addEventListener('click', () => setPhoto(true));
+    $('exit-photo-button').addEventListener('click', () => setPhoto(false));
+    $('fullscreen-button').addEventListener('click', async () => {
+        try {
+            if (document.fullscreenElement) await document.exitFullscreen();
+            else await document.documentElement.requestFullscreen();
+        } catch (error) { notify('fullscreenFailed'); }
+    });
+    $('capture-button').addEventListener('click', () => {
+        try {
+            renderer.render(scene, camera);
+            renderer.domElement.toBlob(blob => {
+                if (!blob) { notify('saveFailed'); return; }
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url; link.download = `mzu-jupiter-descent-${stationIndex + 1}.png`;
+                link.click();
+                setTimeout(() => URL.revokeObjectURL(url), 10000);
+                notify('saved');
+            }, 'image/png');
+        } catch (error) { notify('saveFailed'); }
+    });
+    $('moon-quality').value = preference;
+    $('return-orbit').href = `index.html?focus=Jupiter&quality=${preference}`;
+    $('moon-quality').addEventListener('change', event => {
+        try { localStorage.setItem(policy?.QUALITY_STORAGE_KEY || 'mzu-solar-quality', event.target.value); } catch (error) { savedQuality = ''; }
+        const url = new URL(location.href);
+        url.searchParams.set('quality', event.target.value);
+        url.searchParams.set('lang', language);
+        location.assign(url.toString());
+    });
+    audio = window.JupiterAudio ? window.JupiterAudio.create() : null;
+    try { soundEnabled = localStorage.getItem('mzu-jupiter-sound') !== 'off'; } catch (error) { soundEnabled = true; }
+    if (audio && !soundEnabled) audio.setEnabled(false);
+    applyLanguage();
+    init();
+}());

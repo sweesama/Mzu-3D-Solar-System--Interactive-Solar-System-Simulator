@@ -14,6 +14,7 @@
 - [Mars](https://www.3dsolarsystem.net/mars.html)
 - [Mars expedition](https://www.3dsolarsystem.net/mars-expedition.html): Walk and jump through an artistic Martian plain in lighter gravity, discover five observation points including dunes and layered rock, inspect a 3D specimen, and keep a journal in your browser.
 - [Jupiter](https://www.3dsolarsystem.net/jupiter.html)
+- [Jupiter descent](https://www.3dsolarsystem.net/jupiter-expedition.html): Ride an imagined probe down through Jupiter's cloud decks — drift past ammonia cirrus, a giant storm vortex, and deep lightning, fire the ascent thruster with Space, record five altitude-based discoveries, and keep a journal in your browser.
 - [Saturn](https://www.3dsolarsystem.net/saturn.html)
 - [Uranus](https://www.3dsolarsystem.net/uranus.html)
 - [Neptune](https://www.3dsolarsystem.net/neptune.html)

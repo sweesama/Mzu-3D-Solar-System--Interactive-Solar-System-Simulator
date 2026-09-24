@@ -45,7 +45,8 @@
                 const steps = Math.max(1, Math.ceil(Math.hypot(end.x - start.x, end.z - start.z) / 2.5));
                 for (let j = 0; j < steps && count < MAX_DOTS; j++) {
                     const x = start.x + (end.x - start.x) * j / steps, z = start.z + (end.z - start.z) * j / steps;
-                    attribute.setXYZ(count++, x, terrainModule.sampleSurface(surface, x, z) + 0.08, z);
+                    const y = target.y !== undefined ? target.y : terrainModule.sampleSurface(surface, x, z) + 0.08;
+                    attribute.setXYZ(count++, x, y, z);
                 }
             }
             geometry.setDrawRange(0, count);

@@ -132,7 +132,19 @@ The public page is `https://www.3dsolarsystem.net/mercury-expedition.html` (the 
 - Five discoveries — central-peak crater, ejecta block (rotatable specimen), relay beacon, hollows field, lobate scarp. The hollows field and scarp are on foot only. Progress saves under `mzu-mercury-discoveries-v1`.
 - Files mirror the other expeditions: `mercury-expedition.html`, `mercury.js`, `mercury-terrain.js`, `mercury-expedition.js`, `mercury-audio.js`. `moon-discoveries.js` and `moon.css` remain shared.
 
-All four expedition field guides open with a "What you are seeing" feature list — a localized card list (`planet-facts` markup, `feature-list` element, per-page `features` dictionary entries rendered by `applyLanguage`) that names each visible landmark and ties it to the real observation it is based on, so visitors can read the planet's signature features without walking.
+## Jupiter descent
+
+The public page is `https://www.3dsolarsystem.net/jupiter-expedition.html` (the name avoids colliding with the existing `jupiter.html` orbital detail page). It is listed in `sitemap.xml`, linked from the homepage and generated planet pages, and carries the same indexable metadata as the other expeditions.
+
+- Jupiter has no surface, so this expedition replaces walking with **atmospheric descent**: the visitor rides a probe that sinks continuously at a terminal-velocity drift (`SINK_SPEED` scaled by gravity). Holding **Space** fires an ascent thruster (`THRUST_SPEED`); WASD/arrows drift horizontally; there is no jumping and no ground.
+- `jupiter-atmosphere.js` exposes `JupiterAtmo` — the same `createSurface`/`sampleSurface`/`createWalker`/`updateWalker` contract as the terrain modules, but `walker.y` is a free altitude clamped between `MIN_ALTITUDE` (−360) and `MAX_ALTITUDE` (420), and `walker.grounded` stays true so the shared discovery module works unchanged. Gravity is **24.79 m/s²** (G toggles Earth's 9.8 m/s², scaling the sink rate).
+- The "terrain" is a displaced cloud deck: billowing ammonia tops plus a great-storm vortex (bowl + raised rim) at `storm.x/z`. Vertex colours paint horizontal bands and a rust-red collar around the vortex. Sky is a procedural banded dome with a Sun about five times smaller than from Earth; drifting ice crystals replace rocks (one is the specimen-viewer target).
+- Depth drives atmosphere: a `darkening` uniform dims the banded sky as the probe sinks, fog thickens, sunlight and ambient fade, and random lightning flashes (`flash` uniform + thunder audio) mark the deeper layers.
+- Audio (`jupiter-audio.js`) is continuous wind rush driven by descent rate via `setDescent(vy)`, plus radio static bursts, a thruster whoosh on burn start (`jump()`), muffled `thunder()`, and the discovery `chime()`.
+- Five discoveries sit at different altitudes and require matching the layer (±42 m): ammonia cirrus veil (~190 m), ice crystal (~60 m), storm rim (~45 m), lightning shelf (−60 m), and the abyss (−150 m). Stations carry a `y` altitude used by quick travel. Progress saves under `mzu-jupiter-descent-v1`.
+- Files mirror the other expeditions: `jupiter-expedition.html`, `jupiter.js`, `jupiter-atmosphere.js`, `jupiter-expedition.js`, `jupiter-audio.js`. `moon-discoveries.js` and `moon.css` remain shared.
+
+All five expedition field guides open with a "What you are seeing" feature list — a localized card list (`planet-facts` markup, `feature-list` element, per-page `features` dictionary entries rendered by `applyLanguage`) that names each visible landmark and ties it to the real observation it is based on, so visitors can read the planet's signature features without walking.
 
 After changes, run:
 
@@ -156,6 +168,10 @@ node --check mercury.js
 node --check mercury-terrain.js
 node --check mercury-expedition.js
 node --check mercury-audio.js
+node --check jupiter.js
+node --check jupiter-atmosphere.js
+node --check jupiter-expedition.js
+node --check jupiter-audio.js
 ```
 
 Route verification includes both directions of every route segment at all three terrain detail levels, distant/airborne discovery rejection, duplicate prevention, and invalid saved-data handling. Browser checks should cover walking the complete route with scene obstacles, specimen rotation/zoom, quick-travel without automatic progress, refresh persistence, storage-disabled fallback, and touch discovery controls.

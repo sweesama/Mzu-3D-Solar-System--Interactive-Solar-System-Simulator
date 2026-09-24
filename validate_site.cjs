@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const root = __dirname;
-const pages = ['index', 'mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'moon', 'mars-expedition', 'venus-expedition', 'mercury-expedition'];
+const pages = ['index', 'mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'moon', 'mars-expedition', 'venus-expedition', 'mercury-expedition', 'jupiter-expedition'];
 const errors = [];
 const titles = new Set();
 const canonicals = new Set();
@@ -217,6 +217,77 @@ for (const segments of [192, 288, 384]) {
 }
 const mercuryDirection = mercuryExpedition.guidance({ x: 0, z: 6 }, 0);
 assert.ok(mercuryDirection.distance > 0 && Number.isFinite(mercuryDirection.x));
+const jupiterAtmo = loadBrowserModule('jupiter-atmosphere.js', 'JupiterAtmo');
+assert.equal(jupiterAtmo.GRAVITY, 24.79);
+assert.equal(jupiterAtmo.EARTH_GRAVITY, 9.8);
+assert.equal(jupiterAtmo.noise(12.5, -9.1), jupiterAtmo.noise(12.5, -9.1));
+const jupiterSurface = jupiterAtmo.createSurface(960, 192);
+for (const [x, z] of [[0, 6], [-18, -14], [62, 84], [-124, -44], [-95, 120], [0, -160], [300, 0]]) {
+  assert.ok(Number.isFinite(jupiterAtmo.sampleSurface(jupiterSurface, x, z)), 'Jupiter deck must have finite heights');
+}
+assert.ok(jupiterAtmo.deckHeight(jupiterAtmo.storm.x, jupiterAtmo.storm.z) < jupiterAtmo.deckHeight(jupiterAtmo.storm.x + jupiterAtmo.storm.radius, jupiterAtmo.storm.z), 'Storm eye must dip below its rim');
+const sinker = jupiterAtmo.createWalker(flat, { x: 0, z: 0, y: 260 });
+for (let i = 0; i < 600; i++) jupiterAtmo.updateWalker(flat, sinker, {}, 1 / 60, []);
+assert.ok(Math.abs(sinker.vy + jupiterAtmo.SINK_SPEED) < 0.01, 'Probe must settle at terminal sink rate');
+const burner = jupiterAtmo.createWalker(flat, { x: 0, z: 0, y: 200 });
+for (let i = 0; i < 600; i++) jupiterAtmo.updateWalker(flat, burner, { jump: true }, 1 / 60, []);
+assert.ok(burner.vy > 0 && burner.y > 200 && burner.thrusting, 'Thrust must lift the probe');
+const floorProbe = jupiterAtmo.createWalker(flat, { x: 0, z: 0, y: jupiterAtmo.MIN_ALTITUDE + 1 });
+for (let i = 0; i < 300; i++) jupiterAtmo.updateWalker(flat, floorProbe, {}, 1 / 60, []);
+assert.ok(floorProbe.y >= jupiterAtmo.MIN_ALTITUDE, 'Probe must not sink below the corridor floor');
+const ceilingProbe = jupiterAtmo.createWalker(flat, { x: 0, z: 0, y: jupiterAtmo.MAX_ALTITUDE - 1 });
+for (let i = 0; i < 300; i++) jupiterAtmo.updateWalker(flat, ceilingProbe, { jump: true }, 1 / 60, []);
+assert.ok(ceilingProbe.y <= jupiterAtmo.MAX_ALTITUDE, 'Probe must not climb above the corridor ceiling');
+const earthProbe = jupiterAtmo.createWalker(flat, { x: 0, z: 0, y: 260 });
+for (let i = 0; i < 600; i++) jupiterAtmo.updateWalker(flat, earthProbe, {}, 1 / 60, [], jupiterAtmo.EARTH_GRAVITY);
+assert.ok(Math.abs(earthProbe.vy + jupiterAtmo.SINK_SPEED * jupiterAtmo.EARTH_GRAVITY / jupiterAtmo.GRAVITY) < 0.01, 'Earth gravity must soften the sink rate');
+const drifter = jupiterAtmo.createWalker(flat, { x: 0, z: 0, y: 200 });
+for (let i = 0; i < 6000; i++) jupiterAtmo.updateWalker(flat, drifter, { forward: 1, yaw: 0 }, 1 / 60, []);
+assert.ok(Math.hypot(drifter.x, drifter.z) <= jupiterAtmo.DRIFT_RADIUS + 1e-9, 'Drift must stay inside the descent corridor');
+const jupiterAudio = loadBrowserModule('jupiter-audio.js', 'JupiterAudio');
+const silentJupiterAudio = jupiterAudio.create();
+assert.equal(typeof silentJupiterAudio.start, 'function');
+silentJupiterAudio.setDescent(-2.6); silentJupiterAudio.jump(); silentJupiterAudio.thunder(); silentJupiterAudio.chime(); silentJupiterAudio.setEnabled(false);
+const jupiterExpedition = loadBrowserModule('jupiter-expedition.js', 'JupiterExpedition');
+assert.equal(jupiterExpedition.discoveries.length, 5);
+assert.equal(jupiterExpedition.parseProgress('not-json').length, 0);
+assert.equal(jupiterExpedition.parseProgress('["invalid"]').length, 0);
+assert.equal(jupiterExpedition.parseProgress(JSON.stringify([jupiterExpedition.discoveries[0].id])).length, 1);
+for (const [index, discovery] of jupiterExpedition.discoveries.entries()) {
+  assert.ok(jupiterExpedition.canDiscover({ x: discovery.x, z: discovery.z, y: discovery.y, grounded: true }, index), `Jupiter discovery ${discovery.id} must be discoverable at its altitude`);
+  assert.equal(jupiterExpedition.canDiscover({ x: discovery.x, z: discovery.z, y: discovery.y + 200, grounded: true }, index), false, `Jupiter discovery ${discovery.id} must reject a mismatched altitude`);
+}
+assert.equal(jupiterExpedition.canDiscover({ x: 0, z: 6, y: 260, grounded: true }, 0), false);
+for (const [from, to] of jupiterExpedition.edges) {
+  const a = jupiterExpedition.nodes[from], b = jupiterExpedition.nodes[to];
+  for (const [start, end] of [[a, b], [b, a]]) {
+    const distance = Math.hypot(end.x - start.x, end.z - start.z);
+    let p = start;
+    for (let d = 0; d < distance; d += 0.25) {
+      const fraction = Math.min(1, (d + 0.25) / distance);
+      const next = { x: start.x + (end.x - start.x) * fraction, z: start.z + (end.z - start.z) * fraction };
+      const actual = jupiterAtmo.move(jupiterSurface, p, next.x - p.x, next.z - p.z, []);
+      assert.ok(Math.hypot(actual.x - next.x, actual.z - next.z) < 0.001, `Jupiter route ${from}-${to} must be driftable`);
+      p = next;
+    }
+  }
+}
+const jupiterDirection = jupiterExpedition.guidance({ x: 0, z: 6 }, 0);
+assert.ok(jupiterDirection.distance > 0 && Number.isFinite(jupiterDirection.x));
+const jupiterHtml = fs.readFileSync(path.join(root, 'jupiter-expedition.html'), 'utf8');
+assert.match(jupiterHtml, /id="discover-button"/);
+assert.match(jupiterHtml, /id="discovery-dialog"/);
+assert.match(jupiterHtml, /jupiter-expedition\.js/);
+assert.match(jupiterHtml, /jupiter-atmosphere\.js/);
+assert.match(jupiterHtml, /jupiter-audio\.js/);
+assert.match(jupiterHtml, /moon-discoveries\.js/);
+assert.match(jupiterHtml, /jupiter\.js/);
+assert.match(jupiterHtml, /id="visor"/);
+assert.match(jupiterHtml, /id="gravity-button"/);
+assert.match(jupiterHtml, /id="touch-pad"/);
+assert.match(jupiterHtml, /id="return-orbit"/);
+assert.match(jupiterHtml, /index\.html\?focus=Jupiter/);
+assert.match(fs.readFileSync(path.join(root, 'index.html'), 'utf8'), /href="jupiter-expedition\.html"/);
 const mercuryHtml = fs.readFileSync(path.join(root, 'mercury-expedition.html'), 'utf8');
 assert.match(mercuryHtml, /id="discover-button"/);
 assert.match(mercuryHtml, /id="discovery-dialog"/);
@@ -332,16 +403,17 @@ for (const page of pages) {
   if (page === 'mars-expedition' && !/Mars/i.test(heading)) errors.push(`${file}: heading must identify the Mars expedition`);
   if (page === 'venus-expedition' && !/Venus/i.test(heading)) errors.push(`${file}: heading must identify the Venus expedition`);
   if (page === 'mercury-expedition' && !/Mercury/i.test(heading)) errors.push(`${file}: heading must identify the Mercury expedition`);
+  if (page === 'jupiter-expedition' && !/Jupiter/i.test(heading)) errors.push(`${file}: heading must identify the Jupiter descent`);
   if (/id="seo-content"|SEO Content for Crawlers|style="display:\s*none/i.test(html)) errors.push(`${file}: hidden crawler-only content found`);
   if (/GA_MEASUREMENT_ID|ca-pub-XXXXXXXXXX/i.test(html)) errors.push(`${file}: analytics or advertising placeholder found`);
   if (/\b(ultimate|professional-grade|smooth 60fps|ultra-realistic|therapeutic solar system)\b/i.test(html)) errors.push(`${file}: unsupported marketing claim found`);
-  const isExpedition = page === 'moon' || page === 'mars-expedition' || page === 'venus-expedition' || page === 'mercury-expedition';
+  const isExpedition = page === 'moon' || page === 'mars-expedition' || page === 'venus-expedition' || page === 'mercury-expedition' || page === 'jupiter-expedition';
   if (!isExpedition && !/data-focus="Mercury"[\s\S]*data-focus="Neptune"/i.test(html)) errors.push(`${file}: planet navigation is incomplete`);
   const qualityId = isExpedition ? 'moon-quality' : 'quality-select';
   if (!new RegExp(`<select id="${qualityId}"[\\s\\S]*value="auto"[\\s\\S]*value="high"[\\s\\S]*value="balanced"[\\s\\S]*value="low"`, 'i').test(html)) {
     errors.push(`${file}: accessible quality selector is incomplete`);
   }
-  const engine = page === 'moon' ? 'moon' : page === 'mars-expedition' ? 'mars' : page === 'venus-expedition' ? 'venus' : page === 'mercury-expedition' ? 'mercury' : 'main';
+  const engine = page === 'moon' ? 'moon' : page === 'mars-expedition' ? 'mars' : page === 'venus-expedition' ? 'venus' : page === 'mercury-expedition' ? 'mercury' : page === 'jupiter-expedition' ? 'jupiter' : 'main';
   if (!new RegExp(`<script src="quality-policy\\.js"></script>[\\s\\S]*<script src="${engine}\\.js"></script>`, 'i').test(html)) {
     errors.push(`${file}: quality policy must load before the scene engine`);
   }
