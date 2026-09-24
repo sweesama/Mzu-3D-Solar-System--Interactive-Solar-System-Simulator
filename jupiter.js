@@ -105,7 +105,7 @@
     const stations = expedition.stations;
     let discoveryUI = null, featuredRock = null;
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
-    let skyPivot = null, earthPivot = null, crystalField = [], skyMaterial = null, ambientLight = null, flashTimer = 6, thrustActive = false, stormDisc = null, bolts = [], boltTimer = 0;
+    let skyPivot = null, earthPivot = null, crystalField = [], skyMaterial = null, ambientLight = null, flashTimer = 6, thrustActive = false, stormDisc = null, bolts = [], boltTimer = 0, deckShader = null, puffGroup = null;
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
     const position = { x: stations[0].x, z: stations[0].z };
     const touchDevice = matchMedia('(pointer: coarse)').matches;
@@ -213,10 +213,16 @@
         const map = texture.clone();
         map.repeat.set(repeats, repeats);
         map.needsUpdate = true;
-        const material = new THREE.MeshStandardMaterial({ map, bumpMap: map, bumpScale: 0.055, roughness: 1, metalness: 0, vertexColors: true });
+        const material = new THREE.MeshStandardMaterial({ map, bumpMap: map, bumpScale: 0.03, roughness: 1, metalness: 0, vertexColors: true, emissive: 0x40301e, emissiveIntensity: 0.55 });
         material.onBeforeCompile = shader => {
-            shader.vertexShader = 'varying vec3 vGroundPosition;\n' + shader.vertexShader;
-            shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvGroundPosition = position;');
+            shader.uniforms.uTime = { value: 0 };
+            material.userData.shader = shader;
+            shader.vertexShader = 'uniform float uTime; varying vec3 vGroundPosition;\n' + terrainNoiseShader + shader.vertexShader;
+            shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
+                vGroundPosition = position;
+                float churn = lunarNoise(position.xz * 0.03 + vec2(uTime * 0.025, uTime * 0.017)) - 0.5;
+                float churnFine = lunarNoise(position.xz * 0.11 + vec2(-uTime * 0.04, uTime * 0.03)) - 0.5;
+                transformed.y += churn * 4.5 + churnFine * 1.6;`);
             shader.fragmentShader = 'varying vec3 vGroundPosition;\n' + terrainNoiseShader + shader.fragmentShader;
             shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
                 float broad = lunarNoise(vGroundPosition.xz * 0.038) - 0.5;
@@ -255,7 +261,7 @@
         geometry.rotateX(-Math.PI / 2);
         const positions = geometry.attributes.position;
         const colors = new Float32Array(positions.count * 3);
-        const cream = new THREE.Color(0xe8dcc0), tan = new THREE.Color(0xc4a075), brown = new THREE.Color(0x8a6248), rust = new THREE.Color(0xa8503c), pale = new THREE.Color(0xf2ece0);
+        const cream = new THREE.Color(0xf2e8d0), tan = new THREE.Color(0xd4ad80), brown = new THREE.Color(0x9a7050), rust = new THREE.Color(0xc05c42), pale = new THREE.Color(0xfaf4e8);
         const c1 = new THREE.Color(), c2 = new THREE.Color();
         for (let i = 0; i < positions.count; i++) {
             const px = positions.getX(i), pz = positions.getZ(i);
@@ -271,12 +277,13 @@
                 c2.copy(rust).lerp(pale, ring * 0.55);
                 c1.lerp(c2, Math.min(1, s * 0.8 + ring * 0.35));
             }
-            const shade = 0.62 + n * 0.22 + patch * 0.1;
+            const shade = 0.78 + n * 0.26 + patch * 0.12;
             colors.set([c1.r * shade, c1.g * shade, c1.b * shade], i * 3);
         }
         geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
         geometry.computeVertexNormals();
-        const ground = new THREE.Mesh(geometry, groundMaterial(texture, 240));
+        deckShader = groundMaterial(texture, 240);
+        const ground = new THREE.Mesh(geometry, deckShader);
         ground.receiveShadow = true;
         ground.castShadow = true;
         scene.add(ground);
@@ -290,8 +297,8 @@
             const billow = JupiterAtmo.noise(x * 0.009, z * 0.009) * 26 + n * 60;
             farPositions.setY(i, JupiterAtmo.height(x, z) - 2 + billow);
             const band = Math.sin(z * 0.0045 + JupiterAtmo.noise(x * 0.001, z * 0.0008) * 3);
-            const color = 0.6 + n * 0.2 + band * 0.1;
-            farColors.set([color, color * 0.88, color * 0.66], i * 3);
+            const color = 0.74 + n * 0.22 + band * 0.12;
+            farColors.set([color, color * 0.88, color * 0.68], i * 3);
         }
         const outerIndices = [];
         const indices = farGeometry.index.array;
@@ -409,6 +416,46 @@
             scene.add(bolt);
             bolts.push(bolt);
         }
+    }
+    function puffTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        for (let i = 0; i < 26; i++) {
+            const a = rand() * Math.PI * 2, r = rand() * 34;
+            const x = 64 + Math.cos(a) * r, y = 64 + Math.sin(a) * r;
+            const s = 14 + rand() * 30;
+            const g = ctx.createRadialGradient(x, y, 0, x, y, s);
+            const v = 200 + rand() * 55;
+            g.addColorStop(0, `rgba(${v},${v * 0.94},${v * 0.82},${0.10 + rand() * 0.14})`);
+            g.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = g;
+            ctx.fillRect(x - s, y - s, s * 2, s * 2);
+        }
+        return new THREE.CanvasTexture(canvas);
+    }
+    function buildPuffs() {
+        const tex = puffTexture();
+        puffGroup = new THREE.Group();
+        const tint = new THREE.Color();
+        const palette = [0xf2e6cc, 0xe0c8a4, 0xd8b088, 0xc89878, 0xf8f2e4];
+        for (let i = 0; i < 190; i++) {
+            const layer = rand();
+            const y = layer < 0.62 ? -30 + rand() * 70 : layer < 0.85 ? 40 + rand() * 120 : 160 + rand() * 120;
+            const angle = rand() * Math.PI * 2, r = 30 + Math.sqrt(rand()) * 330;
+            const x = Math.cos(angle) * r, z = Math.sin(angle) * r;
+            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+                map: tex, color: tint.setHex(palette[Math.floor(rand() * palette.length)]).clone(),
+                transparent: true, opacity: 0.14 + rand() * 0.2, depthWrite: false
+            }));
+            const w = 50 + rand() * 160;
+            sprite.scale.set(w, w * (0.3 + rand() * 0.25), 1);
+            sprite.position.set(x, y, z);
+            sprite.userData.phase = rand() * Math.PI * 2;
+            puffGroup.add(sprite);
+        }
+        puffGroup.renderOrder = 1;
+        scene.add(puffGroup);
     }
     function buildSky() {
         skyMaterial = new THREE.ShaderMaterial({
@@ -717,6 +764,13 @@
             }
             if (boltTimer <= 0) for (const bolt of bolts) if (bolt.visible) { bolt.material.opacity -= dt * 3; if (bolt.material.opacity <= 0) bolt.visible = false; }
             if (stormDisc) stormDisc.rotation.z += dt * 0.06;
+            if (deckShader && deckShader.userData.shader) deckShader.userData.shader.uniforms.uTime.value = now * 0.001;
+            if (puffGroup) {
+                for (const puff of puffGroup.children) {
+                    puff.position.x += Math.sin(now * 0.0001 + puff.userData.phase) * dt * 2.2;
+                    puff.position.y += Math.cos(now * 0.00013 + puff.userData.phase) * dt * 0.6;
+                }
+            }
             for (const field of crystalField) field.mesh.rotation.y += dt * 0.008;
             if (featuredRock) { featuredRock.rotation.y += dt * 0.5; featuredRock.rotation.x += dt * 0.2; }
         }
@@ -855,6 +909,7 @@
             buildRocks();
             buildStorm();
             buildBolts();
+            buildPuffs();
             buildAstronaut(texture);
             walker = JupiterAtmo.createWalker(surface, position);
             walker.y = stations[0].y || 260;
