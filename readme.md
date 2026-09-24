@@ -91,7 +91,7 @@ Open `http://localhost:8000/moon.html` or use **Step onto the Moon** in the Sola
 - `?quality=auto|high|balanced|low` selects a render profile. The quality preference is shared with the existing explorer. Auto mode can lower pixel resolution after sustained slow rendering; it does not promise a fixed frame rate on every device.
 - **Return to orbit** reopens the Solar System focused on the Moon.
 
-The landscape and rock materials are generated in the browser. Distant mountains have separate multi-scale rock shading and surface-normal detail, with fine detail faded at small screen sizes to limit shimmer. Earth uses the existing Solar System Scope imagery (CC BY 4.0). Earth's apparent size and location are composed for the scene rather than calculated from an ephemeris. The experience intentionally has no wind audio.
+The landscape and rock materials are generated in the browser. Distant mountains have separate multi-scale rock shading and surface-normal detail, with fine detail faded at small screen sizes to limit shimmer. Regolith piles in soft fillets around rock bases, the ground carries small impact pits and sparse glass-bead-like glints (Apollo crews described the soil sparkling), and large boulders sit in shallow debris aprons. A faint additive glow band hugs the horizon toward the Sun (the levitating-dust horizon glow Apollo crews reported), boot prints are drawn with high-contrast tread, and Earth carries a gentle emissive boost so it reads as the brilliant object it is from the surface. Earth uses the existing Solar System Scope imagery (CC BY 4.0). Earth's apparent size and location are composed for the scene rather than calculated from an ephemeris. The experience intentionally has no wind audio.
 
 Jump gravity is a constant **1.62 m/s²**, following NASA's average lunar surface value (https://www1.grc.nasa.gov/beginners-guide-to-aeronautics/moon/). Scene distances use metres. The chosen takeoff velocity of **1.8 m/s** gives a rise of **1 metre** and approximately **2.22 seconds** aloft on level ground. Eye height is **1.68 m**; walking and brisk walking are **1.55 m/s** and **2.8 m/s**. Takeoff strength, horizontal acceleration, gait animation, and landing dip are experience settings, not measurements of an astronaut in a specific spacesuit. Rocks currently use conservative horizontal collision bounds, so jumping onto or over large rocks is not supported.
 
@@ -104,7 +104,7 @@ Implementation: `moon.html` and `moon.css` provide the expedition interface, `mo
 The public page is `https://www.3dsolarsystem.net/mars-expedition.html` (the name avoids colliding with the existing `mars.html` orbital detail page). It is listed in `sitemap.xml`, linked from the homepage and generated planet pages, and carries the same indexable metadata as the Moon expedition.
 
 - The same first-person engine as the Moon expedition, retuned for Mars: gravity is **3.71 m/s²** (G toggles Earth's 9.8 m/s²), so the same 1.8 m/s takeoff gives roughly a 0.44-metre hop — visibly heavier than the Moon.
-- The environment differs deliberately: a butterscotch sky dome, tan dust haze (distance fog), a smaller Sun with a faint blue-tinged halo, and two dim moonlets instead of Earth. Terrain includes a layered flat-topped mesa, a wind-rippled dune field, and degraded craters.
+- The environment differs deliberately: a butterscotch sky dome, tan dust haze (distance fog), a smaller Sun with a faint blue-tinged halo, thin cirrus-like ice clouds, and two dim moonlets instead of Earth. Terrain includes a layered flat-topped mesa, a wind-rippled dune field, degraded craters, dark dust-devil tracks crossing the plain, ventifact-style elongated rocks aligned to the prevailing wind, and boulders whose tops carry a lighter dust coating — all informed by rover imagery. A live dust devil (a translucent twin-column mesh with scrolling streak texture) wanders the plain, and twin rover-track grooves darken the ground near the arrival point.
 - Audio differs too: Mars has a real but thin atmosphere — Perseverance's microphones showed a deep silence broken by occasional faint gusts, so the soundscape is suit-internal sounds plus rare low-frequency gusts, not a constant wind bed. A quiet life-support hum is present on both worlds (Apollo crews heard their suit fans). Footfalls are crunchier than on the Moon.
 - Five discoveries — layered mesa, basalt boulder (3D specimen viewer), dune field, weather mast, degraded crater rim. The weather mast and crater are on foot only. Progress saves under `mzu-mars-discoveries-v1`.
 - Files mirror the lunar set: `mars-expedition.html`, `mars.js`, `mars-terrain.js`, `mars-expedition.js`, `mars-audio.js`. `moon-discoveries.js` and `moon.css` are shared — the discoveries module accepts optional `expedition`, `terrain`, and `strings` parameters.
@@ -113,12 +113,26 @@ The public page is `https://www.3dsolarsystem.net/mars-expedition.html` (the nam
 
 The public page is `https://www.3dsolarsystem.net/venus-expedition.html` (the name avoids colliding with the existing `venus.html` orbital detail page). It is listed in `sitemap.xml`, linked from the homepage and generated planet pages, and carries the same indexable metadata as the other expeditions.
 
-- The same first-person engine, retuned for Venus: gravity is **8.87 m/s²** (G toggles Earth's 9.8 m/s²) — about 91% of Earth, so the 2.6 m/s takeoff gives roughly a 0.38-metre hop, almost like home. That similarity is itself a discovery.
-- The environment differs deliberately: Venus has no visible sky — thick sulfuric-acid clouds admit only a dim, directionless amber glow where the Sun stands. Distance fog is dense and orange; visibility is short. Terrain is volcanic, not cratered: fractured basalt slabs, a lava channel, a pancake dome, and ridged tessera-like highlands, inspired by Venera surface photos and Magellan radar maps.
+- The same first-person engine, retuned for Venus: gravity is **8.87 m/s²** (G toggles Earth's 9.8 m/s²) — about 91% of Earth, so the same 1.8 m/s takeoff as the Moon and Mars expeditions gives roughly a 0.18-metre hop versus 0.17 on Earth. The near-identical jump is itself a discovery.
+- The environment differs deliberately: Venus has no visible sky — thick sulfuric-acid clouds admit only a dim, directionless amber glow where the Sun stands. The cloud deck is procedural horizontal banding drawn on the sky dome (no floating sprite patches); distance fog is dense and orange so far terrain dissolves into haze silhouettes rather than clipping away. The far terrain shimmers subtly (heat-haze vertex wobble) and the cloud deck brightens briefly on each thunder event through a `flashBoost` sky uniform. Terrain is volcanic, not cratered: fractured basalt slabs, a lava channel, a pancake dome, and ridged tessera-like highlands, inspired by Venera surface photos and Magellan radar maps.
+- Rocks are flat fractured plates (as in Venera panoramas), not rounded boulders, and come in mixed sizes — from hand-sized shards to multi-metre embedded plates. Low plates are walkable — the walker steps or jumps onto them and stands on their tilted top planes; tall upheaved slabs and leaning plate pairs still block movement. The lava channel carries a faint pulsing emissive seam, and the ground darkens around it like fresh flow deposits.
 - Audio differs too: a 92-atmosphere CO₂ sky carries sound far better than Mars — a low continuous rumble, slow heavy wind-pressure swells, and rare muffled thunder. Thunder events drive a brief lightning brightening of the cloud deck through an `onThunder` hook.
 - The sky has no moons and no other bodies — Venus has no moons and the overcast hides everything. Only the Sun's brighter patch of haze is clickable; it links back to `index.html?focus=Sun`.
 - Five discoveries — basalt slab field, Venera-13-inspired lander, lava channel, pancake dome, tessera highland. The pancake dome and tessera highland are on foot only. Progress saves under `mzu-venus-discoveries-v1`.
 - Files mirror the other expeditions: `venus-expedition.html`, `venus.js`, `venus-terrain.js`, `venus-expedition.js`, `venus-audio.js`. `moon-discoveries.js` and `moon.css` remain shared.
+
+## Mercury expedition
+
+The public page is `https://www.3dsolarsystem.net/mercury-expedition.html` (the name avoids colliding with the existing `mercury.html` orbital detail page). It is listed in `sitemap.xml`, linked from the homepage and generated planet pages, and carries the same indexable metadata as the other expeditions.
+
+- The same first-person engine, retuned for Mercury: gravity is **3.7 m/s²** (G toggles Earth's 9.8 m/s²) — nearly identical to Mars on a much smaller world, because Mercury is mostly a giant iron core. The same 1.8 m/s takeoff gives roughly a 0.44-metre hop.
+- The sky is the opposite of Venus: no atmosphere at all, so it stays black at noon with visible stars. The Sun looks about three times wider than from Earth — a hard white disc with a glare halo. Earth and Venus hang nearby as bright points. All three bodies are clickable and link back to the orbital explorer (`?focus=Sun|Earth|Venus`). There are no clouds, no haze, no wind, and no dust devils.
+- Terrain is cratered like the Moon but warmer gray-brown: a large central-peak crater (the rim viewpoint is a discovery), a lobate scarp — a long thrust-fault ridge from Mercury's global contraction, walkable to its crest — and a field of bright-rimmed hollows (a Mercury-exclusive terrain type). A relay beacon prop honours Mariner 10, MESSENGER, and BepiColombo; no real lander has ever touched Mercury.
+- Audio matches the Moon's near-vacuum design: suit-internal fan hum, conducted footfalls, and a radio chime — no environmental sound at all.
+- Five discoveries — central-peak crater, ejecta block (rotatable specimen), relay beacon, hollows field, lobate scarp. The hollows field and scarp are on foot only. Progress saves under `mzu-mercury-discoveries-v1`.
+- Files mirror the other expeditions: `mercury-expedition.html`, `mercury.js`, `mercury-terrain.js`, `mercury-expedition.js`, `mercury-audio.js`. `moon-discoveries.js` and `moon.css` remain shared.
+
+All four expedition field guides open with a "What you are seeing" feature list — a localized card list (`planet-facts` markup, `feature-list` element, per-page `features` dictionary entries rendered by `applyLanguage`) that names each visible landmark and ties it to the real observation it is based on, so visitors can read the planet's signature features without walking.
 
 After changes, run:
 
@@ -138,6 +152,10 @@ node --check venus.js
 node --check venus-terrain.js
 node --check venus-expedition.js
 node --check venus-audio.js
+node --check mercury.js
+node --check mercury-terrain.js
+node --check mercury-expedition.js
+node --check mercury-audio.js
 ```
 
 Route verification includes both directions of every route segment at all three terrain detail levels, distant/airborne discovery rejection, duplicate prevention, and invalid saved-data handling. Browser checks should cover walking the complete route with scene obstacles, specimen rotation/zoom, quick-travel without automatic progress, refresh persistence, storage-disabled fallback, and touch discovery controls.

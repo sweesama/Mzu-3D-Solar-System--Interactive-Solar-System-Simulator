@@ -22,6 +22,15 @@
             skyEyebrow: 'IN THE VENUSIAN SKY', sunName: 'The Sun',
             sunText: 'From the surface, Venus’s clouds hide the Sun completely — there is only a brighter patch of amber haze where it stands. The glow here is an artistic interpretation, not an accurate ephemeris. Nothing else — no moons, no stars, not even Earth — is visible through the overcast.',
             viewOrbit: 'See it in the Solar System', keepExploring: 'Keep exploring', skyHint: 'Venus has no moons, and its clouds hide every other body — only the Sun’s brighter patch of haze is clickable. Click it to learn more.',
+            featuresTitle: 'What you are seeing', features: [
+                ['Broken slab plains', 'Flat basalt plates cracked like a cooling crust — exactly what the Venera cameras saw. Low plates can be walked onto and climbed.'],
+                ['Leaning plate pairs', 'Slabs propped against each other where the crust buckled.'],
+                ['Lava channel', 'A dark, winding channel cut by very runny lava. The faint ember glow along its floor is artistic license — the real flows froze long ago.'],
+                ['Pancake dome', 'The low flat-topped rise to the north-west: thick, sticky lava that piled up in place.'],
+                ['Tessera highlands', 'Ridged, criss-crossed terrain to the far south-east — among the oldest surfaces on Venus.'],
+                ['Venera-style lander', 'A tribute to the Soviet probes that photographed this world for barely two hours.'],
+                ['The crushing sky', 'No sun disk, no stars, no moons — directionless amber light, heavy air, and rare thunder with a flash. Heat shimmer bends the far horizon.']
+            ],
             error: 'The 3D scene could not start. Try reloading in a browser with WebGL enabled.', lost: 'The graphics connection was interrupted. Reload this page to resume.', boundary: 'You have reached the edge of this expedition. Try another observation point.', saved: 'Photograph saved.', saveFailed: 'This browser could not save the photograph.', fullscreenFailed: 'Full screen is not available in this browser.', textureFailed: 'A texture was unavailable; a simpler material is shown instead.', adjusted: 'Render resolution reduced to keep exploring smoothly.',
             notes: [
                 ['A floor of broken slabs', 'The ground under your boots is fractured volcanic rock — flat plates tilted and cracked like cooling crust. The Venera landers photographed exactly this kind of surface.', 'LANDSCAPE', 'Fractured basalt plain'],
@@ -47,6 +56,15 @@
             skyEyebrow: '金星天空中', sunName: '太阳',
             sunText: '在金星表面，浓云完全遮住了太阳——只能看到一片稍亮的琥珀色雾霭标记它的方位。这里的亮斑是艺术演绎，并非精确星历。除此之外什么都看不见：金星没有卫星，云层也挡住了星星和地球。',
             viewOrbit: '在太阳系中查看它', keepExploring: '继续探索', skyHint: '金星没有卫星，云层遮蔽了所有天体——只有太阳那团稍亮的雾霭可以点击。点它了解更多。',
+            featuresTitle: '你眼前的景观', features: [
+                ['碎裂石板平原', '玄武岩板像冷却的壳一样碎裂翘起——正是金星号相机拍到的样子。矮的石板可以直接走上去。'],
+                ['斜靠板对', '地壳挤压变形，让两块石板互相倚靠成尖顶。'],
+                ['熔岩沟', '深色蜿蜒的沟槽，曾由极稀的熔岩切开。沟底残留的微光是艺术处理——真实的熔岩早已凝固。'],
+                ['薄饼穹丘', '西北方向那座低平的圆顶：粘稠的熔岩原地堆积而成。'],
+                ['镶嵌高地', '东南远处纵横交错的脊状地形——金星上最古老的表面之一。'],
+                ['金星号着陆器', '向当年只工作了两小时就牺牲的苏联探测器致敬。'],
+                ['压抑的天空', '没有日轮、没有星星、没有卫星——只有无方向的琥珀色微光、沉重的空气和偶尔一声闷雷。远处的地平线在热气中微微晃动。']
+            ],
             error: '三维场景未能启动，请在支持 WebGL 的浏览器中重新加载。', lost: '图形连接中断，请重新加载页面继续。', boundary: '已到达本次探索区域边缘，可以前往另一个观察点。', saved: '照片已保存。', saveFailed: '当前浏览器无法保存照片。', fullscreenFailed: '当前浏览器无法进入全屏。', textureFailed: '纹理暂时不可用，已显示简化材质。', adjusted: '已适当降低渲染分辨率，让探索更流畅。',
             notes: [
                 ['碎裂的地板', '靴底是碎裂的火山岩——一块块平板翘起、开裂，像冷却中的外壳。金星号着陆器拍到的正是这种地表。', '地貌类型', '碎裂玄武岩平原'],
@@ -72,16 +90,18 @@
         }
     };
     let language = parameters.get('lang') === 'zh' ? 'zh' : 'en';
-    let stationIndex = 0, exploring = false, photoMode = false, ready = false;
+    let stationIndex = 0, exploring = false, photoMode = false, ready = false, onSlab = false;
     let renderer, scene, camera, surface, sunlight, hemisphereLight, walker, astronaut, animationId = null;
     let flash = 0;
+    const timeUniform = { value: 0 };
+    let skyMat = null;
     let jumpRequested = false, motionEnabled = !matchMedia('(prefers-reduced-motion: reduce)').matches;
     let yaw = -0.12, pitch = -0.06, lastTime = 0, frameCount = 0, sampleTime = 0, pixelRelief = 0, cameraTween = null;
     let noticeTimer, lastBoundaryNotice = 0, drag = null;
     let gravity = VenusTerrain.GRAVITY, audio = null, soundEnabled = true;
     let footprints = null, printCursor = 0, lastPrintMark = 0;
     const dust = { bursts: [], texture: null };
-    const keys = new Set(), touchKeys = new Set(), obstacles = [];
+    const keys = new Set(), touchKeys = new Set(), obstacles = [], walkables = [];
     const stations = expedition.stations;
     let discoveryUI = null, featuredRock = null;
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
@@ -118,6 +138,15 @@
         updateSoundButton();
         $('gravity-mode').textContent = t(gravity === VenusTerrain.GRAVITY ? 'venusTag' : 'earthTag');
         if (walker) $('movement-state').textContent = t(walker.grounded ? 'grounded' : 'airborne');
+        const featureList = $('feature-list');
+        if (featureList) {
+            featureList.innerHTML = '';
+            for (const [name, text] of (t('features') || [])) {
+                const li = document.createElement('li'), strong = document.createElement('strong'), span = document.createElement('span');
+                strong.textContent = name; span.textContent = text;
+                li.append(strong, span); featureList.appendChild(li);
+            }
+        }
         updateNotes();
     }
     function updateNotes() {
@@ -202,8 +231,13 @@
         const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(0x8a6244).convertSRGBToLinear(), roughness: 1, metalness: 0, vertexColors: true });
         material.extensions = { derivatives: true };
         material.onBeforeCompile = shader => {
-            shader.vertexShader = 'varying vec3 vMountainPosition;\n' + shader.vertexShader;
-            shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvMountainPosition = position;');
+            shader.uniforms.uTime = timeUniform;
+            shader.vertexShader = 'uniform float uTime; varying vec3 vMountainPosition;\n' + shader.vertexShader;
+            shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
+                vMountainPosition = position;
+                float shim = smoothstep(500.0, 2600.0, length(transformed.xz));
+                transformed.x += sin(transformed.z * 0.011 + uTime * 1.6) * shim * 2.4;
+                transformed.z += sin(transformed.x * 0.013 + uTime * 1.25) * shim * 2.4;`);
             shader.fragmentShader = 'varying vec3 vMountainPosition;\n' + terrainNoiseShader + `
                 float rockRelief(vec2 p) {
                     return lunarNoise(p * 0.067) * 2.8 + lunarNoise(p * 0.19) * 0.45;
@@ -240,7 +274,8 @@
             const patch = VenusTerrain.noise(positions.getX(i) * 0.011 + 7, positions.getZ(i) * 0.011 - 3);
             const streak = VenusTerrain.noise(positions.getX(i) * 0.03 - positions.getZ(i) * 0.05 + 11, positions.getZ(i) * 0.008);
             const shade = 0.62 + n * 0.16 + patch * 0.08 + Math.max(0, streak - 0.35) * 0.1;
-            colors.set([shade, shade * 0.84, shade * 0.64], i * 3);
+            const flowDark = 1 - Math.max(0, 1 - VenusTerrain.channelDistance(positions.getX(i), positions.getZ(i)) / (VenusTerrain.CHANNEL.width * 3.2)) * 0.32;
+            colors.set([shade * flowDark, shade * 0.84 * flowDark, shade * 0.64 * flowDark], i * 3);
         }
         geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
         geometry.computeVertexNormals();
@@ -282,28 +317,49 @@
         scene.add(far);
     }
     function rockGeometry(seed, detail) {
-        const geometry = new THREE.IcosahedronGeometry(1, detail);
+        const sides = 6 + ((seed + detail) % 3);
+        const geometry = new THREE.CylinderGeometry(1, 1.06, 0.22, sides, 1, false);
         const p = geometry.attributes.position;
         const c = new Float32Array(p.count * 3);
         for (let i = 0; i < p.count; i++) {
             const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
-            const n = VenusTerrain.noise(x * 3 + seed, z * 3 + y * 2);
-            const f = 0.86 + n * 0.2;
-            p.setXYZ(i, x * f, y * (0.72 + n * 0.16), z * f);
-            const shade = 0.38 + VenusTerrain.noise(x * 8 + seed, y * 8 + z * 2) * 0.18;
-            c.set([shade, shade * 0.82, shade * 0.62], i * 3);
+            const angle = Math.atan2(z, x);
+            const rim = 1 + VenusTerrain.noise(Math.cos(angle) * 2.4 + seed, Math.sin(angle) * 2.4) * 0.26;
+            const warp = 1 + VenusTerrain.noise(x * 2.1 + seed, z * 2.1 - y * 3) * 0.1;
+            const crown = VenusTerrain.noise(x * 3 + seed, z * 3) * 0.05;
+            p.setXYZ(i, x * rim * warp, y + crown, z * rim * warp);
+            const shade = 0.3 + VenusTerrain.noise(x * 8 + seed, z * 8 + y * 4) * 0.16 + (y > 0.05 ? 0.06 : 0);
+            c.set([shade, shade * 0.8, shade * 0.58], i * 3);
         }
         geometry.setAttribute('color', new THREE.BufferAttribute(c, 3));
         geometry.computeVertexNormals();
-        const normals = geometry.attributes.normal;
-        const normal = new THREE.Vector3(), radial = new THREE.Vector3();
-        for (let i = 0; i < p.count; i++) {
-            normal.fromBufferAttribute(normals, i);
-            radial.set(p.getX(i), p.getY(i) * 1.7, p.getZ(i)).normalize();
-            normal.lerp(radial, 0.72).normalize();
-            normals.setXYZ(i, normal.x, normal.y, normal.z);
-        }
         return geometry;
+    }
+    function registerWalkable(object, sx, sy, sz) {
+        const normal = new THREE.Vector3(0, 1, 0).applyQuaternion(object.quaternion);
+        if (normal.y < 0.55) return false;
+        const ground = VenusTerrain.sampleSurface(surface, object.position.x, object.position.z);
+        if (object.position.y + sy * 0.11 - ground > 0.55) return false;
+        walkables.push({
+            px: object.position.x, py: object.position.y, pz: object.position.z,
+            nx: normal.x, ny: normal.y, nz: normal.z, halfT: sy * 0.11,
+            hx: sx * 0.46, hz: sz * 0.46, bound: Math.max(sx, sz) * 0.55,
+            inv: object.quaternion.clone().invert()
+        });
+        return true;
+    }
+    const slabProbe = new THREE.Vector3();
+    function slabTopAt(x, z) {
+        let best = -Infinity;
+        for (const s of walkables) {
+            const dx = x - s.px, dz = z - s.pz;
+            if (dx * dx + dz * dz > s.bound * s.bound) continue;
+            slabProbe.set(dx, 0, dz).applyQuaternion(s.inv);
+            if (Math.abs(slabProbe.x) > s.hx || Math.abs(slabProbe.z) > s.hz) continue;
+            const top = s.py + (s.halfT - s.nx * dx - s.nz * dz) / s.ny;
+            if (top > best) best = top;
+        }
+        return best;
     }
     function buildRocks(texture) {
         const rand = VenusTerrain.random(19690720);
@@ -319,13 +375,18 @@
                 while (stations.some(s => Math.hypot(x - s.x, z - s.z) < size + 4) || expedition.isOnRoute({ x, z }, size * 1.5 + 0.5)) {
                     x = (rand() - 0.5) * 760; z = (rand() - 0.5) * 760;
                 }
-                transform.position.set(x, VenusTerrain.sampleSurface(surface, x, z) + size * 0.22, z);
-                transform.scale.set(size * (0.8 + rand() * 0.7), size, size * (0.8 + rand() * 0.5));
-                transform.rotation.set((rand() - 0.5) * 0.4, rand() * Math.PI * 2, (rand() - 0.5) * 0.4);
+                const upheaved = size > 1.35 && rand() < 0.3;
+                const scaleX = size * (1.4 + rand() * 0.9), scaleZ = size * (0.9 + rand() * 0.5);
+                const scaleY = size * (upheaved ? 1.1 + rand() * 0.6 : 0.4 + rand() * 0.4);
+                transform.position.set(x, VenusTerrain.sampleSurface(surface, x, z) + size * 0.07, z);
+                transform.scale.set(scaleX, scaleY, scaleZ);
+                transform.rotation.set((rand() - 0.5) * (upheaved ? 1.3 : 0.5), rand() * Math.PI * 2, (rand() - 0.5) * (upheaved ? 1.3 : 0.5));
                 transform.updateMatrix();
                 rocks.setMatrixAt(i, transform.matrix);
                 rocks.setColorAt(i, color.setScalar(0.5 + rand() * 0.4));
-                if (size > 0.5) obstacles.push({ x, z, radius: size * 1.5 });
+                const halfWidth = Math.max(scaleX, scaleZ) * 0.5;
+                if (upheaved) obstacles.push({ x, z, radius: halfWidth * 0.95 });
+                else if (halfWidth >= 0.4 && !registerWalkable(transform, scaleX, scaleY, scaleZ) && halfWidth >= 0.5) obstacles.push({ x, z, radius: halfWidth * 0.8 });
             }
             rocks.castShadow = quality !== 'low';
             rocks.receiveShadow = true;
@@ -335,20 +396,43 @@
         const heroes = [[-45, 55, 3.2], [-49, 50, 1.5], [-40, 60, 0.8], [-62, -22, 1.7], [-56, -30, 0.9], [-66, -27, 0.6], [72, -82, 1.3], [28, -48, 0.9], [-18, -14, 1.1]];
         for (const [x, z, size] of heroes) {
             const rock = new THREE.Mesh(rockGeometry(x + 100, 2), material);
-            rock.scale.set(size * 1.6, size * 0.55, size * 1.15);
-            rock.rotation.set((rand() - 0.5) * 0.34, rand() * 6, (rand() - 0.5) * 0.3);
-            rock.position.set(x, VenusTerrain.sampleSurface(surface, x, z) + size * 0.16, z);
+            rock.scale.set(size * 2.0, size * 0.45, size * 1.35);
+            rock.rotation.set((rand() - 0.5) * 0.4, rand() * 6, (rand() - 0.5) * 0.4);
+            rock.position.set(x, VenusTerrain.sampleSurface(surface, x, z) + size * 0.07, z);
             rock.castShadow = rock.receiveShadow = true;
+            rock.updateMatrixWorld();
             scene.add(rock);
             if (x === -45 && z === 55) featuredRock = rock;
-            obstacles.push({ x, z, radius: size * 1.6 });
+            if (!registerWalkable(rock, size * 2.0, size * 0.45, size * 1.35)) obstacles.push({ x, z, radius: size * 1.6 });
+        }
+        const giants = [[-95, 30, 4.6], [105, -35, 5.4], [28, 95, 4.1]];
+        for (const [x, z, size] of giants) {
+            const plate = new THREE.Mesh(rockGeometry(x * 3 + 7, 2), material);
+            plate.scale.set(size * 2.2, size * 0.35, size * 1.5);
+            plate.rotation.set((rand() - 0.5) * 0.3, rand() * 6, (rand() - 0.5) * 0.3);
+            plate.position.set(x, VenusTerrain.sampleSurface(surface, x, z) + size * 0.03, z);
+            plate.castShadow = plate.receiveShadow = true;
+            plate.updateMatrixWorld();
+            scene.add(plate);
+            if (!registerWalkable(plate, size * 2.2, size * 0.35, size * 1.5)) obstacles.push({ x, z, radius: size * 1.4 });
+        }
+        for (const [lx, lz, lean] of [[-58.5, -28.5, 1], [-63.5, -20.5, -1], [75, -85, 1]]) {
+            for (const side of [-1, 1]) {
+                const plate = new THREE.Mesh(rockGeometry(Math.round(lx * 7 + side * 31), 1), material);
+                plate.scale.set(1.7, 0.5, 2.3);
+                plate.rotation.set(0, lean * 0.5 + side * 0.12, side * lean * 1.02);
+                plate.position.set(lx + side * lean * 0.75, VenusTerrain.sampleSurface(surface, lx, lz) + 0.52, lz + side * 0.25);
+                plate.castShadow = plate.receiveShadow = true;
+                scene.add(plate);
+            }
+            obstacles.push({ x: lx, z: lz, radius: 1.9 });
         }
         const gravel = new THREE.InstancedMesh(rockGeometry(84, 0), material, profile.gravel);
         for (let i = 0; i < profile.gravel; i++) {
             const x = (rand() - 0.5) * 530, z = (rand() - 0.5) * 530;
             const size = 0.03 + rand() * 0.17;
-            transform.position.set(x, VenusTerrain.sampleSurface(surface, x, z) + size * 0.1, z);
-            transform.scale.set(size * 1.7, size, size);
+            transform.position.set(x, VenusTerrain.sampleSurface(surface, x, z) + size * 0.05, z);
+            transform.scale.set(size * 1.9, size * 0.6, size * 1.3);
             transform.rotation.set(0, rand() * Math.PI * 2, 0);
             transform.updateMatrix();
             gravel.setMatrixAt(i, transform.matrix);
@@ -363,16 +447,30 @@
             side: THREE.BackSide, depthWrite: false, depthTest: false,
             uniforms: {
                 zenith: { value: new THREE.Color(0x77492a).convertSRGBToLinear() },
-                horizon: { value: new THREE.Color(0xd99a55).convertSRGBToLinear() }
+                horizon: { value: new THREE.Color(0xd99a55).convertSRGBToLinear() },
+                flashBoost: { value: 0 }
             },
             vertexShader: 'varying vec3 vP; void main(){vP=position; vec4 mv=modelViewMatrix*vec4(position,1.0); gl_Position=projectionMatrix*mv; gl_Position.z=gl_Position.w;}',
-            fragmentShader: 'uniform vec3 zenith; uniform vec3 horizon; varying vec3 vP; void main(){float h=clamp(normalize(vP).y,0.0,1.0); vec3 c=mix(horizon,zenith,pow(h,0.5)); gl_FragColor=vec4(c,1.0);}'
+            fragmentShader: `uniform vec3 zenith; uniform vec3 horizon; uniform float flashBoost; varying vec3 vP;
+                float hsh(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+                float n2(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(hsh(i),hsh(i+vec2(1.0,0.0)),f.x),mix(hsh(i+vec2(0.0,1.0)),hsh(i+vec2(1.0,1.0)),f.x),f.y);}
+                void main(){
+                    vec3 d = normalize(vP);
+                    float h = clamp(d.y, 0.0, 1.0);
+                    vec3 c = mix(horizon, zenith, pow(h, 0.5));
+                    float bands = n2(vec2(d.x * 2.1 + d.z * 1.3, d.y * 6.5)) - 0.5;
+                    float mottle = n2(vP.xz * 0.0016 + vec2(vP.y * 0.002)) - 0.5;
+                    c *= 1.0 + (bands * 0.08 + mottle * 0.1) * smoothstep(0.02, 0.4, h);
+                    c *= 1.0 + flashBoost * 0.55;
+                    gl_FragColor = vec4(c, 1.0);
+                }`
         });
+        skyMat = skyMaterial;
         const sky = new THREE.Mesh(new THREE.SphereGeometry(6800, 32, 24), skyMaterial);
         sky.frustumCulled = false;
         sky.renderOrder = -1;
         scene.add(sky);
-        scene.fog = new THREE.Fog(new THREE.Color(0xc98e54).convertSRGBToLinear(), 55, 780);
+        scene.fog = new THREE.Fog(new THREE.Color(0xc98e54).convertSRGBToLinear(), 40, 520);
         const sunDirection = sunlight.position.clone().normalize();
         const glowCanvas = document.createElement('canvas');
         glowCanvas.width = glowCanvas.height = 256;
@@ -393,23 +491,6 @@
         sunProxy.userData.body = 'sun';
         scene.add(sunProxy);
         skyBodies.push(sunProxy);
-        for (const [cx, cy, cz, sx, sy, opacity] of [[-1400, 620, -2400, 2400, 520, 0.4], [1100, 540, -1900, 2100, 430, 0.34], [2300, 700, -500, 2000, 460, 0.38], [-2400, 680, 800, 2300, 500, 0.3], [300, 500, 2400, 2200, 440, 0.36], [-900, 560, 2000, 1900, 400, 0.28]]) {
-            const cloudCanvas = document.createElement('canvas');
-            cloudCanvas.width = 256; cloudCanvas.height = 64;
-            const cloudContext = cloudCanvas.getContext('2d');
-            const cloudGradient = cloudContext.createRadialGradient(128, 32, 4, 128, 32, 120);
-            cloudGradient.addColorStop(0, 'rgba(228,168,110,0.95)');
-            cloudGradient.addColorStop(0.5, 'rgba(214,150,95,0.5)');
-            cloudGradient.addColorStop(1, 'rgba(205,140,88,0)');
-            cloudContext.fillStyle = cloudGradient;
-            cloudContext.beginPath();
-            cloudContext.ellipse(128, 32, 124, 30, 0, 0, Math.PI * 2);
-            cloudContext.fill();
-            const cloud = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cloudCanvas), transparent: true, opacity, depthWrite: false }));
-            cloud.position.set(cx, cy, cz);
-            cloud.scale.set(sx, sy, 1);
-            scene.add(cloud);
-        }
         return Promise.resolve();
     }
     function buildAstronaut(texture) {
@@ -568,6 +649,30 @@
                 dust.bursts.splice(i, 1);
             }
         }
+    }
+    let channelGlow = null;
+    function buildChannelGlow() {
+        const pts = VenusTerrain.CHANNEL.points;
+        const curve = new THREE.CatmullRomCurve3(pts.map(([x, z]) => new THREE.Vector3(x, 0, z)));
+        const divisions = 72, halfWidth = 1.1;
+        const positions = [], indices = [];
+        const point = new THREE.Vector3(), tangent = new THREE.Vector3();
+        for (let i = 0; i <= divisions; i++) {
+            const t = i / divisions;
+            curve.getPoint(t, point); curve.getTangent(t, tangent);
+            const px = -tangent.z, pz = tangent.x;
+            const length = Math.hypot(px, pz) || 1;
+            const ox = px / length * halfWidth, oz = pz / length * halfWidth;
+            positions.push(point.x + ox, VenusTerrain.sampleSurface(surface, point.x + ox, point.z + oz) + 0.07, point.z + oz);
+            positions.push(point.x - ox, VenusTerrain.sampleSurface(surface, point.x - ox, point.z - oz) + 0.07, point.z - oz);
+            if (i < divisions) { const a = i * 2; indices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+        }
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geometry.setIndex(indices);
+        geometry.computeVertexNormals();
+        channelGlow = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xff4517, transparent: true, opacity: 0.16, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
+        scene.add(channelGlow);
     }
     let stationBeacon = null;
     function buildInstrument() {
@@ -755,6 +860,12 @@
             VenusTerrain.updateWalker(surface, walker, { forward, right, yaw, fast: keys.has('ShiftLeft') || keys.has('ShiftRight'), jump: jumpRequested }, dt, obstacles, gravity);
             jumpRequested = false;
             position.x = walker.x; position.z = walker.z;
+            onSlab = false;
+            const slabTop = slabTopAt(position.x, position.z);
+            if (slabTop > -Infinity && walker.vy <= 0.01) {
+                const rise = slabTop - walker.y;
+                if (rise > -0.28 && rise <= 0.5) { walker.y = slabTop; walker.vy = 0; walker.grounded = true; onSlab = true; }
+            }
             if (!wasAirborne && !walker.grounded) { spawnDust(position.x, walker.y + 0.06, position.z, 10, 0.45); if (audio) audio.jump(); }
             if (wasAirborne && walker.grounded) {
                 const energy = Math.min(1.5, Math.max(0.3, fallSpeed / 3));
@@ -762,6 +873,7 @@
                 if (audio) audio.land(energy);
             }
             const printMark = Math.floor(walker.stride / Math.PI);
+            if (onSlab) lastPrintMark = printMark;
             while (lastPrintMark < printMark) { lastPrintMark++; dropPrint(lastPrintMark); }
             if (Math.hypot(position.x, position.z) > VenusTerrain.WALK_RADIUS - 1 && now - lastBoundaryNotice > 5000) { notify('boundary'); lastBoundaryNotice = now; }
             if (wasMoving || walker.speed > 0.001 || !walker.grounded) sunlight.shadow.needsUpdate = true;
@@ -777,7 +889,10 @@
         }
         if (exploring && dt > 0) updateDust(dt);
         if (stationBeacon) stationBeacon.material.opacity = 0.15 + 0.75 * (0.5 + 0.5 * Math.sin(now * 0.0028));
-        if (flash > 0.001) { flash *= Math.exp(-dt * 3.4); hemisphereLight.intensity = 0.62 * (1 + flash * 1.7); }
+        timeUniform.value = now * 0.001;
+        if (channelGlow) channelGlow.material.opacity = 0.1 + 0.12 * (0.5 + 0.5 * Math.sin(now * 0.0009)) + flash * 0.15;
+        if (flash > 0.001) { flash *= Math.exp(-dt * 3.4); hemisphereLight.intensity = 0.62 * (1 + flash * 1.7); if (skyMat) skyMat.uniforms.flashBoost.value = flash; }
+        else if (skyMat && skyMat.uniforms.flashBoost.value !== 0) skyMat.uniforms.flashBoost.value = 0;
         if (Math.hypot(sunlight.target.position.x - position.x, sunlight.target.position.z - position.z) > 20) {
             sunlight.target.position.set(position.x, 0, position.z);
             sunlight.position.set(position.x - 180, 105, position.z - 160);
@@ -913,6 +1028,7 @@
             buildAstronaut(texture);
             buildFootprints();
             buildInstrument();
+            buildChannelGlow();
             walker = VenusTerrain.createWalker(surface, position);
             await buildSky();
             updateCamera();

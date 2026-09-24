@@ -87,6 +87,9 @@ dialog h2 { font: 400 32px Georgia, "Songti SC", SimSun, serif; margin: 18px 0; 
 dialog h3 { color: #e7c7a2; font-size: 13px; margin-top: 24px; font-weight: 500; }
 dialog p { font-size: 13px; line-height: 1.8; color: #bfc3b9; }
 dialog .asset-note { font-size: 11px; border-top: 1px solid var(--line); padding-top: 18px; }
+.feature-list { list-style: none; padding: 0; margin: 8px 0 4px; display: grid; gap: 10px; }
+.feature-list li { display: grid; grid-template-columns: minmax(110px, 34%) 1fr; gap: 12px; font-size: 12px; line-height: 1.6; color: #bfc3b9; }
+.feature-list strong { color: #e7c7a2; font-weight: 500; }
 .dialog-close { position: absolute; right: 15px; top: 12px; color: #bbb; background: none; border: none; font-size: 25px; padding: 0 8px; }
 #photo-controls { position: absolute; bottom: max(30px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 20px; white-space: nowrap; }
 .photo-mode .expedition-header, .photo-mode .location-label, .photo-mode .compass, .photo-mode .arrival-card, .photo-mode .field-card, .photo-mode .telemetry, .photo-mode .expedition-footer, .photo-mode .art-note, .photo-mode .walking-hint, .photo-mode #reticle, .photo-mode .touch-pad, .photo-mode .scene-shade, .photo-mode .visor { display: none !important; }

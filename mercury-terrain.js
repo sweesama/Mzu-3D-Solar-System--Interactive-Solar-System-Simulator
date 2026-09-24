@@ -1,14 +1,39 @@
 (function (root) {
     const WALK_RADIUS = 300;
-    const GRAVITY = 8.87;
+    const GRAVITY = 3.7;
     const EARTH_GRAVITY = 9.8;
     const EYE_HEIGHT = 1.68;
     const WALK_SPEED = 1.55;
     const FAST_SPEED = 2.8;
     const JUMP_SPEED = 1.8;
-    const DOME = { x: -120, z: -95, radius: 44, height: 7 };
-    const TESSERA = { x: 190, z: 150, radius: 95, amplitude: 2.6, angle: 0.6 };
-    const CHANNEL = { points: [[-15, -165], [35, -125], [95, -98], [160, -58]], width: 8, depth: 2.4 };
+    const craters = [
+        { x: -60, z: -55, radius: 42, depth: 11, rim: 5, peak: 4.2 },
+        { x: 110, z: 60, radius: 26, depth: 5.5, rim: 2.4 },
+        { x: -150, z: 60, radius: 60, depth: 14, rim: 6 },
+        { x: 60, z: -170, radius: 85, depth: 17, rim: 7 },
+        { x: -40, z: 150, radius: 14, depth: 3, rim: 1.2 },
+        { x: 170, z: -40, radius: 20, depth: 4, rim: 1.8 },
+        { x: 30, z: 35, radius: 7, depth: 1.5, rim: 0.7 },
+        { x: -15, z: -28, radius: 9, depth: 1.8, rim: 0.8 },
+        { x: 140, z: 130, radius: 30, depth: 6, rim: 2.6 },
+        { x: 18, z: -52, radius: 6, depth: 1.2, rim: 0.5 },
+        { x: -80, z: 30, radius: 5, depth: 1.0, rim: 0.4 },
+        { x: 45, z: 8, radius: 4, depth: 0.9, rim: 0.4 },
+        { x: -45, z: 95, radius: 7, depth: 1.4, rim: 0.6 },
+        { x: 75, z: -45, radius: 5, depth: 1.0, rim: 0.5 },
+        { x: 130, z: 10, radius: 6, depth: 1.1, rim: 0.5 },
+        { x: -110, z: -30, radius: 8, depth: 1.6, rim: 0.7 },
+        { x: 12, z: 110, radius: 5, depth: 0.9, rim: 0.4 }
+    ];
+    const scarpA = { x: -40, z: -150 };
+    const scarpB = { x: 160, z: -10 };
+    const hollows = [
+        { x: 92, z: 96, radius: 11, depth: 1.3 },
+        { x: 83, z: 89, radius: 8, depth: 0.9 },
+        { x: 101, z: 104, radius: 9, depth: 1.1 },
+        { x: 79, z: 106, radius: 7, depth: 0.8 },
+        { x: 99, z: 84, radius: 6, depth: 0.7 }
+    ];
     function random(seed) {
         return function () {
             seed |= 0;
@@ -32,46 +57,33 @@
         const c = hash(ix, iz + 1), d = hash(ix + 1, iz + 1);
         return (a + (b - a) * fx) * (1 - fz) + (c + (d - c) * fx) * fz;
     }
-    function smoothstep(edge0, edge1, value) {
-        const t = Math.max(0, Math.min(1, (value - edge0) / (edge1 - edge0)));
-        return t * t * (3 - 2 * t);
-    }
-    function channelDistance(x, z) {
-        let best = Infinity;
-        const points = CHANNEL.points;
-        for (let i = 0; i < points.length - 1; i++) {
-            const [ax, az] = points[i], [bx, bz] = points[i + 1];
-            const dx = bx - ax, dz = bz - az;
-            const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz)));
-            best = Math.min(best, Math.hypot(x - (ax + dx * t), z - (az + dz * t)));
-        }
-        return best;
+    function scarpDistance(x, z) {
+        const dx = scarpB.x - scarpA.x, dz = scarpB.z - scarpA.z;
+        const t = Math.max(0, Math.min(1, ((x - scarpA.x) * dx + (z - scarpA.z) * dz) / (dx * dx + dz * dz)));
+        return Math.hypot(x - (scarpA.x + dx * t), z - (scarpA.z + dz * t));
     }
     function height(x, z) {
-        let h = (noise(x * 0.005 + 3, z * 0.005 + 9) - 0.5) * 6.5;
-        h += (noise(x * 0.028 + 1, z * 0.028 + 2) - 0.5) * 1.6;
-        h += (noise(x * 0.1 + 7, z * 0.1 + 4) - 0.5) * 0.45;
-        h += (noise(x * 0.38 + 11, z * 0.38 + 6) - 0.5) * 0.12;
-        h += (Math.floor(noise(x * 0.05 + 40, z * 0.05 + 9) * 5) / 5 - 0.4) * 0.5;
-        const channelOffset = channelDistance(x, z);
-        if (channelOffset < CHANNEL.width * 2.4) {
-            const inside = channelOffset / CHANNEL.width;
-            h -= CHANNEL.depth * Math.max(0, 1 - inside * inside);
-            h += smoothstep(CHANNEL.width * 2.4, CHANNEL.width * 1.2, channelOffset) * 0.55;
+        let h = (noise(x * 0.008 + 7, z * 0.008 + 12) - 0.5) * 13;
+        h += (noise(x * 0.034, z * 0.034) - 0.5) * 2.6;
+        h += (noise(x * 0.13, z * 0.13) - 0.5) * 0.6;
+        h += (noise(x * 0.45, z * 0.45) - 0.5) * 0.15;
+        for (const crater of craters) {
+            const dx = x - crater.x, dz = z - crater.z;
+            const distance = Math.hypot(dx, dz) / crater.radius;
+            if (distance > 1.9) continue;
+            const angle = Math.atan2(dz, dx);
+            const irregularity = 1 + 0.025 * Math.sin(angle * 7) + 0.018 * Math.cos(angle * 11);
+            const r = distance * irregularity;
+            const bowl = r < 1 ? -crater.depth * Math.pow(1 - r * r, 1.5) : 0;
+            const rim = crater.rim * Math.exp(-Math.pow((r - 1) / 0.14, 2));
+            const peak = crater.peak ? crater.peak * Math.exp(-Math.pow(distance * crater.radius / 9, 2)) : 0;
+            h += bowl + rim + peak;
         }
-        const domeDistance = Math.hypot(x - DOME.x, z - DOME.z) / DOME.radius;
-        if (domeDistance < 1.5) {
-            const cap = smoothstep(1.2, 0.82, domeDistance);
-            h += DOME.height * cap + (noise(x * 0.16 + 5, z * 0.16 + 3) - 0.5) * 1.2 * cap;
-        }
-        const tesseraDistance = Math.hypot(x - TESSERA.x, z - TESSERA.z) / TESSERA.radius;
-        if (tesseraDistance < 1.2) {
-            const mask = smoothstep(1.2, 0.72, tesseraDistance);
-            const u = x * Math.cos(TESSERA.angle) + z * Math.sin(TESSERA.angle);
-            const v = -x * Math.sin(TESSERA.angle) + z * Math.cos(TESSERA.angle);
-            const ridges = Math.abs(Math.sin(u * 0.5 + noise(x * 0.015 + 9, z * 0.015) * 2.4));
-            const cross = Math.abs(Math.sin(v * 0.23 + noise(x * 0.02 - 4, z * 0.02 + 8) * 1.6));
-            h += (ridges * 1.15 + cross * 0.5 - 0.55) * TESSERA.amplitude * mask;
+        const scarpD = scarpDistance(x, z) + (noise(x * 0.015 + 5, z * 0.015 - 9) - 0.5) * 18;
+        h += 7.5 * Math.exp(-Math.pow(scarpD / 13, 2)) * (0.75 + 0.5 * noise(x * 0.02, z * 0.02));
+        for (const hollow of hollows) {
+            const d = Math.hypot(x - hollow.x, z - hollow.z) / hollow.radius;
+            if (d < 1.6) h -= hollow.depth * Math.exp(-d * d * 1.8) * (0.7 + 0.6 * noise(x * 0.3, z * 0.3));
         }
         return h;
     }
@@ -168,6 +180,5 @@
         }
         return body;
     }
-    root.VenusTerrain = Object.freeze({ WALK_RADIUS, GRAVITY, EARTH_GRAVITY, EYE_HEIGHT, WALK_SPEED, FAST_SPEED, JUMP_SPEED, DOME, TESSERA, CHANNEL, random, noise, height, channelDistance, createSurface, sampleSurface, move, createWalker, updateWalker });
-    if (typeof module !== 'undefined' && module.exports) module.exports = root.VenusTerrain;
+    root.MercuryTerrain = Object.freeze({ WALK_RADIUS, GRAVITY, EARTH_GRAVITY, EYE_HEIGHT, WALK_SPEED, FAST_SPEED, JUMP_SPEED, craters, hollows, scarpDistance, random, noise, height, createSurface, sampleSurface, move, createWalker, updateWalker });
 }(typeof globalThis !== 'undefined' ? globalThis : this));

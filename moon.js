@@ -19,6 +19,15 @@
             scienceTitle: 'Science meets imagination', scienceText: "Impact craters, airless skies, subdued rock colors, and hard sunlight are inspired by lunar science. Terrain, rock placement, and observation points are procedural art, not survey data. Earth's apparent size and placement are composed for this scene, not calculated for a real date or location.",
             soundText: "In this near vacuum there is no wind to hear; the sounds come from inside the suit — a quiet life-support hum, footfalls conducted through the body, and a radio chime for each discovery. Jumps use a constant lunar surface gravity of 1.62 m/s²; press G to feel Earth's 9.8 m/s² with the same takeoff push. The chosen 1.8 m/s takeoff gives about 1 metre of rise and 2.2 seconds in the air on level ground. Pace, takeoff strength, and camera motion are comfort settings, not a full spacesuit simulation.",
             assetText: "Earth imagery: Solar System Scope, CC BY 4.0, using the site's existing textures. Lunar terrain and rock textures are generated locally in your browser.",
+            featuresTitle: 'What you are seeing', features: [
+                ['Glass-bead soil', 'The regolith glints — Apollo crews called the soil "sparkly". Watch for bright specks near your boots.'],
+                ['Micro-craters', 'The ground is peppered with centimetre-scale pits from endless micrometeorite rain.'],
+                ['Rock fillets', 'Dust ramped against the base of every big boulder — a signature lunar look.'],
+                ['Black-sky daylight', 'No air to scatter light: the sky stays black at noon and shadows are razor-sharp.'],
+                ['Earth overhead', 'It hangs almost still in the lunar sky — from here it never sets, and it shines about four times brighter than a full Moon does at home.'],
+                ['Horizon glow', 'A faint bright band hugs the horizon toward the Sun — Apollo crews reported dust levitating and scattering light there.'],
+                ['Your footprints', 'Nothing erodes them — Apollo’s boot prints are still up there after fifty years.']
+            ],
             error: 'The 3D scene could not start. Try reloading in a browser with WebGL enabled.', lost: 'The graphics connection was interrupted. Reload this page to resume.', boundary: 'You have reached the edge of this expedition. Try another observation point.', saved: 'Photograph saved.', saveFailed: 'This browser could not save the photograph.', fullscreenFailed: 'Full screen is not available in this browser.', textureFailed: 'Earth imagery is unavailable; a simple globe is shown instead.', adjusted: 'Render resolution reduced to keep exploring smoothly.',
             notes: [
                 ['A history of impacts', 'The raised rim and sunken bowl tell the same story: an impact scattered rock outward. Without wind or rain, these scars can remain for billions of years.', 'LANDSCAPE', 'Impact crater'],
@@ -41,6 +50,15 @@
             scienceTitle: '科学与想象的交界', scienceText: '撞击坑、漆黑天空、低饱和度岩石和强烈日照来自月球科学常识。地形、岩石分布与观察点由程序创作，并非实测地形。地球在天空中的位置和视觉大小经过构图处理，不对应真实日期或坐标。',
             soundText: '接近真空的环境里没有风声；你听到的来自宇航服内部——维生风扇的低鸣、经身体传导的脚步，以及记录发现时的无线电提示音。跳跃使用月面平均重力 1.62 m/s²；按 G 可用相同的起跳力度感受地球 9.8 m/s² 的重力。设定的起跳速度为 1.8 m/s，在平地约跳高 1 米、腾空 2.2 秒。步速、起跳力度和镜头起伏经过舒适性设计，不是完整的宇航服物理模拟。',
             assetText: '地球影像：Solar System Scope，CC BY 4.0，复用网站已有贴图。月面地形与岩石纹理由浏览器本地生成。',
+            featuresTitle: '你眼前的景观', features: [
+                ['玻璃微珠月壤', '月壤会闪光——阿波罗宇航员形容它"亮晶晶的"。注意你靴边零星的光点。'],
+                ['微小撞击坑', '地面布满厘米级小坑，来自永不停歇的微陨石雨。'],
+                ['岩根土堆', '每块巨石根部都堆起一圈月壤——月球上标志性的细节。'],
+                ['白昼黑天', '没有大气散射阳光：正午的天空依然漆黑，影子边缘锋利如刀。'],
+                ['头顶的地球', '它几乎一动不动地挂在月空——从这里看它永不落下，亮度约是满月的四倍。'],
+                ['地平线辉光', '朝着太阳方向的地平线有一圈微弱亮带——阿波罗宇航员报告过悬浮尘埃散射出的这种光。'],
+                ['你的脚印', '没有风没有水，脚印永不磨灭——阿波罗的靴印至今仍留在月面。']
+            ],
             error: '三维场景未能启动，请在支持 WebGL 的浏览器中重新加载。', lost: '图形连接中断，请重新加载页面继续。', boundary: '已到达本次探索区域边缘，可以前往另一个观察点。', saved: '照片已保存。', saveFailed: '当前浏览器无法保存照片。', fullscreenFailed: '当前浏览器无法进入全屏。', textureFailed: '地球影像暂时无法加载，已显示简化球体。', adjusted: '已适当降低渲染分辨率，让探索更流畅。',
             notes: [
                 ['撞击留下的岁月', '隆起的边缘与下陷的坑底，记录着一次猛烈撞击。没有风雨侵蚀，这样的痕迹可以留存数十亿年。', '地貌类型', '撞击坑'],
@@ -96,6 +114,15 @@
         updateSoundButton();
         $('gravity-mode').textContent = t(gravity === LunarTerrain.GRAVITY ? 'moonTag' : 'earthTag');
         if (walker) $('movement-state').textContent = t(walker.grounded ? 'grounded' : 'airborne');
+        const featureList = $('feature-list');
+        if (featureList) {
+            featureList.innerHTML = '';
+            for (const [name, text] of (t('features') || [])) {
+                const li = document.createElement('li'), strong = document.createElement('strong'), span = document.createElement('span');
+                strong.textContent = name; span.textContent = text;
+                li.append(strong, span); featureList.appendChild(li);
+            }
+        }
         updateNotes();
     }
     function updateNotes() {
@@ -170,6 +197,16 @@
                 float fine = lunarNoise(vGroundPosition.xz * 1.8) - 0.5;
                 float detailFade = 1.0 - smoothstep(25.0, 130.0, distance(cameraPosition, vGroundPosition));
                 diffuseColor.rgb *= 0.94 + broad * 0.22 + fine * 0.06 * detailFade;
+                vec2 microCell = vGroundPosition.xz * 1.4;
+                vec2 microId = floor(microCell);
+                vec2 microF = fract(microCell) - vec2(0.28, 0.31) * (lunarHash(microId) - 0.35) - 0.5;
+                float microDist = length(microF);
+                float microPit = step(0.6, lunarHash(microId + 17.0)) * (smoothstep(0.3, 0.16, microDist) * -0.1 + smoothstep(0.36, 0.28, microDist) * 0.07);
+                diffuseColor.rgb *= 1.0 + microPit * detailFade;
+                vec2 glintCell = floor(vGroundPosition.xz * 17.0);
+                vec2 glintF = fract(vGroundPosition.xz * 17.0) - 0.5;
+                float glint = step(0.996, lunarHash(glintCell + 3.0)) * smoothstep(0.24, 0.02, length(glintF));
+                diffuseColor.rgb += vec3(glint * 0.4) * detailFade;
             `);
         };
         return material;
@@ -303,6 +340,8 @@
             rocks.frustumCulled = false;
             scene.add(rocks);
         }
+        const filletGeometry = new THREE.SphereGeometry(1, 14, 8);
+        const filletMaterial = new THREE.MeshStandardMaterial({ map: texture, roughness: 1, color: 0xb3aea2 });
         const heroes = [[-7, 68, 1.1], [12, 48, 2.2], [21, 50, 1.1], [-43, 13, 3.4], [-47, 8, 1.3], [-42, 18, 0.7], [90, 26, 1.5], [7, 20, 0.9], [-17, 40, 1.9]];
         for (const [x, z, size] of heroes) {
             const rock = new THREE.Mesh(rockGeometry(x + 100, 2), material);
@@ -311,6 +350,11 @@
             rock.rotation.y = rand() * 6;
             rock.castShadow = rock.receiveShadow = true;
             scene.add(rock);
+            const fillet = new THREE.Mesh(filletGeometry, filletMaterial);
+            fillet.scale.set(size * 1.75, size * 0.3, size * 1.55);
+            fillet.position.set(x, LunarTerrain.sampleSurface(surface, x, z) - size * 0.06, z);
+            fillet.receiveShadow = true;
+            scene.add(fillet);
             if (x === -43 && z === 13) featuredRock = rock;
             obstacles.push({ x, z, radius: size * 1.45 });
         }
@@ -341,6 +385,8 @@
             loader.load('textures/2k_earth_daymap.jpg', texture => {
                 texture.encoding = THREE.sRGBEncoding;
                 earthMaterial.map = texture;
+                earthMaterial.emissiveMap = texture;
+                earthMaterial.emissive = new THREE.Color(0x4a5560);
                 earthMaterial.color.set(0xffffff);
                 earthMaterial.needsUpdate = true;
                 resolve();
@@ -363,6 +409,26 @@
         const sun = new THREE.Mesh(new THREE.SphereGeometry(7, 24, 16), new THREE.MeshBasicMaterial({ color: 0xfff5dc }));
         sun.position.copy(sunlight.position).normalize().multiplyScalar(2100);
         scene.add(sun);
+        const glowCanvas = document.createElement('canvas');
+        glowCanvas.width = 256; glowCanvas.height = 64;
+        const glowContext = glowCanvas.getContext('2d');
+        const glowGradient = glowContext.createRadialGradient(128, 96, 4, 128, 96, 96);
+        glowGradient.addColorStop(0, 'rgba(255,244,214,0.5)');
+        glowGradient.addColorStop(0.4, 'rgba(240,228,200,0.18)');
+        glowGradient.addColorStop(1, 'rgba(230,220,195,0)');
+        glowContext.save();
+        glowContext.translate(0, 32);
+        glowContext.scale(1, 0.42);
+        glowContext.translate(0, -32);
+        glowContext.fillStyle = glowGradient;
+        glowContext.fillRect(0, -96, 256, 256);
+        glowContext.restore();
+        const horizonGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(glowCanvas), transparent: true, opacity: 0.5, depthWrite: false, blending: THREE.AdditiveBlending }));
+        const sunFlat = new THREE.Vector3(sun.position.x, 0, sun.position.z).normalize();
+        horizonGlow.position.copy(sunFlat).multiplyScalar(2500);
+        horizonGlow.position.y = 55;
+        horizonGlow.scale.set(2400, 190, 1);
+        scene.add(horizonGlow);
         return Promise.race([earthReady, new Promise(resolve => setTimeout(resolve, 5000))]);
     }
     function buildAstronaut(texture) {
@@ -425,11 +491,11 @@
         canvas.width = 64; canvas.height = 96;
         const context = canvas.getContext('2d');
         context.translate(32, 48);
-        context.fillStyle = 'rgba(38,36,32,0.55)';
+        context.fillStyle = 'rgba(26,24,20,0.78)';
         context.beginPath(); context.ellipse(0, 0, 13, 22, 0, 0, Math.PI * 2); context.fill();
-        context.fillStyle = 'rgba(22,21,18,0.8)';
-        for (let i = 0; i < 8; i++) context.fillRect(-11, -20 + i * 5, 22, 2.6);
-        context.fillStyle = 'rgba(20,19,16,0.85)';
+        context.fillStyle = 'rgba(12,11,9,0.95)';
+        for (let i = 0; i < 8; i++) context.fillRect(-11, -20 + i * 5, 22, 2.8);
+        context.fillStyle = 'rgba(11,10,8,0.95)';
         context.fillRect(-10, 15, 20, 8);
         const texture = new THREE.CanvasTexture(canvas);
         const geometry = new THREE.PlaneGeometry(0.24, 0.42);

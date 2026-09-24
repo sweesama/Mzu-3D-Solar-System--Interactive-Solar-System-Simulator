@@ -2,97 +2,97 @@
     'use strict';
     const $ = id => document.getElementById(id);
     const parameters = new URLSearchParams(location.search);
-    const expedition = window.MarsExpedition;
+    const expedition = window.MercuryExpedition;
     if (!expedition) { $('loading-label').textContent = 'The expedition guide could not load. Please reload this page.'; return; }
     const dictionary = {
         en: {
-            expeditions: 'EXPEDITIONS', fullscreen: 'Full screen', return: 'Return to orbit', destination: 'MARS', surfaceMode: 'SURFACE EXPLORATION',
-            chapter: 'EXPEDITION 002 / THE RED PLAIN', title: 'Walk on\nMars.', intro: 'Walk an imagined Martian plain, jump in gentler gravity, and read layered rock, wind-blown dunes, and a butterscotch sky.', begin: 'Step onto Mars', arrivalHint: 'No download. Just a little curiosity.',
-            fieldNotes: 'FIELD NOTES', reconstruction: 'An imagined site, informed by Mars science.', gravity: 'GRAVITY', atmosphere: 'ATMOSPHERE', vacuum: 'Thin CO₂', distance: 'FROM ARRIVAL',
-            walkingHint: 'W A S D to walk · drag to look · Space to jump · G gravity · M sound', touchHint: 'Arrows to walk · drag to look · tap Jump to leap', station0: 'Layered mesa', station1: 'Boulder field', station2: 'Dune edge',
+            expeditions: 'EXPEDITIONS', fullscreen: 'Full screen', return: 'Return to orbit', destination: 'MERCURY', surfaceMode: 'SURFACE EXPLORATION',
+            chapter: 'EXPEDITION 004 / THE TWILIGHT ZONE', title: 'Stand on\nMercury.', intro: 'Walk an imagined cratered plain near Mercury’s twilight band — a black sky at noon, a Sun three times wider than from Earth, and the oldest-looking ground in the Solar System.', begin: 'Step onto Mercury', arrivalHint: 'No download. Just a little curiosity.',
+            fieldNotes: 'FIELD NOTES', reconstruction: 'An imagined site, informed by Mercury science.', gravity: 'GRAVITY', atmosphere: 'ATMOSPHERE', vacuum: 'Airless', temperature: 'SURFACE TEMP', tempValue: '430°C day / −180°C night', distance: 'FROM ARRIVAL',
+            walkingHint: 'W A S D to walk · drag to look · Space to jump · G gravity · M sound', touchHint: 'Arrows to walk · drag to look · tap Jump to leap', station0: 'Arrival plain', station1: 'Crater approach', station2: 'Hollows rim',
             astronaut: 'ASTRONAUT', jump: 'Jump', grounded: 'On the surface', airborne: 'Airborne', motionOn: 'Camera motion: On', motionOff: 'Camera motion: Off', motionHint: 'Disable head motion for a steadier view.',
             guide: 'Field guide', photo: 'Photo mode', quality: 'Quality', auto: 'Auto', high: 'High', balanced: 'Balanced', low: 'Low', artNote: 'SCIENCE-INSPIRED ARTISTIC RECONSTRUCTION · NOT A SCANNED LANDING SITE',
-            capture: 'Save photograph', exitPhoto: 'Exit photo mode', loading: 'Preparing the Martian landscape…', fieldGuide: 'THE EXPEDITION FIELD GUIDE', guideTitle: 'Take the long way home.',
-            guideIntro: 'This is a small, freely explorable Martian plain, not a whole-planet simulation. The five observation points are different views of the same place; two of them can only be reached on foot.', controlsTitle: 'Moving around',
-            gravityCompare: 'Compare Earth gravity · G', gravityMars: 'Back to Martian gravity · G', gravityHint: 'Same takeoff push, different fall. Mars gravity is 3.71 m/s² — lighter than Earth, heavier than the Moon.', soundOn: 'Suit sounds: On', soundOff: 'Suit sounds: Off', soundHint: 'Fan hum and footfalls inside the suit; outside, deep silence broken by an occasional faint gust. M toggles.', gravityMarsTag: 'Martian gravity — 3.71 m/s².', gravityEarth: 'Earth gravity — 9.8 m/s². Same push, far less height.', marsTag: 'MARS', earthTag: 'EARTH',
+            capture: 'Save photograph', exitPhoto: 'Exit photo mode', loading: 'Preparing the Mercurian landscape…', fieldGuide: 'THE EXPEDITION FIELD GUIDE', guideTitle: 'Where the Sun looms.',
+            guideIntro: 'This is a small, freely explorable cratered plain, not a whole-planet simulation. The five observation points are different views of the same place; two of them can only be reached on foot.', controlsTitle: 'Moving around',
+            gravityCompare: 'Compare Earth gravity · G', gravityMercury: 'Back to Mercury gravity · G', gravityHint: 'Same takeoff push, different fall. Mercury gravity is 3.7 m/s² — almost exactly the same as Mars, on a much smaller world.', soundOn: 'Suit sounds: On', soundOff: 'Suit sounds: Off', soundHint: 'Inside the suit: fan hum and conducted footfalls. Outside, total silence — Mercury has no air to carry sound. M toggles.', gravityMercuryTag: 'Mercury gravity — 3.7 m/s², Mars-like.', gravityEarth: 'Earth gravity — 9.8 m/s². Same push, far less height.', mercuryTag: 'MERCURY', earthTag: 'EARTH',
             controlsText: 'You are exploring on foot as an astronaut. Walk with W A S D or the arrow keys; Shift gives a brisker pace. Press Space to jump, then wait to land before jumping again. Momentum carries you forward in the air. Drag to look, including down at your boots. Touchscreens have direction and Jump buttons. G compares Earth gravity; M toggles suit sounds. H hides notes; P opens photo mode; Esc closes it.',
-            scienceTitle: 'Science meets imagination', scienceText: 'The butterscotch sky comes from fine dust scattering sunlight; blue light collects around the Sun, opposite to sunsets on Earth. Layered rock, basalt boulders, and wind-shaped dunes are inspired by rover imagery. Terrain and observation points are procedural art, not survey data.',
-            soundText: "Mars has a real atmosphere — about one percent of Earth's — but it carries sound poorly: recordings by NASA's Perseverance rover show that a deep silence prevails, broken by occasional faint, muffled gusts. High pitches barely travel in carbon dioxide air. Most of what you hear comes from inside the suit: a quiet life-support hum, footfalls conducted through the body, and a radio chime for each discovery. Jumps use a constant Martian gravity of 3.71 m/s²; press G to feel Earth's 9.8 m/s² with the same takeoff push. Pace, takeoff strength, and camera motion are comfort settings, not a full spacesuit simulation.",
+            scienceTitle: 'Science meets imagination', scienceText: 'Mercury is airless and heavily cratered like the Moon, but darker and browner. Its signature landmarks are real: lobate scarps from a shrinking planet, bright hollows found nowhere else, and a Sun that looks three times wider. This site sits near the day-night band, where sunlight arrives at a low angle; terrain and observation points are procedural art, not survey data.',
+            soundText: "Mercury has essentially no atmosphere — the surface is silent, so what you hear comes from inside the suit: a quiet life-support hum, footfalls conducted through the body, and a radio chime for each discovery. Jumps use Mercury's surface gravity of 3.7 m/s²; press G to feel Earth's 9.8 m/s² with the same takeoff push. Pace, takeoff strength, and camera motion are comfort settings, not a full spacesuit simulation.",
             assetText: 'No external imagery on this page — terrain, rock textures, and the sky are generated locally in your browser.',
-            skyEyebrow: 'IN THE MARTIAN SKY', phobosName: 'Phobos', deimosName: 'Deimos', sunName: 'The Sun', earthName: 'Earth',
-            phobosText: 'The larger of Mars’s two moons — an irregular, asteroid-like body about 22 km across. It orbits so low that it rises in the west and sets in the east twice each Martian day. Its size and position in this sky are artistic, not an accurate ephemeris.',
-            deimosText: 'Mars’s smaller, more distant moon — only about 12 km across, appearing as a star-like point in the real Martian sky. Its placement here is artistic, not an accurate ephemeris.',
-            sunText: 'Seen from Mars, the Sun looks about two-thirds the size it does from Earth, wearing a pale bluish halo — Martian dust scatters blue light forward toward the Sun. This is an artistic rendering, not an accurate ephemeris.',
-            earthText: 'From Mars, Earth is a bright blue-white “evening star” that never strays far from the Sun — rovers and orbiters have photographed it. Its placement in this sky is artistic, not an accurate ephemeris.',
-            viewOrbit: 'See it in the Solar System', keepExploring: 'Keep exploring', skyHint: 'Click the Sun, Earth, or a moon in the sky to learn about it — you can then visit it in the Solar System view.',
+            skyEyebrow: 'IN THE MERCURY SKY', sunName: 'The Sun', earthName: 'Earth', venusName: 'Venus',
+            sunText: 'From Mercury the Sun looks about three times wider than from Earth — a fierce white disc in a black sky. Mercury’s slow spin and eccentric orbit can even make the Sun pause and reverse at sunrise. This is an artistic rendering, not an accurate ephemeris.',
+            earthText: 'From Mercury, Earth is a brilliant blue-white “star” that never strays more than about 28° from the Sun. Its placement in this sky is artistic, not an accurate ephemeris.',
+            venusText: 'Venus is the brightest point of light in Mercury’s sky — brighter than it appears from Earth — and can wander up to about 46° from the Sun. Its placement here is artistic, not an accurate ephemeris.',
+            viewOrbit: 'See it in the Solar System', keepExploring: 'Keep exploring', skyHint: 'Click the Sun, Earth, or Venus in the sky to learn about it — you can then visit it in the Solar System view.',
             featuresTitle: 'What you are seeing', features: [
-                ['Dust-devil tracks', 'Dark wandering streaks where whirlwinds vacuumed the bright dust — one is still swirling out on the plain right now.'],
-                ['Rover tracks', 'Twin grooves near the arrival point — a nod to the tracks Curiosity and Perseverance leave behind.'],
-                ['Dust-capped rocks', 'Boulders wear a coat of red dust on top; the sides stay dark basalt.'],
-                ['Ventifacts', 'Elongated rocks aligned to the prevailing wind, carved grain by grain.'],
-                ['Butterscotch sky & cirrus', 'Suspended dust tints the sky; thin ice clouds drift high overhead.'],
-                ['Phobos & Deimos', 'Two tiny moons cross the sky — click one and the camera turns to it.'],
-                ['Sun & Earth', 'A shrunken Sun with a faint blue halo, and Earth as a blue evening star — both clickable.']
+                ['A Sun three times wider', 'Mercury orbits barely a third of Earth’s distance from the Sun — it looms huge in a black sky, and its slow drift can pause and reverse.'],
+                ['Black sky at noon', 'No air means no scattering — stars share the sky with the Sun and shadows are razor-sharp.'],
+                ['The great scarp', 'A long cliff ridge to the south — Mercury shrank as its core cooled and the crust wrinkled like a dried fruit.'],
+                ['Bright hollows', 'Shallow pale pits found only on Mercury — probably rock evaporating away under the heat.'],
+                ['Central-peak crater', 'A mountain raised inside the bowl when the crater floor rebounded after impact.'],
+                ['Earth & Venus as stars', 'The two brightest points hugging the Sun — both clickable.'],
+                ['Angular ejecta blocks', 'Sharp-edged rock fragments clustered near crater rims — with no wind or water, nothing ever rounds them off.'],
+                ['Mars-like gravity', '3.7 m/s² — a planet much smaller than Mars that feels oddly familiar underfoot.']
             ],
             error: 'The 3D scene could not start. Try reloading in a browser with WebGL enabled.', lost: 'The graphics connection was interrupted. Reload this page to resume.', boundary: 'You have reached the edge of this expedition. Try another observation point.', saved: 'Photograph saved.', saveFailed: 'This browser could not save the photograph.', fullscreenFailed: 'Full screen is not available in this browser.', textureFailed: 'A texture was unavailable; a simpler material is shown instead.', adjusted: 'Render resolution reduced to keep exploring smoothly.',
             notes: [
-                ['Layers of deep time', 'The mesa wall ahead is banded like a sedimentary stack. On the real Mars, such layers record lakes, floods, and ash over billions of years.', 'LANDSCAPE', 'Layered mesa'],
-                ['Basalt under the dust', 'This dark boulder represents volcanic basalt — the rock beneath most Martian dust. Rotate it in the specimen viewer to inspect its texture.', 'SURFACE', 'Rock & regolith'],
-                ['The wind still works here', 'These dunes are shaped by real physics: thin air can still move sand. Martian dunes migrate a little every year.', 'ATMOSPHERE', 'Active dunes'],
-                ['A quiet weather mast', 'Orbiters and landers have measured Martian wind, temperature, and pressure for decades. This mast is an artistic prop honouring instruments like those on Viking and InSight.', 'INSTRUMENT', 'Weather mast'],
-                ['A softened crater', 'Unlike the Moon, Mars craters erode — wind and dust soften their rims over time. Look into the bowl and compare it with lunar craters.', 'LANDSCAPE', 'Degraded crater']
+                ['A mountain born of impact', 'The peak in the middle of this crater was pushed up when the compressed floor rebounded — a signature of large impacts everywhere, but especially crisp on airless worlds.', 'LANDSCAPE', 'Central-peak crater'],
+                ['A block thrown by impact', 'This angular block is ejecta — rock blasted out of the crater and dropped here. Rotate it in the specimen viewer; its sharp edges have survived billions of years with no wind to soften them.', 'SURFACE', 'Ejecta block'],
+                ['A listener in the glare', 'No probe has ever landed on Mercury — orbiters like MESSENGER studied it from above. This solar-powered relay beacon is an imagined prop, not a real mission.', 'INSTRUMENT', 'Relay beacon'],
+                ['Mercury’s hollows', 'These shallow, bright-rimmed pits exist nowhere else we know. They may form as volatile material in the rock evaporates under the relentless Sun.', 'SURFACE', 'Hollows field'],
+                ['A wrinkle from a shrinking world', 'This long ridge is a lobate scarp — a cliff pushed up as Mercury’s interior cooled and the whole planet contracted. No other planet wears them so prominently.', 'LANDSCAPE', 'Lobate scarp']
             ]
         },
         zh: {
-            expeditions: '星际探索', fullscreen: '全屏', return: '返回太阳系', destination: '火星', surfaceMode: '火星表面探索', chapter: '探索 002 / 红色平原', title: '漫步火星。',
-            intro: '走进一片艺术重建的火星平原，在较轻的重力中跳跃，观察层状岩石、风吹沙丘和奶油色的天空。', begin: '踏上火星', arrivalHint: '无需下载，带上好奇心就好。', fieldNotes: '探索手记', reconstruction: '受火星科学启发的虚构地点。',
-            gravity: '火星重力', atmosphere: '大气环境', vacuum: '稀薄二氧化碳', distance: '距抵达点', walkingHint: 'W A S D 行走 · 拖动转头 · 空格跳跃 · G 重力 · M 声音', touchHint: '方向按钮行走 · 拖动画面转头 · 点击跳跃',
+            expeditions: '星际探索', fullscreen: '全屏', return: '返回太阳系', destination: '水星', surfaceMode: '水星表面探索', chapter: '探索 004 / 晨昏之地', title: '站上水星。',
+            intro: '走进一片艺术重建的水星晨昏带陨击平原——正午时分天空依然漆黑，太阳的视直径是地球上的三倍，脚下是太阳系里最古老的地表。', begin: '踏上水星', arrivalHint: '无需下载，带上好奇心就好。', fieldNotes: '探索手记', reconstruction: '受水星科学启发的虚构地点。',
+            gravity: '水星重力', atmosphere: '大气环境', vacuum: '接近真空', temperature: '表面温度', tempValue: '白天 430°C / 夜 −180°C', distance: '距抵达点', walkingHint: 'W A S D 行走 · 拖动转头 · 空格跳跃 · G 重力 · M 声音', touchHint: '方向按钮行走 · 拖动画面转头 · 点击跳跃',
             astronaut: '宇航员视角', jump: '跳跃', grounded: '双脚着地', airborne: '腾空中', motionOn: '镜头起伏：开', motionOff: '镜头起伏：关', motionHint: '关闭头部起伏可获得更平稳的视角。',
-            station0: '层状平顶山', station1: '岩石原野', station2: '沙丘边缘', guide: '探索指南', photo: '摄影模式', quality: '画质', auto: '自动', high: '高', balanced: '均衡', low: '低',
-            artNote: '科学启发的艺术重建 · 非真实着陆点扫描', capture: '保存照片', exitPhoto: '退出摄影', loading: '正在准备火星风景…', fieldGuide: '火星探索指南', guideTitle: '慢一点，看看远方。',
-            guideIntro: '这是一片可以自由漫游的火星平原，而非完整火星。五个观察点都位于同一个场景，其中两个只能徒步走到。', controlsTitle: '如何探索',
-            gravityCompare: '对比地球重力 · G', gravityMars: '恢复火星重力 · G', gravityHint: '同样的起跳力度，不同的下落感受。火星重力 3.71 m/s²——比地球轻，比月球重。', soundOn: '宇航服声音：开', soundOff: '宇航服声音：关', soundHint: '宇航服内的风扇低鸣与脚步声；外部是深邃的寂静，偶尔掠过一阵微弱而沉闷的风。M 切换。', gravityMarsTag: '火星重力 — 3.71 m/s²。', gravityEarth: '地球重力 — 9.8 m/s²。同样的起跳，高度骤减。', marsTag: '火星', earthTag: '地球',
+            station0: '抵达平原', station1: '陨坑外围', station2: '凹陷区边缘', guide: '探索指南', photo: '摄影模式', quality: '画质', auto: '自动', high: '高', balanced: '均衡', low: '低',
+            artNote: '科学启发的艺术重建 · 非真实着陆点扫描', capture: '保存照片', exitPhoto: '退出摄影', loading: '正在准备水星风景…', fieldGuide: '水星探索指南', guideTitle: '太阳高悬之地。',
+            guideIntro: '这是一片可以自由漫游的陨击平原，而非完整水星。五个观察点都位于同一个场景，其中两个只能徒步走到。', controlsTitle: '如何探索',
+            gravityCompare: '对比地球重力 · G', gravityMercury: '恢复水星重力 · G', gravityHint: '同样的起跳力度，不同的下落感受。水星重力 3.7 m/s²——和火星几乎一模一样，但它比火星小得多。', soundOn: '宇航服声音：开', soundOff: '宇航服声音：关', soundHint: '宇航服内的风扇低鸣与经身体传导的脚步声；外部一片死寂——水星没有空气传声。M 切换。', gravityMercuryTag: '水星重力 — 3.7 m/s²，和火星相近。', gravityEarth: '地球重力 — 9.8 m/s²。同样的起跳，高度骤减。', mercuryTag: '水星', earthTag: '地球',
             controlsText: '你是一位徒步探索的宇航员。W A S D 或方向键行走，Shift 快步，空格跳跃，落地后才能再次起跳。腾空时保留起跳时的水平惯性，不能像飞行器一样转向。拖动画面观察，也可以低头看看自己的靴子。触屏有方向按钮和跳跃键。G 对比地球重力，M 开关宇航服声音。H 隐藏手记，P 进入摄影，Esc 退出摄影。',
-            scienceTitle: '科学与想象的交界', scienceText: '奶油色的天空来自细小尘埃散射阳光；蓝色聚集在太阳周围，与地球上的日落恰好相反。层状岩石、玄武岩巨石和风成沙丘都受火星探测车影像启发。地形与观察点由程序创作，并非实测数据。',
-            soundText: '火星有真实的大气——约为地球的百分之一——但传声能力很差：NASA 毅力号的录音显示，火星上绝大部分时间是深邃的寂静，偶尔掠过微弱而沉闷的阵风，高音在二氧化碳空气中几乎传不远。你听到最多的仍来自宇航服内部：维生风扇的低鸣、经身体传导的脚步，以及记录发现时的无线电提示音。跳跃使用火星重力 3.71 m/s²；按 G 可用相同的起跳力度感受地球 9.8 m/s²。步速、起跳力度和镜头起伏经过舒适性设计，不是完整的宇航服物理模拟。',
+            scienceTitle: '科学与想象的交界', scienceText: '水星和月球一样没有大气、遍布陨击坑，但颜色更暗、偏棕。它的标志性地貌都是真实的：行星收缩形成的叶状悬崖、太阳系独有的明亮凹陷群、以及视直径三倍于地球的太阳。本场景位于晨昏带附近，阳光以很低的角度斜射；地形与观察点由程序创作，并非实测数据。',
+            soundText: '水星几乎没有大气——表面是完全寂静的，你听到的来自宇航服内部：维生风扇的低鸣、经身体传导的脚步，以及记录发现时的无线电提示音。跳跃使用水星表面重力 3.7 m/s²；按 G 可用相同的起跳力度感受地球 9.8 m/s²。步速、起跳力度和镜头起伏经过舒适性设计，不是完整的宇航服物理模拟。',
             assetText: '本页不使用外部影像——地形、岩石纹理和天空均由浏览器本地生成。',
-            skyEyebrow: '火星天空中', phobosName: '火卫一（福博斯）', deimosName: '火卫二（德莫斯）', sunName: '太阳', earthName: '地球',
-            phobosText: '火星较大的卫星——一颗直径约 22 公里的不规则小天体，轨道极低，在火星上看它每天从西边升起、东边落下两次。它在天空中的大小和位置经过艺术处理，并非精确星历。',
-            deimosText: '火星较小、较远的卫星——直径约 12 公里，在真实的火星天空中只是一个星点般的亮点。它的位置经过艺术处理，并非精确星历。',
-            sunText: '从火星看，太阳只有地球上看到的约三分之二大，周围还带着一圈淡蓝色光晕——火星尘埃会把蓝光向前散射。本场景为艺术呈现，并非精确星历。',
-            earthText: '从火星看，地球是一颗靠近太阳的蓝白色“昏星”——探测车和轨道器都拍到过它。它在天空中的位置经过艺术处理，并非精确星历。',
-            viewOrbit: '在太阳系中查看它', keepExploring: '继续探索', skyHint: '点击天空中的太阳、地球或卫星可以了解它，然后还能跳到太阳系视角。',
+            skyEyebrow: '水星天空中', sunName: '太阳', earthName: '地球', venusName: '金星',
+            sunText: '从水星看，太阳的视直径约为地球上的三倍——一轮炽热的白色圆盘挂在漆黑的天空中。水星缓慢的自转和偏心轨道甚至能让太阳在日出时停顿、倒退。本场景为艺术呈现，并非精确星历。',
+            earthText: '从水星看，地球是一颗明亮的蓝白色"星"，永远不会离太阳超过约 28°。它在天空中的位置经过艺术处理，并非精确星历。',
+            venusText: '金星是水星天空中最亮的点状天体——比从地球上看更亮——最多可以离太阳约 46°。它的位置经过艺术处理，并非精确星历。',
+            viewOrbit: '在太阳系中查看它', keepExploring: '继续探索', skyHint: '点击天空中的太阳、地球或金星可以了解它，然后还能跳到太阳系视角。',
             featuresTitle: '你眼前的景观', features: [
-                ['尘卷风轨迹', '深色的蜿蜒条纹——旋风卷走表层亮尘留下的痕迹，此刻平原上就有一个在转。'],
-                ['火星车辙印', '抵达点附近的双轨凹槽——致敬好奇号和毅力号留下的轨迹。'],
-                ['戴尘帽的岩石', '巨石顶部盖着一层红色尘土，侧面仍是深色玄武岩。'],
-                ['风蚀岩', '沿盛行风向拉长的岩石——被风沙一粒粒磨出来的形状。'],
-                ['奶油色天空与卷云', '悬浮的尘埃把天空染成奶油色，高空还飘着稀薄的冰晶云。'],
-                ['火卫一与火卫二', '两颗小小的卫星划过天空——点击它，镜头会自动转过去。'],
-                ['太阳与地球', '缩小了一圈、带着淡蓝光晕的太阳，和一颗蓝色的"昏星"地球——都可以点击。']
+                ['三倍宽的太阳', '水星距太阳只有地球的三分之一左右——黑天上巨大的炽白日轮，还会缓慢漂移、仿佛停顿倒退。'],
+                ['正午的黑天', '没有大气就没有散射——星星和太阳同时挂在天上，影子边缘锋利如刀。'],
+                ['大悬崖皱脊', '南方横亘着一道长崖脊——水星内核冷却收缩，外壳像干果一样起皱。'],
+                ['明亮的凹陷', '浅浅的亮色坑，太阳系中仅见于水星——可能是岩石中的挥发性物质被烤了出来。'],
+                ['中央峰陨坑', '坑中央立着一座山——撞击瞬间坑底反弹抬升形成。'],
+                ['地球与金星作伴', '太阳附近两颗最亮的星点——都可以点击。'],
+                ['棱角溅射岩块', '聚集在陨坑边缘的锋利碎块——没有风水侵蚀，亿万年也磨不圆它们。'],
+                ['类火星的重力', '3.7 m/s²——水星比火星小得多，脚感却几乎一样。']
             ],
             error: '三维场景未能启动，请在支持 WebGL 的浏览器中重新加载。', lost: '图形连接中断，请重新加载页面继续。', boundary: '已到达本次探索区域边缘，可以前往另一个观察点。', saved: '照片已保存。', saveFailed: '当前浏览器无法保存照片。', fullscreenFailed: '当前浏览器无法进入全屏。', textureFailed: '纹理暂时不可用，已显示简化材质。', adjusted: '已适当降低渲染分辨率，让探索更流畅。',
             notes: [
-                ['沉积的时光', '眼前的平顶山壁像一层层堆叠的沉积物。在真实的火星上，这样的岩层记录着湖泊、洪水与火山灰的数十亿年历史。', '地貌类型', '层状平顶山'],
-                ['尘埃下的玄武岩', '这块深色巨石代表火山玄武岩——火星尘埃之下最常见的岩石。可以在查看器中旋转它，观察表面质感。', '地表组成', '岩石与风化层'],
-                ['风仍在工作', '这些沙丘由真实的物理过程塑造：稀薄的空气依然能搬运沙粒。火星上的沙丘每年都在缓慢移动。', '大气作用', '活动沙丘'],
-                ['安静的气象站', '轨道器和着陆器数十年来一直在测量火星的风、温度和气压。这座气象桅杆是致敬海盗号、洞察号等仪器的艺术道具。', '仪器类型', '气象桅杆'],
-                ['被磨平的环形山', '与月球不同，火星环形山会被侵蚀——风和尘埃随时间磨平坑缘。看看这个坑的坑底，和月球的环形山比较一下。', '地貌类型', '退化环形山']
+                ['撞击诞生的山峰', '坑中央的山峰是受压坑底反弹抬升的结果——大撞击的标志性产物，在没有大气的星球上保存得格外清晰。', '地貌类型', '中央峰陨击坑'],
+                ['被抛出的大岩块', '这块棱角分明的巨石是溅射物——撞击时从坑中炸飞出来、落在这里的岩石。在查看器中旋转它；没有风的打磨，它的棱角保存了几十亿年。', '地表组成', '溅射岩块'],
+                ['烈日下的倾听者', '迄今没有探测器在水星着陆——信使号等轨道器从空中研究它。这座太阳能中继信标是想象出来的道具，并非真实任务。', '仪器类型', '中继信标'],
+                ['水星的凹陷', '这些浅浅的亮边浅坑在别处从未见过——可能是岩石中的挥发性物质在烈日下蒸发逸散形成的。', '地表组成', '凹陷群'],
+                ['星球收缩的皱纹', '这道长脊是叶状悬崖——水星内部冷却、整颗行星收缩时把地壳推起来的断崖。没有哪颗行星像水星这样布满这种皱脊。', '地貌类型', '叶状悬崖']
             ]
         }
     };
     const discoveryStrings = {
         en: {
-            fieldRoute: 'YOUR FIELD ROUTE', allFound: 'All five discoveries are in your journal. Stay a little longer.', discover: 'Discover · E', review: 'Read again · E', chooseStop: 'Next stop', rotateRock: 'Drag or use arrow keys to rotate', continueRoute: 'Continue exploring', takePhoto: 'Frame a photograph', discoveryDisclaimer: 'This is an imagined site, not a surveyed landing site or an identified Martian sample.',
-            savedHere: 'Journal saved on this device.', visitOnly: 'Journal kept for this visit only.', follow: 'Follow the amber guide dots', closeEnough: 'You are here. Press E or Discover.', landFirst: 'Land before recording a discovery.', approach: 'Walk closer to this discovery.', recorded: 'DISCOVERY RECORDED', journal: 'FROM YOUR FIELD JOURNAL', away: 'm to the stop', ready: 'Ready to discover', quick: 'Quick travel — discovery not automatic', unavailable: 'The 3D specimen viewer is unavailable.', routeHelp: 'Follow the amber guide dots and distance arrow. Walk up to a stop and press E or Discover to add it to your journal. The numbered buttons offer quick travel, not automatic discoveries. Guide dots are interface aids, not structures on Mars. H hides or restores the route card.',
-            teasers: ['Walk west to the layered mesa and look up at its banded wall.', 'Approach the dark boulder, then turn it around in the specimen viewer.', 'Enter the dune field and look for ripples shaped by Martian wind.', 'Walk south-east from arrival to find a small weather mast standing on the plain.', 'Hike east to the rim of a worn crater and look into its bowl.'],
-            details: ['Sedimentary layers like these form when water, wind, or ash deposits material over long periods. On Mars they record environments that changed over billions of years. This mesa is an artistic example, not a reconstruction of a named formation.', 'Beneath the red dust, much of the Martian surface is dark basalt from ancient volcanism. Rovers have studied such rocks up close. Shape alone cannot tell us this model’s composition or age. Rotate the representative rock to examine its surface.', 'Martian dunes migrate measurably — orbiters have photographed them shifting over years. Thin air still moves sand, just slowly and differently than on Earth. This field is an artistic arrangement.', 'Viking landers measured Martian weather starting in 1976; InSight tracked wind, pressure, and temperature until 2022. This mast honours those instruments; its readings are imagined, not real data.', 'Unlike lunar craters, Martian craters erode under wind and dust — rims soften and bowls fill over millions of years. This worn crater is a modest artistic echo of that process.']
+            fieldRoute: 'YOUR FIELD ROUTE', allFound: 'All five discoveries are in your journal. Stay a little longer.', discover: 'Discover · E', review: 'Read again · E', chooseStop: 'Next stop', rotateRock: 'Drag or use arrow keys to rotate', continueRoute: 'Continue exploring', takePhoto: 'Frame a photograph', discoveryDisclaimer: 'This is an imagined site, not a surveyed landing site or an identified Mercurian sample.',
+            savedHere: 'Journal saved on this device.', visitOnly: 'Journal kept for this visit only.', follow: 'Follow the amber guide dots', closeEnough: 'You are here. Press E or Discover.', landFirst: 'Land before recording a discovery.', approach: 'Walk closer to this discovery.', recorded: 'DISCOVERY RECORDED', journal: 'FROM YOUR FIELD JOURNAL', away: 'm to the stop', ready: 'Ready to discover', quick: 'Quick travel — discovery not automatic', unavailable: 'The 3D specimen viewer is unavailable.', routeHelp: 'Follow the amber guide dots and distance arrow. Walk up to a stop and press E or Discover to add it to your journal. The numbered buttons offer quick travel, not automatic discoveries. Guide dots are interface aids, not structures on Mercury. H hides or restores the route card.',
+            teasers: ['Walk south-west to the crater rim and look for the mountain inside its bowl.', 'Approach the angular block beside the crater, then turn it around in the specimen viewer.', 'Walk east from arrival to find a small relay beacon standing in the glare.', 'Cross the plain north-east to a cluster of shallow, bright pits.', 'Hike south-east and climb the long cliff ridge — a wrinkle from a shrinking planet.'],
+            details: ['Central peaks rise when a crater floor, compressed by the impact, springs back — the whole bowl rebounds like a slow splash frozen in rock. This crater is an artistic example, not a reconstruction of a named formation.', 'Ejecta blocks are fragments hurled out by the impact that dug the crater. On an airless world they keep their sharp edges for ages — nothing rounds them off. Rotate the representative rock to examine its surface.', 'Mercury has never hosted a lander — it is a hard place to reach and a harder place to survive. This beacon honours the orbiters that mapped it: Mariner 10, MESSENGER, and BepiColombo on its way. Its readings are imagined, not real data.', 'MESSENGER found these bright, shallow depressions and named them “hollows” — they may form as sunlight bakes volatile substances out of the rock. They are young and still forming today, geologically speaking.', 'Lobate scarps are Mercury’s signature: as the planet’s huge core cooled and shrank, the crust cracked and one side thrust up over the other — cliffs hundreds of kilometres long. This ridge is a modest artistic echo.']
         },
         zh: {
-            fieldRoute: '你的探索路线', allFound: '五个发现都已记入手记。不妨再多停留一会儿。', discover: '记录发现 · E', review: '重读手记 · E', chooseStop: '换一站', rotateRock: '拖动或使用方向键旋转岩石', continueRoute: '继续探索', takePhoto: '构图拍照', discoveryDisclaimer: '这是虚构场景，并非真实着陆点测绘，也不是已鉴定的火星样本。',
-            savedHere: '手记已保存在此设备。', visitOnly: '手记仅在本次浏览中保留。', follow: '沿淡金色引导点前进', closeEnough: '已抵达，按 E 或点击记录发现。', landFirst: '请先落地，再记录发现。', approach: '请走近这个发现点。', recorded: '新的发现已记录', journal: '你的探索手记', away: '米到达此站', ready: '可以记录发现', quick: '快捷移动，不会自动完成发现', unavailable: '三维岩石查看器暂时不可用。', routeHelp: '跟随淡金色引导点和距离箭头，走近后按 E 或点击记录发现。底部编号可以快捷移动，但不会自动完成发现。引导点只是界面辅助，并非火星表面的真实设施。H 可隐藏或恢复路线卡片。',
-            teasers: ['向西走到层状平顶山，抬头看看带状岩壁。', '走近那块深色巨石，在查看器中转动并观察它。', '走进沙丘区，寻找火星风吹出的波纹。', '从抵达点向东南走，找一座立在平原上的小型气象桅杆。', '徒步到东侧一座风化环形山的坑缘，俯视它的坑底。'],
-            details: ['这样的沉积岩层是水、风或火山灰在漫长岁月中逐层堆积形成的。在火星上，它们记录着数十亿年间不断变迁的环境。这座平顶山是艺术示例，并不对应某个真实命名的地层。', '红色尘埃之下，火星表面大多是远古火山活动形成的深色玄武岩。探测车曾近距离研究过这类岩石。仅凭外形无法判断这个模型的成分或年龄。可以旋转这块代表性岩石，仔细观察表面。', '火星沙丘确实在移动——轨道器拍到过它们逐年变化。稀薄的空气依然能搬运沙粒，只是比地球慢。这片沙丘是艺术化布置。', '1976 年起，海盗号着陆器开始测量火星气象；洞察号直到 2022 年都在记录风、气压和温度。这座桅杆致敬那些仪器，读数是虚构的。', '与月球环形山不同，火星环形山会在风和尘埃作用下被侵蚀——坑缘随数百万年逐渐软化、坑底被填平。这座风化环形山是对这一过程的朴素艺术再现。']
+            fieldRoute: '你的探索路线', allFound: '五个发现都已记入手记。不妨再多停留一会儿。', discover: '记录发现 · E', review: '重读手记 · E', chooseStop: '换一站', rotateRock: '拖动或使用方向键旋转岩石', continueRoute: '继续探索', takePhoto: '构图拍照', discoveryDisclaimer: '这是虚构场景，并非真实着陆点测绘，也不是已鉴定的水星样本。',
+            savedHere: '手记已保存在此设备。', visitOnly: '手记仅在本次浏览中保留。', follow: '沿淡金色引导点前进', closeEnough: '已抵达，按 E 或点击记录发现。', landFirst: '请先落地，再记录发现。', approach: '请走近这个发现点。', recorded: '新的发现已记录', journal: '你的探索手记', away: '米到达此站', ready: '可以记录发现', quick: '快捷移动，不会自动完成发现', unavailable: '三维岩石查看器暂时不可用。', routeHelp: '跟随淡金色引导点和距离箭头，走近后按 E 或点击记录发现。底部编号可以快捷移动，但不会自动完成发现。引导点只是界面辅助，并非水星表面的真实设施。H 可隐藏或恢复路线卡片。',
+            teasers: ['向西南走到陨坑边缘，找找坑底中央的那座山。', '走近陨坑旁那块棱角分明的大岩块，在查看器中转动并观察它。', '从抵达点向东走，在烈日下找一座小型中继信标。', '穿过平原向东北走，找一片浅浅的亮色坑群。', '徒步东南，爬上那道长长的崖脊——一颗收缩星球留下的皱纹。'],
+            details: ['中央峰的形成原理是：撞击瞬间坑底被压缩，随后像慢动作的回弹一样隆起——整座坑底仿佛一朵被冻住的浪花。这座陨坑是艺术示例，不对应某个真实命名地貌。', '溅射岩块是挖掘陨坑的那次撞击抛出的碎片。在没有大气的星球上，它们的锋利棱角能保存几十亿年——没有任何东西磨圆它们。可以旋转这块代表性岩石，仔细观察表面。', '水星从来没有迎来过着陆器——抵达它难，活下来更难。这座信标致敬那些环绕它的轨道器：水手 10 号、信使号，以及正在路上的贝皮科伦坡。读数是虚构的。', '信使号发现了这些明亮的浅坑并命名为"凹陷"——可能是阳光把岩石中的挥发性物质烤了出来。从地质尺度看，它们很年轻，至今仍在形成。', '叶状悬崖是水星的招牌：行星巨大的内核冷却收缩，地壳开裂、一侧推覆到另一侧之上——绵延数百公里的断崖。这道山脊是朴素的艺术再现。']
         }
     };
     let language = parameters.get('lang') === 'zh' ? 'zh' : 'en';
@@ -101,13 +101,14 @@
     let jumpRequested = false, motionEnabled = !matchMedia('(prefers-reduced-motion: reduce)').matches;
     let yaw = -0.12, pitch = -0.06, lastTime = 0, frameCount = 0, sampleTime = 0, pixelRelief = 0, cameraTween = null;
     let noticeTimer, lastBoundaryNotice = 0, drag = null;
-    let gravity = MarsTerrain.GRAVITY, audio = null, soundEnabled = true;
-    let footprints = null, printCursor = 0, lastPrintMark = 0, dustDevil = null;
+    let gravity = MercuryTerrain.GRAVITY, audio = null, soundEnabled = true;
+    let footprints = null, printCursor = 0, lastPrintMark = 0;
     const dust = { bursts: [], texture: null };
     const keys = new Set(), touchKeys = new Set(), obstacles = [];
     const stations = expedition.stations;
     let discoveryUI = null, featuredRock = null;
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
+    let skyPivot = null, earthPivot = null;
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
     const position = { x: stations[0].x, z: stations[0].z };
     const touchDevice = matchMedia('(pointer: coarse)').matches;
@@ -139,7 +140,7 @@
         updateMotionButton();
         updateGravityButton();
         updateSoundButton();
-        $('gravity-mode').textContent = t(gravity === MarsTerrain.GRAVITY ? 'marsTag' : 'earthTag');
+        $('gravity-mode').textContent = t(gravity === MercuryTerrain.GRAVITY ? 'mercuryTag' : 'earthTag');
         if (walker) $('movement-state').textContent = t(walker.grounded ? 'grounded' : 'airborne');
         const featureList = $('feature-list');
         if (featureList) {
@@ -169,12 +170,12 @@
         $('loading-label').textContent = t(key);
         document.querySelector('.loading-orbit').style.animation = 'none';
         document.querySelectorAll('.station-button, #begin-button, #photo-button').forEach(button => { button.disabled = true; });
-        if (error) console.error('Moon expedition:', error);
+        if (error) console.error('Mercury expedition:', error);
     }
     function makeTexture() {
         const size = profile.texture;
         const pixels = new Uint8Array(size * size * 4);
-        const rand = MarsTerrain.random(817);
+        const rand = MercuryTerrain.random(817);
         const fields = [8, 32, 128].map(count => ({ count, data: Float32Array.from({ length: count * count }, () => rand()) }));
         function tileNoise(u, v, field) {
             const x = u * field.count, z = v * field.count, ix = Math.floor(x), iz = Math.floor(z);
@@ -189,9 +190,9 @@
                 const grain = (rand() - 0.5) * 17;
                 const cloud = (tileNoise(u, v, fields[0]) - 0.5) * 33 + (tileNoise(u, v, fields[1]) - 0.5) * 27 + (tileNoise(u, v, fields[2]) - 0.5) * 20;
                 const ripple = Math.sin((u * 46 + tileNoise(u, v, fields[1]) * 4.5) * Math.PI) * 4;
-                const value = Math.max(55, Math.min(200, 155 + grain + cloud + ripple + (rand() > 0.999 ? -35 : 0)));
+                const value = Math.max(48, Math.min(190, 118 + grain + cloud + ripple + (rand() > 0.999 ? -35 : 0)));
                 const i = (z * size + x) * 4;
-                pixels[i] = value; pixels[i + 1] = value * 0.76; pixels[i + 2] = value * 0.56; pixels[i + 3] = 255;
+                pixels[i] = value; pixels[i + 1] = value * 0.92; pixels[i + 2] = value * 0.84; pixels[i + 3] = 255;
             }
         }
         const texture = new THREE.DataTexture(pixels, size, size, THREE.RGBAFormat);
@@ -231,7 +232,7 @@
         return material;
     }
     function mountainMaterial() {
-        const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(0xb08a72).convertSRGBToLinear(), roughness: 1, metalness: 0, vertexColors: true });
+        const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(0x8d8177).convertSRGBToLinear(), roughness: 1, metalness: 0, vertexColors: true });
         material.extensions = { derivatives: true };
         material.onBeforeCompile = shader => {
             shader.vertexShader = 'varying vec3 vMountainPosition;\n' + shader.vertexShader;
@@ -261,31 +262,24 @@
         return material;
     }
     function buildTerrain(texture) {
-        surface = MarsTerrain.createSurface(960, profile.segments);
+        surface = MercuryTerrain.createSurface(960, profile.segments);
         const geometry = new THREE.PlaneGeometry(surface.size, surface.size, surface.segments, surface.segments);
         geometry.rotateX(-Math.PI / 2);
         const positions = geometry.attributes.position;
         const colors = new Float32Array(positions.count * 3);
         for (let i = 0; i < positions.count; i++) {
             positions.setY(i, surface.heights[i]);
-            const n = MarsTerrain.noise(positions.getX(i) * 0.085, positions.getZ(i) * 0.085);
-            const patch = MarsTerrain.noise(positions.getX(i) * 0.011 + 7, positions.getZ(i) * 0.011 - 3);
-            const streak = MarsTerrain.noise(positions.getX(i) * 0.03 - positions.getZ(i) * 0.05 + 11, positions.getZ(i) * 0.008);
+            const n = MercuryTerrain.noise(positions.getX(i) * 0.085, positions.getZ(i) * 0.085);
+            const patch = MercuryTerrain.noise(positions.getX(i) * 0.011 + 7, positions.getZ(i) * 0.011 - 3);
+            const streak = MercuryTerrain.noise(positions.getX(i) * 0.03 - positions.getZ(i) * 0.05 + 11, positions.getZ(i) * 0.008);
             const px = positions.getX(i), pz = positions.getZ(i);
-            const wander = MarsTerrain.noise(px * 0.006 + 21, pz * 0.006 - 8) * 7;
-            const trackA = Math.abs(Math.sin(px * 0.017 + pz * 0.008 + wander));
-            const trackB = Math.abs(Math.sin(px * -0.011 + pz * 0.023 + MarsTerrain.noise(px * 0.005 - 14, pz * 0.005 + 33) * 5));
-            const devil = (trackA < 0.055 || trackB < 0.045) ? 0.84 : 1;
-            let roverShade = 1;
-            if (px > -50 && px < 58 && pz > -20 && pz < 45) {
-                const lane = 14 + Math.sin(px * 0.045) * 5 + Math.sin(px * 0.012 + 2.2) * 4;
-                const edge = THREE.MathUtils.smoothstep(px, -50, -36) * (1 - THREE.MathUtils.smoothstep(px, 42, 58));
-                const wheel = Math.abs(Math.abs(pz - lane) - 0.55);
-                if (wheel < 0.1) roverShade = 1 - edge * 0.24;
-                else if (Math.abs(pz - lane) < 0.55) roverShade = 1 - edge * 0.07;
+            let hollowGlow = 1;
+            for (const hollow of MercuryTerrain.hollows) {
+                const hd = Math.hypot(px - hollow.x, pz - hollow.z) / hollow.radius;
+                if (hd < 1.7) hollowGlow = Math.max(hollowGlow, 1 + (1 - hd / 1.7) * 0.55);
             }
-            const shade = (0.73 + n * 0.17 + patch * 0.08 + Math.max(0, streak - 0.35) * 0.1) * devil * roverShade;
-            colors.set([shade, shade * 0.9, shade * 0.78], i * 3);
+            const shade = (0.6 + n * 0.15 + patch * 0.07 + Math.max(0, streak - 0.35) * 0.08) * hollowGlow;
+            colors.set([shade, shade * 0.94, shade * 0.88], i * 3);
         }
         geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
         geometry.computeVertexNormals();
@@ -300,14 +294,14 @@
         for (let i = 0; i < farPositions.count; i++) {
             const x = farPositions.getX(i), z = farPositions.getZ(i), r = Math.hypot(x, z);
             const blend = THREE.MathUtils.smoothstep(r, 480, 700);
-            const n = MarsTerrain.noise(x * 0.003 + 3, z * 0.003 - 1);
+            const n = MercuryTerrain.noise(x * 0.003 + 3, z * 0.003 - 1);
             const ridge = Math.exp(-Math.pow((r - 1100) / 510, 2));
-            const broken = 0.55 + 0.35 * MarsTerrain.noise(x * 0.008, z * 0.008) + 0.1 * MarsTerrain.noise(x * 0.026, z * 0.026);
-            const fractured = (Math.abs(MarsTerrain.noise(x * 0.012 + 31, z * 0.012) * 2 - 1) - 0.4) * 12 + (MarsTerrain.noise(x * 0.022, z * 0.022 + 19) - 0.5) * 3;
-            const h = MarsTerrain.height(x, z) - 0.6 + blend * (ridge * ((45 + n * 170) * broken + fractured) + n * 28);
+            const broken = 0.55 + 0.35 * MercuryTerrain.noise(x * 0.008, z * 0.008) + 0.1 * MercuryTerrain.noise(x * 0.026, z * 0.026);
+            const fractured = (Math.abs(MercuryTerrain.noise(x * 0.012 + 31, z * 0.012) * 2 - 1) - 0.4) * 12 + (MercuryTerrain.noise(x * 0.022, z * 0.022 + 19) - 0.5) * 3;
+            const h = MercuryTerrain.height(x, z) - 0.6 + blend * (ridge * ((45 + n * 170) * broken + fractured) + n * 28);
             farPositions.setY(i, h);
             const color = 0.67 + n * 0.19;
-            farColors.set([color, color * 0.8, color * 0.6], i * 3);
+            farColors.set([color, color * 0.92, color * 0.85], i * 3);
         }
         const outerIndices = [];
         const indices = farGeometry.index.array;
@@ -329,43 +323,44 @@
         const c = new Float32Array(p.count * 3);
         for (let i = 0; i < p.count; i++) {
             const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
-            const n = MarsTerrain.noise(x * 3 + seed, z * 3 + y * 2);
-            const f = 0.86 + n * 0.2;
-            p.setXYZ(i, x * f, y * (0.72 + n * 0.16), z * f);
-            const shade = 0.46 + MarsTerrain.noise(x * 8 + seed, y * 8 + z * 2) * 0.2;
-            const dustTop = Math.max(0, y) * 0.11;
-            c.set([shade + dustTop, (shade + dustTop) * 0.8, (shade + dustTop) * 0.64], i * 3);
+            const n = MercuryTerrain.noise(x * 2.4 + seed, z * 2.4 + y * 1.7);
+            const corner = MercuryTerrain.noise(x * 5.5 - seed, y * 5.5 + z * 3.1);
+            const f = 0.72 + n * 0.34 + corner * 0.14;
+            p.setXYZ(i, x * f, y * (0.52 + n * 0.3), z * f);
+            const shade = 0.46 + MercuryTerrain.noise(x * 8 + seed, y * 8 + z * 2) * 0.2;
+            c.set([shade, shade * 0.95, shade * 0.88], i * 3);
         }
         geometry.setAttribute('color', new THREE.BufferAttribute(c, 3));
         geometry.computeVertexNormals();
-        const normals = geometry.attributes.normal;
-        const normal = new THREE.Vector3(), radial = new THREE.Vector3();
-        for (let i = 0; i < p.count; i++) {
-            normal.fromBufferAttribute(normals, i);
-            radial.set(p.getX(i), p.getY(i) * 1.7, p.getZ(i)).normalize();
-            normal.lerp(radial, 0.72).normalize();
-            normals.setXYZ(i, normal.x, normal.y, normal.z);
-        }
         return geometry;
     }
     function buildRocks(texture) {
-        const rand = MarsTerrain.random(19690720);
-        const material = new THREE.MeshStandardMaterial({ map: texture, bumpMap: texture, bumpScale: 0.07, roughness: 0.98, vertexColors: true });
+        const rand = MercuryTerrain.random(19690720);
+        const material = new THREE.MeshStandardMaterial({ map: texture, bumpMap: texture, bumpScale: 0.07, roughness: 0.98, vertexColors: true, flatShading: true });
         const transform = new THREE.Object3D();
         const color = new THREE.Color();
+        const craters = MercuryTerrain.craters;
         for (let group = 0; group < 4; group++) {
             const count = Math.floor(profile.rocks / 4);
             const rocks = new THREE.InstancedMesh(rockGeometry(group * 19 + 8, 1), material, count);
             for (let i = 0; i < count; i++) {
-                let x = (rand() - 0.5) * 760, z = (rand() - 0.5) * 760;
+                let x, z;
+                if (rand() < 0.55) {
+                    const crater = craters[Math.floor(rand() * craters.length)];
+                    const angle = rand() * Math.PI * 2;
+                    const ring = crater.radius * (1.02 + rand() * 0.65);
+                    x = crater.x + Math.cos(angle) * ring;
+                    z = crater.z + Math.sin(angle) * ring;
+                } else {
+                    x = (rand() - 0.5) * 760; z = (rand() - 0.5) * 760;
+                }
                 const size = 0.2 + Math.pow(rand(), 3.7) * 2.7;
                 while (stations.some(s => Math.hypot(x - s.x, z - s.z) < size + 4) || expedition.isOnRoute({ x, z }, size * 1.5 + 0.5)) {
                     x = (rand() - 0.5) * 760; z = (rand() - 0.5) * 760;
                 }
-                const ventifact = size > 0.35 && rand() < 0.4;
-                transform.position.set(x, MarsTerrain.sampleSurface(surface, x, z) + size * 0.22, z);
-                transform.scale.set(size * (0.8 + rand() * 0.7) * (ventifact ? 1.5 + rand() * 0.4 : 1), size * (ventifact ? 0.78 : 1), size * (0.8 + rand() * 0.5));
-                transform.rotation.set((rand() - 0.5) * 0.4, ventifact ? -0.9 + (rand() - 0.5) * 0.4 : rand() * Math.PI * 2, (rand() - 0.5) * 0.4);
+                transform.position.set(x, MercuryTerrain.sampleSurface(surface, x, z) + size * 0.12, z);
+                transform.scale.set(size * (0.8 + rand() * 0.7), size, size * (0.8 + rand() * 0.5));
+                transform.rotation.set((rand() - 0.5) * 0.9, rand() * Math.PI * 2, (rand() - 0.5) * 0.9);
                 transform.updateMatrix();
                 rocks.setMatrixAt(i, transform.matrix);
                 rocks.setColorAt(i, color.setScalar(0.5 + rand() * 0.4));
@@ -376,22 +371,22 @@
             rocks.frustumCulled = false;
             scene.add(rocks);
         }
-        const heroes = [[-7, 68, 1.1], [12, 48, 2.2], [21, 50, 1.1], [-43, 14, 3.4], [-47, 8, 1.3], [-42, 19, 0.7], [90, 26, 1.5], [7, 20, 0.9], [-17, 40, 1.9]];
+        const heroes = [[-37, -16, 2.6], [-42, -22, 1.2], [-26, -34, 1.5], [-52, -8, 0.9], [14, 30, 1.8], [8, -14, 0.9], [70, 42, 1.4], [-90, 20, 1.9], [50, -58, 1.2], [-12, 44, 1.1]];
         for (const [x, z, size] of heroes) {
             const rock = new THREE.Mesh(rockGeometry(x + 100, 2), material);
-            rock.scale.set(size * 1.25, size, size);
-            rock.position.set(x, MarsTerrain.sampleSurface(surface, x, z) + size * 0.3, z);
-            rock.rotation.y = rand() * 6;
+            rock.scale.set(size * 1.35, size * 0.9, size);
+            rock.position.set(x, MercuryTerrain.sampleSurface(surface, x, z) + size * 0.2, z);
+            rock.rotation.set((rand() - 0.5) * 0.5, rand() * 6, (rand() - 0.5) * 0.5);
             rock.castShadow = rock.receiveShadow = true;
             scene.add(rock);
-            if (x === -43 && z === 14) featuredRock = rock;
+            if (x === -37 && z === -16) featuredRock = rock;
             obstacles.push({ x, z, radius: size * 1.45 });
         }
         const gravel = new THREE.InstancedMesh(rockGeometry(84, 0), material, profile.gravel);
         for (let i = 0; i < profile.gravel; i++) {
             const x = (rand() - 0.5) * 530, z = (rand() - 0.5) * 530;
             const size = 0.03 + rand() * 0.17;
-            transform.position.set(x, MarsTerrain.sampleSurface(surface, x, z) + size * 0.1, z);
+            transform.position.set(x, MercuryTerrain.sampleSurface(surface, x, z) + size * 0.1, z);
             transform.scale.set(size * 1.7, size, size);
             transform.rotation.set(0, rand() * Math.PI * 2, 0);
             transform.updateMatrix();
@@ -405,73 +400,67 @@
     function buildSky() {
         const skyMaterial = new THREE.ShaderMaterial({
             side: THREE.BackSide, depthWrite: false, depthTest: false,
-            uniforms: {
-                zenith: { value: new THREE.Color(0x8f5f42).convertSRGBToLinear() },
-                horizon: { value: new THREE.Color(0xe3b489).convertSRGBToLinear() }
-            },
+            uniforms: { base: { value: new THREE.Color(0x020203) } },
             vertexShader: 'varying vec3 vP; void main(){vP=position; vec4 mv=modelViewMatrix*vec4(position,1.0); gl_Position=projectionMatrix*mv; gl_Position.z=gl_Position.w;}',
-            fragmentShader: 'uniform vec3 zenith; uniform vec3 horizon; varying vec3 vP; void main(){float h=clamp(normalize(vP).y,0.0,1.0); vec3 c=mix(horizon,zenith,pow(h,0.6)); gl_FragColor=vec4(c,1.0);}'
+            fragmentShader: 'uniform vec3 base; varying vec3 vP; void main(){gl_FragColor=vec4(base,1.0);}'
         });
         const sky = new THREE.Mesh(new THREE.SphereGeometry(6800, 32, 24), skyMaterial);
         sky.frustumCulled = false;
         sky.renderOrder = -1;
         scene.add(sky);
-        scene.fog = new THREE.Fog(new THREE.Color(0xd9ab84).convertSRGBToLinear(), 240, 4200);
-        const sun = new THREE.Mesh(new THREE.SphereGeometry(4.6, 24, 16), new THREE.MeshBasicMaterial({ color: 0xfff3dd, fog: false }));
+        const starRand = MercuryTerrain.random(9137);
+        const starPositions = new Float32Array(1400 * 3);
+        const starColors = new Float32Array(1400 * 3);
+        for (let i = 0; i < 1400; i++) {
+            const theta = starRand() * Math.PI * 2, y = 0.04 + starRand() * 0.96;
+            const r = Math.sqrt(Math.max(0, 1 - y * y));
+            starPositions.set([Math.cos(theta) * r * 6400, y * 6400, Math.sin(theta) * r * 6400], i * 3);
+            const bright = 0.35 + starRand() * 0.65, warm = starRand();
+            starColors.set([bright, bright * (0.88 + warm * 0.12), bright * (0.78 + (1 - warm) * 0.22)], i * 3);
+        }
+        const starGeometry = new THREE.BufferGeometry();
+        starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        starGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+        const stars = new THREE.Points(starGeometry, new THREE.PointsMaterial({ size: 5.5, vertexColors: true, sizeAttenuation: true, depthWrite: false, transparent: true, opacity: 0.9 }));
+        stars.frustumCulled = false;
+        scene.add(stars);
+        skyPivot = new THREE.Group();
+        scene.add(skyPivot);
+        const sun = new THREE.Mesh(new THREE.SphereGeometry(26, 32, 24), new THREE.MeshBasicMaterial({ color: 0xfffaf0 }));
         sun.position.copy(sunlight.position).normalize().multiplyScalar(2100);
-        scene.add(sun);
+        skyPivot.add(sun);
         const haloCanvas = document.createElement('canvas');
         haloCanvas.width = haloCanvas.height = 128;
         const haloContext = haloCanvas.getContext('2d');
-        const gradient = haloContext.createRadialGradient(64, 64, 2, 64, 64, 64);
-        gradient.addColorStop(0, 'rgba(190,214,245,0.9)');
-        gradient.addColorStop(0.25, 'rgba(170,196,235,0.45)');
-        gradient.addColorStop(0.6, 'rgba(210,170,140,0.18)');
-        gradient.addColorStop(1, 'rgba(210,170,140,0)');
+        const gradient = haloContext.createRadialGradient(64, 64, 4, 64, 64, 64);
+        gradient.addColorStop(0, 'rgba(255,248,235,0.95)');
+        gradient.addColorStop(0.2, 'rgba(255,240,215,0.5)');
+        gradient.addColorStop(0.55, 'rgba(255,230,195,0.14)');
+        gradient.addColorStop(1, 'rgba(255,230,195,0)');
         haloContext.fillStyle = gradient;
         haloContext.fillRect(0, 0, 128, 128);
-        const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(haloCanvas), transparent: true, opacity: 0.85, depthWrite: false, fog: false }));
-        halo.scale.set(150, 150, 1);
+        const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(haloCanvas), transparent: true, opacity: 0.95, depthWrite: false }));
+        halo.scale.set(340, 340, 1);
         halo.position.copy(sun.position);
-        scene.add(halo);
-        const earthDirection = sun.position.clone().normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.3);
-        earthDirection.y = Math.max(0.18, earthDirection.y - 0.09);
-        const earthDot = new THREE.Mesh(new THREE.SphereGeometry(2.2, 12, 10), new THREE.MeshBasicMaterial({ color: 0xbcd2ff, fog: false }));
+        skyPivot.add(halo);
+        earthPivot = new THREE.Group();
+        skyPivot.add(earthPivot);
+        const earthDirection = sun.position.clone().normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.22);
+        earthDirection.y = Math.max(0.1, earthDirection.y - 0.06);
+        const earthDot = new THREE.Mesh(new THREE.SphereGeometry(1.9, 12, 10), new THREE.MeshBasicMaterial({ color: 0xaac8ff }));
         earthDot.position.copy(earthDirection.normalize()).multiplyScalar(2100);
-        scene.add(earthDot);
-        for (const [body, object, hitRadius] of [['sun', sun, 170], ['earth', earthDot, 140]]) {
+        earthPivot.add(earthDot);
+        const venusDirection = sun.position.clone().normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), -0.5);
+        venusDirection.y = Math.max(0.12, venusDirection.y - 0.03);
+        const venusDot = new THREE.Mesh(new THREE.SphereGeometry(2.3, 12, 10), new THREE.MeshBasicMaterial({ color: 0xf5ead0 }));
+        venusDot.position.copy(venusDirection.normalize()).multiplyScalar(2100);
+        skyPivot.add(venusDot);
+        for (const [body, object, hitRadius, parent] of [['sun', sun, 230, skyPivot], ['earth', earthDot, 120, earthPivot], ['venus', venusDot, 130, skyPivot]]) {
             const proxy = new THREE.Mesh(new THREE.SphereGeometry(hitRadius, 8, 6), new THREE.MeshBasicMaterial({ visible: false }));
             proxy.position.copy(object.position);
             proxy.userData.body = body;
-            scene.add(proxy);
+            parent.add(proxy);
             skyBodies.push(proxy);
-        }
-        for (const [body, mx, my, mz, size] of [['phobos', -820, 940, -1350, 4.2], ['deimos', 340, 520, -1950, 2.6]]) {
-            const moonlet = new THREE.Mesh(new THREE.SphereGeometry(size, 14, 10), new THREE.MeshStandardMaterial({ color: 0x7a6250, roughness: 1 }));
-            moonlet.position.set(mx, my, mz);
-            scene.add(moonlet);
-            const proxy = new THREE.Mesh(new THREE.SphereGeometry(140, 8, 6), new THREE.MeshBasicMaterial({ visible: false }));
-            proxy.position.copy(moonlet.position);
-            proxy.userData.body = body;
-            scene.add(proxy);
-            skyBodies.push(proxy);
-        }
-        for (const [cx, cy, cz, sx, sy, opacity] of [[-1500, 1500, -3200, 1600, 300, 0.1], [900, 1800, -2600, 1300, 240, 0.08], [2200, 1300, -800, 1500, 260, 0.09], [-2400, 1700, 900, 1800, 320, 0.07]]) {
-            const cloudCanvas = document.createElement('canvas');
-            cloudCanvas.width = 256; cloudCanvas.height = 64;
-            const cloudContext = cloudCanvas.getContext('2d');
-            const cloudGradient = cloudContext.createRadialGradient(128, 32, 4, 128, 32, 120);
-            cloudGradient.addColorStop(0, 'rgba(255,238,220,0.9)');
-            cloudGradient.addColorStop(0.5, 'rgba(255,232,205,0.35)');
-            cloudGradient.addColorStop(1, 'rgba(255,230,200,0)');
-            cloudContext.fillStyle = cloudGradient;
-            cloudContext.beginPath();
-            cloudContext.ellipse(128, 32, 124, 30, 0, 0, Math.PI * 2);
-            cloudContext.fill();
-            const cloud = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cloudCanvas), transparent: true, opacity, depthWrite: false }));
-            cloud.position.set(cx, cy, cz);
-            cloud.scale.set(sx, sy, 1);
-            scene.add(cloud);
         }
         return Promise.resolve();
     }
@@ -558,9 +547,9 @@
         const footZ = -0.1 + (walker.grounded ? Math.min(0, Math.sin(walker.stride + (side < 0 ? 0 : Math.PI)) * 0.12) : 0);
         const x = position.x + Math.cos(yaw) * legX + Math.sin(yaw) * footZ;
         const z = position.z - Math.sin(yaw) * legX + Math.cos(yaw) * footZ;
-        const y = MarsTerrain.sampleSurface(surface, x, z) + 0.015;
-        const slopeX = (MarsTerrain.sampleSurface(surface, x + 0.35, z) - MarsTerrain.sampleSurface(surface, x - 0.35, z)) / 0.7;
-        const slopeZ = (MarsTerrain.sampleSurface(surface, x, z + 0.35) - MarsTerrain.sampleSurface(surface, x, z - 0.35)) / 0.7;
+        const y = MercuryTerrain.sampleSurface(surface, x, z) + 0.015;
+        const slopeX = (MercuryTerrain.sampleSurface(surface, x + 0.35, z) - MercuryTerrain.sampleSurface(surface, x - 0.35, z)) / 0.7;
+        const slopeZ = (MercuryTerrain.sampleSurface(surface, x, z + 0.35) - MercuryTerrain.sampleSurface(surface, x, z - 0.35)) / 0.7;
         const normal = new THREE.Vector3(-slopeX, 1, -slopeZ).normalize();
         const align = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal);
         const turn = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw + (rand() - 0.5) * 0.12);
@@ -569,7 +558,7 @@
         footprints.instanceMatrix.needsUpdate = true;
         printCursor++;
         if (walker.speed > 0.6) spawnDust(x, y + 0.03, z, 4, 0.28);
-        if (audio) audio.step(walker.speed / MarsTerrain.WALK_SPEED);
+        if (audio) audio.step(walker.speed / MercuryTerrain.WALK_SPEED);
         return { x, z };
     }
     function dustTexture() {
@@ -598,7 +587,7 @@
         }
         const geometry = new THREE.BufferGeometry();
         geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        const material = new THREE.PointsMaterial({ size: 0.05 + energy * 0.05, map: dustTexture(), color: 0xd0a888, transparent: true, opacity: 0.65, depthWrite: false, sizeAttenuation: true });
+        const material = new THREE.PointsMaterial({ size: 0.05 + energy * 0.05, map: dustTexture(), color: 0xa79e92, transparent: true, opacity: 0.65, depthWrite: false, sizeAttenuation: true });
         const points = new THREE.Points(geometry, material);
         points.frustumCulled = false;
         scene.add(points);
@@ -619,7 +608,7 @@
                 let py = attribute.getY(j) + burst.velocities[j * 3 + 1] * dt;
                 let pz = attribute.getZ(j) + (burst.velocities[j * 3 + 2] + 0.06) * dt;
                 burst.velocities[j * 3 + 1] -= gravity * dt;
-                const ground = MarsTerrain.sampleSurface(surface, px, pz) + 0.01;
+                const ground = MercuryTerrain.sampleSurface(surface, px, pz) + 0.01;
                 if (py < ground) { py = ground; burst.velocities[j * 3] *= 0.3; burst.velocities[j * 3 + 1] = 0; burst.velocities[j * 3 + 2] *= 0.3; }
                 attribute.setXYZ(j, px, py, pz);
             }
@@ -679,31 +668,31 @@
         }
         stationBeacon = part(new THREE.SphereGeometry(0.04, 12, 10), new THREE.MeshBasicMaterial({ color: 0xff6a3d, transparent: true, opacity: 0.9 }), -0.13, 2.5, -0.11);
         stationBeacon.castShadow = stationBeacon.receiveShadow = false;
-        const x = 31, z = -63;
-        station.position.set(x, MarsTerrain.sampleSurface(surface, x, z) - 0.015, z);
+        const x = 28, z = -30;
+        station.position.set(x, MercuryTerrain.sampleSurface(surface, x, z) - 0.015, z);
         station.rotation.y = 2.2;
         scene.add(station);
         obstacles.push({ x, z, radius: 1 });
     }
-    const rand = MarsTerrain.random(4451);
+    const rand = MercuryTerrain.random(4451);
     function updateGravityButton() {
-        $('gravity-button').textContent = t(gravity === MarsTerrain.GRAVITY ? 'gravityCompare' : 'gravityMars');
-        $('gravity-button').setAttribute('aria-pressed', String(gravity !== MarsTerrain.GRAVITY));
+        $('gravity-button').textContent = t(gravity === MercuryTerrain.GRAVITY ? 'gravityCompare' : 'gravityMercury');
+        $('gravity-button').setAttribute('aria-pressed', String(gravity !== MercuryTerrain.GRAVITY));
     }
     function updateSoundButton() {
         $('sound-button').textContent = t(soundEnabled ? 'soundOn' : 'soundOff');
         $('sound-button').setAttribute('aria-pressed', String(soundEnabled));
     }
     function toggleGravity() {
-        gravity = gravity === MarsTerrain.GRAVITY ? MarsTerrain.EARTH_GRAVITY : MarsTerrain.GRAVITY;
+        gravity = gravity === MercuryTerrain.GRAVITY ? MercuryTerrain.EARTH_GRAVITY : MercuryTerrain.GRAVITY;
         $('gravity-value').textContent = gravity.toFixed(2);
-        $('gravity-mode').textContent = t(gravity === MarsTerrain.GRAVITY ? 'marsTag' : 'earthTag');
+        $('gravity-mode').textContent = t(gravity === MercuryTerrain.GRAVITY ? 'mercuryTag' : 'earthTag');
         updateGravityButton();
-        notify(gravity === MarsTerrain.GRAVITY ? 'gravityMarsTag' : 'gravityEarth');
+        notify(gravity === MercuryTerrain.GRAVITY ? 'gravityMercuryTag' : 'gravityEarth');
     }
     function toggleSound() {
         soundEnabled = !soundEnabled;
-        try { localStorage.setItem('mzu-mars-sound', soundEnabled ? 'on' : 'off'); } catch (error) { }
+        try { localStorage.setItem('mzu-mercury-sound', soundEnabled ? 'on' : 'off'); } catch (error) { }
         if (audio) audio.setEnabled(soundEnabled);
         updateSoundButton();
     }
@@ -726,16 +715,16 @@
         clearMovement();
         $('moonlet-title').textContent = t(`${body}Name`);
         $('moonlet-text').textContent = t(`${body}Text`);
-        const focusNames = { phobos: 'Phobos', deimos: 'Deimos', sun: 'Sun', earth: 'Earth' };
-        $('moonlet-link').href = `index.html?focus=${focusNames[body] || 'Mars'}`;
+        const focusNames = { sun: 'Sun', earth: 'Earth', venus: 'Venus' };
+        $('moonlet-link').href = `index.html?focus=${focusNames[body] || 'Mercury'}`;
         $('moonlet-dialog').showModal();
     }
     function updateCamera() {
         if (!walker) return;
         const headMotion = motionEnabled && !photoMode && exploring;
         const bob = headMotion ? walker.bob - walker.landing : 0;
-        const roll = headMotion && walker.grounded ? Math.sin(walker.stride) * Math.min(1, walker.speed / MarsTerrain.WALK_SPEED) * 0.003 : 0;
-        camera.position.set(position.x, walker.y + MarsTerrain.EYE_HEIGHT + bob, position.z);
+        const roll = headMotion && walker.grounded ? Math.sin(walker.stride) * Math.min(1, walker.speed / MercuryTerrain.WALK_SPEED) * 0.003 : 0;
+        camera.position.set(position.x, walker.y + MercuryTerrain.EYE_HEIGHT + bob, position.z);
         camera.rotation.set(pitch, yaw, roll, 'YXZ');
         if (astronaut) {
             astronaut.visible = exploring;
@@ -743,12 +732,12 @@
             astronaut.rotation.y = yaw;
             astronaut.userData.legs.forEach((leg, i) => {
                 const stride = Math.sin(walker.stride + i * Math.PI);
-                const amount = walker.grounded ? Math.min(1, walker.speed / MarsTerrain.WALK_SPEED) : 0;
+                const amount = walker.grounded ? Math.min(1, walker.speed / MercuryTerrain.WALK_SPEED) : 0;
                 leg.position.z = stride * 0.12 * amount;
                 const footZ = leg.position.z - 0.1;
                 const footX = position.x + Math.cos(yaw) * leg.position.x + Math.sin(yaw) * footZ;
                 const footWorldZ = position.z - Math.sin(yaw) * leg.position.x + Math.cos(yaw) * footZ;
-                const contact = walker.grounded ? MarsTerrain.sampleSurface(surface, footX, footWorldZ) - walker.y : 0;
+                const contact = walker.grounded ? MercuryTerrain.sampleSurface(surface, footX, footWorldZ) - walker.y : 0;
                 leg.position.y = contact + Math.max(0, stride) * 0.07 * amount;
             });
         }
@@ -789,7 +778,7 @@
         stationIndex = index;
         const station = stations[index];
         position.x = station.x; position.z = station.z;
-        walker = MarsTerrain.createWalker(surface, position);
+        walker = MercuryTerrain.createWalker(surface, position);
         lastPrintMark = 0;
         yaw = station.yaw; pitch = station.pitch;
         updateCamera();
@@ -812,53 +801,6 @@
         if (discoveryUI) discoveryUI.update(0);
         $('moon-canvas').focus({ preventScroll: true });
     }
-    function buildDustDevil() {
-        const canvas = document.createElement('canvas');
-        canvas.width = 128; canvas.height = 256;
-        const context = canvas.getContext('2d');
-        for (let i = 0; i < 26; i++) {
-            const x = Math.random() * 128;
-            const gradient = context.createLinearGradient(0, 256, 0, 0);
-            gradient.addColorStop(0, 'rgba(196,150,116,0.55)');
-            gradient.addColorStop(0.55, 'rgba(206,164,128,0.28)');
-            gradient.addColorStop(1, 'rgba(206,164,128,0)');
-            context.strokeStyle = gradient;
-            context.lineWidth = 3 + Math.random() * 7;
-            context.beginPath();
-            context.moveTo(x, 256);
-            for (let y = 256; y > 0; y -= 16) context.lineTo(x + Math.sin(y * 0.05 + i) * 9 + (256 - y) * 0.06, y);
-            context.stroke();
-        }
-        const texture = new THREE.CanvasTexture(canvas);
-        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-        const group = new THREE.Group();
-        const makeColumn = (topR, bottomR, height, opacity) => {
-            const material = new THREE.MeshBasicMaterial({ map: texture.clone(), transparent: true, opacity, depthWrite: false, side: THREE.DoubleSide });
-            const mesh = new THREE.Mesh(new THREE.CylinderGeometry(topR, bottomR, height, 14, 1, true), material);
-            mesh.position.y = height / 2;
-            group.add(mesh);
-            return mesh;
-        };
-        const outer = makeColumn(2.2, 4.6, 34, 0.3);
-        const inner = makeColumn(1.2, 2.6, 27, 0.34);
-        inner.position.y = 15;
-        group.userData = { outer, inner };
-        dustDevil = group;
-        scene.add(group);
-    }
-    function updateDustDevil(now) {
-        if (!dustDevil) return;
-        const t = now * 0.001;
-        const x = -170 + Math.sin(t * 0.021) * 85;
-        const z = 150 + Math.cos(t * 0.016) * 70;
-        dustDevil.position.set(x, MarsTerrain.height(x, z) - 0.5, z);
-        dustDevil.userData.outer.rotation.y += 0.028;
-        dustDevil.userData.inner.rotation.y -= 0.043;
-        dustDevil.userData.outer.material.map.offset.y = -t * 0.14;
-        dustDevil.userData.inner.material.map.offset.y = -t * 0.22;
-        const pulse = 0.85 + 0.15 * Math.sin(t * 0.9);
-        dustDevil.scale.set(pulse, 1, pulse);
-    }
     function frame(now) {
         if (!ready || document.hidden) { animationId = null; return; }
         animationId = requestAnimationFrame(frame);
@@ -870,7 +812,7 @@
             const wasMoving = walker.speed > 0.001 || !walker.grounded;
             const wasAirborne = !walker.grounded;
             const fallSpeed = wasAirborne ? Math.max(0, -walker.vy) : 0;
-            MarsTerrain.updateWalker(surface, walker, { forward, right, yaw, fast: keys.has('ShiftLeft') || keys.has('ShiftRight'), jump: jumpRequested }, dt, obstacles, gravity);
+            MercuryTerrain.updateWalker(surface, walker, { forward, right, yaw, fast: keys.has('ShiftLeft') || keys.has('ShiftRight'), jump: jumpRequested }, dt, obstacles, gravity);
             jumpRequested = false;
             position.x = walker.x; position.z = walker.z;
             if (!wasAirborne && !walker.grounded) { spawnDust(position.x, walker.y + 0.06, position.z, 10, 0.45); if (audio) audio.jump(); }
@@ -881,7 +823,7 @@
             }
             const printMark = Math.floor(walker.stride / Math.PI);
             while (lastPrintMark < printMark) { lastPrintMark++; dropPrint(lastPrintMark); }
-            if (Math.hypot(position.x, position.z) > MarsTerrain.WALK_RADIUS - 1 && now - lastBoundaryNotice > 5000) { notify('boundary'); lastBoundaryNotice = now; }
+            if (Math.hypot(position.x, position.z) > MercuryTerrain.WALK_RADIUS - 1 && now - lastBoundaryNotice > 5000) { notify('boundary'); lastBoundaryNotice = now; }
             if (wasMoving || walker.speed > 0.001 || !walker.grounded) sunlight.shadow.needsUpdate = true;
             updateCamera();
         }
@@ -895,7 +837,8 @@
         }
         if (exploring && dt > 0) updateDust(dt);
         if (stationBeacon) stationBeacon.material.opacity = 0.15 + 0.75 * (0.5 + 0.5 * Math.sin(now * 0.0028));
-        if (exploring && dt > 0) updateDustDevil(now);
+        if (skyPivot) skyPivot.rotation.y = Math.sin(now * 0.00003) * 0.045;
+        if (earthPivot) earthPivot.rotation.y = now * 0.00002;
         if (Math.hypot(sunlight.target.position.x - position.x, sunlight.target.position.z - position.z) > 20) {
             sunlight.target.position.set(position.x, 0, position.z);
             sunlight.position.set(position.x - 180, 105, position.z - 160);
@@ -998,7 +941,7 @@
     }
     async function init() {
         try {
-            if (!window.THREE || !window.MarsTerrain) throw new Error('Required 3D dependencies are unavailable');
+            if (!window.THREE || !window.MercuryTerrain) throw new Error('Required 3D dependencies are unavailable');
             renderer = new THREE.WebGLRenderer({ canvas: $('moon-canvas'), antialias: quality !== 'low', powerPreference: 'high-performance' });
             renderer.setSize(innerWidth, innerHeight);
             renderer.setPixelRatio(Math.min(devicePixelRatio, profile.ratio));
@@ -1008,11 +951,11 @@
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xd9ab84);
+            scene.background = new THREE.Color(0x020203);
             camera = new THREE.PerspectiveCamera(58, innerWidth / innerHeight, 0.08, 7200);
-            scene.add(new THREE.AmbientLight(0xd8b094, 0.14));
-            scene.add(new THREE.HemisphereLight(0xe6bd92, 0x5a3a28, 0.42));
-            sunlight = new THREE.DirectionalLight(0xffe4c4, 2.15);
+            scene.add(new THREE.AmbientLight(0x8a8578, 0.1));
+            scene.add(new THREE.HemisphereLight(0xb0a99a, 0x1c1a17, 0.3));
+            sunlight = new THREE.DirectionalLight(0xfff4e0, 2.6);
             sunlight.position.set(-180, 105, -160);
             sunlight.castShadow = true;
             sunlight.shadow.mapSize.set(profile.shadows, profile.shadows);
@@ -1030,13 +973,12 @@
             buildAstronaut(texture);
             buildFootprints();
             buildInstrument();
-            buildDustDevil();
-            walker = MarsTerrain.createWalker(surface, position);
+            walker = MercuryTerrain.createWalker(surface, position);
             await buildSky();
             updateCamera();
             renderer.render(scene, camera);
             if (typeof window.createMoonDiscoveries !== 'function') throw new Error('Discovery interface is unavailable');
-            discoveryUI = window.createMoonDiscoveries({ scene, camera, surface, rock: featuredRock, getWalker: () => walker, isExploring: () => exploring, isPhotoMode: () => photoMode, clearMovement, onPhoto: () => setPhoto(true), onDiscover: () => { if (audio) audio.chime(); }, getNotes: () => t('notes'), language, expedition: window.MarsExpedition, terrain: MarsTerrain, strings: discoveryStrings });
+            discoveryUI = window.createMoonDiscoveries({ scene, camera, surface, rock: featuredRock, getWalker: () => walker, isExploring: () => exploring, isPhotoMode: () => photoMode, clearMovement, onPhoto: () => setPhoto(true), onDiscover: () => { if (audio) audio.chime(); }, getNotes: () => t('notes'), language, expedition: window.MercuryExpedition, terrain: MercuryTerrain, strings: discoveryStrings });
             ready = true;
             $('loading-overlay').hidden = true;
             document.querySelectorAll('.station-button, #begin-button, #photo-button').forEach(button => { button.disabled = false; });
@@ -1070,7 +1012,7 @@
                 if (!blob) { notify('saveFailed'); return; }
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
-                link.href = url; link.download = `mzu-mars-expedition-${stationIndex + 1}.png`;
+                link.href = url; link.download = `mzu-mercury-expedition-${stationIndex + 1}.png`;
                 link.click();
                 setTimeout(() => URL.revokeObjectURL(url), 10000);
                 notify('saved');
@@ -1078,7 +1020,7 @@
         } catch (error) { notify('saveFailed'); }
     });
     $('moon-quality').value = preference;
-    $('return-orbit').href = `index.html?focus=Mars&quality=${preference}`;
+    $('return-orbit').href = `index.html?focus=Mercury&quality=${preference}`;
     $('moon-quality').addEventListener('change', event => {
         try { localStorage.setItem(policy?.QUALITY_STORAGE_KEY || 'mzu-solar-quality', event.target.value); } catch (error) { savedQuality = ''; }
         const url = new URL(location.href);
@@ -1086,8 +1028,8 @@
         url.searchParams.set('lang', language);
         location.assign(url.toString());
     });
-    audio = window.MarsAudio ? window.MarsAudio.create() : null;
-    try { soundEnabled = localStorage.getItem('mzu-mars-sound') !== 'off'; } catch (error) { soundEnabled = true; }
+    audio = window.MercuryAudio ? window.MercuryAudio.create() : null;
+    try { soundEnabled = localStorage.getItem('mzu-mercury-sound') !== 'off'; } catch (error) { soundEnabled = true; }
     if (audio && !soundEnabled) audio.setEnabled(false);
     applyLanguage();
     init();
