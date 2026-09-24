@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
     'use strict';
     const $ = id => document.getElementById(id);
     const parameters = new URLSearchParams(location.search);
@@ -355,6 +355,26 @@
         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
         return texture;
     }
+    function loadRockModel(url) {
+        return new Promise(resolve => {
+            if (!THREE.GLTFLoader) return resolve(null);
+            new THREE.GLTFLoader().load(url, gltf => {
+                let mesh = null;
+                gltf.scene.traverse(o => { if (!mesh && o.isMesh) mesh = o; });
+                if (!mesh) return resolve(null);
+                const geometry = mesh.geometry.clone();
+                geometry.computeBoundingBox();
+                geometry.center();
+                const size = new THREE.Vector3();
+                geometry.boundingBox.getSize(size);
+                const norm = 1 / Math.max(size.x, size.y, size.z);
+                geometry.scale(norm, norm, norm);
+                geometry.computeBoundingBox();
+                if (mesh.material && mesh.material.map) { mesh.material.map.anisotropy = 4; }
+                resolve({ geometry, material: mesh.material || null });
+            }, undefined, () => resolve(null));
+        });
+    }
     function rockGeometry(seed, detail) {
         const geometry = new THREE.IcosahedronGeometry(1, detail);
         const p = geometry.attributes.position;
@@ -382,7 +402,7 @@
         }
         return geometry;
     }
-    function buildRocks(texture) {
+    function buildRocks(texture, rockModels) {
         const rand = MarsTerrain.random(19690720);
         const rockTex = rockTexture();
         const material = new THREE.MeshStandardMaterial({ map: rockTex, bumpMap: rockTex, bumpScale: 0.15, roughness: 1, vertexColors: true, flatShading: true });
@@ -413,10 +433,21 @@
         }
         const heroes = [[-7, 68, 1.1], [12, 48, 2.2], [21, 50, 1.1], [-43, 14, 3.4], [-47, 8, 1.3], [-42, 19, 0.7], [90, 26, 1.5], [7, 20, 0.9], [-17, 40, 1.9]];
         for (const [x, z, size] of heroes) {
-            const rock = new THREE.Mesh(rockGeometry(x + 100, 2), material);
-            rock.scale.set(size * (1.15 + rand() * 0.4), size * (0.78 + rand() * 0.32), size);
-            rock.position.set(x, MarsTerrain.sampleSurface(surface, x, z) + size * 0.18, z);
-            rock.rotation.y = rand() * 6;
+            const model = rockModels && rockModels.length ? rockModels[Math.floor(rand() * rockModels.length)] : null;
+            let rock;
+            if (model) {
+                rock = new THREE.Mesh(model.geometry, model.material || material);
+                const s = size * 1.9;
+                rock.scale.setScalar(s);
+                rock.rotation.set((rand() - 0.5) * 0.45, rand() * 6, (rand() - 0.5) * 0.45);
+                const lift = -model.geometry.boundingBox.min.y * s;
+                rock.position.set(x, MarsTerrain.sampleSurface(surface, x, z) + lift * 0.38, z);
+            } else {
+                rock = new THREE.Mesh(rockGeometry(x + 100, 2), material);
+                rock.scale.set(size * (1.15 + rand() * 0.4), size * (0.78 + rand() * 0.32), size);
+                rock.rotation.y = rand() * 6;
+                rock.position.set(x, MarsTerrain.sampleSurface(surface, x, z) + size * 0.18, z);
+            }
             rock.castShadow = rock.receiveShadow = true;
             scene.add(rock);
             if (x === -43 && z === 14) featuredRock = rock;
@@ -1091,7 +1122,8 @@
             const texture = makeTexture();
             buildTerrain(texture);
             await new Promise(resolve => setTimeout(resolve, 20));
-            buildRocks(texture);
+            const rockModels = (await Promise.all([loadRockModel('models/bennu.glb'), loadRockModel('models/itokawa.glb')])).filter(Boolean);
+            buildRocks(texture, rockModels);
             buildAstronaut(texture);
             buildFootprints();
             buildInstrument();

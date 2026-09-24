@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
     'use strict';
     const $ = id => document.getElementById(id);
     const parameters = new URLSearchParams(location.search);
@@ -335,6 +335,7 @@
                 geometry.boundingBox.getSize(size);
                 const norm = 1 / Math.max(size.x, size.y, size.z);
                 geometry.scale(norm, norm, norm);
+                geometry.computeBoundingBox();
                 if (mesh.material && mesh.material.map) { mesh.material.map.anisotropy = 4; }
                 resolve({ geometry, material: mesh.material || null });
             }, undefined, () => resolve(null));
@@ -403,9 +404,11 @@
             let rock;
             if (model) {
                 rock = new THREE.Mesh(model.geometry, model.material || material);
-                rock.scale.setScalar(size * 2.1);
+                const s = size * 1.9;
+                rock.scale.setScalar(s);
                 rock.rotation.set((rand() - 0.5) * 0.45, rand() * 6, (rand() - 0.5) * 0.45);
-                rock.position.set(x, LunarTerrain.sampleSurface(surface, x, z) + size * 0.66, z);
+                const lift = -model.geometry.boundingBox.min.y * s;
+                rock.position.set(x, LunarTerrain.sampleSurface(surface, x, z) + lift * 0.38, z);
             } else {
                 rock = new THREE.Mesh(rockGeometry(x + 100, 2), material);
                 rock.scale.set(size * (1.1 + rand() * 0.5), size * (0.78 + rand() * 0.35), size);
