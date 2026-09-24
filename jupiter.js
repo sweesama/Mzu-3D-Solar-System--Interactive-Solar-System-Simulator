@@ -105,7 +105,7 @@
     const stations = expedition.stations;
     let discoveryUI = null, featuredRock = null;
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
-    let skyPivot = null, earthPivot = null, crystalField = [], skyMaterial = null, ambientLight = null, flashTimer = 6, thrustActive = false;
+    let skyPivot = null, earthPivot = null, crystalField = [], skyMaterial = null, ambientLight = null, flashTimer = 6, thrustActive = false, stormDisc = null, bolts = [], boltTimer = 0;
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
     const position = { x: stations[0].x, z: stations[0].z };
     const touchDevice = matchMedia('(pointer: coarse)').matches;
@@ -222,38 +222,29 @@
                 float broad = lunarNoise(vGroundPosition.xz * 0.038) - 0.5;
                 float fine = lunarNoise(vGroundPosition.xz * 1.8) - 0.5;
                 float detailFade = 1.0 - smoothstep(25.0, 130.0, distance(cameraPosition, vGroundPosition));
-                diffuseColor.rgb *= 0.94 + broad * 0.22 + fine * 0.06 * detailFade;
-                diffuseColor.rgb *= 1.0 + sin(vGroundPosition.y * 3.1) * 0.055;
+                float billow = lunarNoise(vGroundPosition.xz * 0.14) * 0.55 + lunarNoise(vGroundPosition.xz * 0.42 + 7.0) * 0.30 + lunarNoise(vGroundPosition.xz * 1.3 + 19.0) * 0.15;
+                float billowShade = smoothstep(0.15, 0.85, billow);
+                diffuseColor.rgb *= 0.72 + broad * 0.18 + billowShade * 0.42 + fine * 0.08 * detailFade;
+                float stream = sin(vGroundPosition.z * 0.16 + lunarNoise(vGroundPosition.xz * 0.045) * 5.0);
+                diffuseColor.rgb *= 1.0 + stream * 0.05;
+                float crest = smoothstep(4.0, 18.0, vGroundPosition.y);
+                diffuseColor.rgb *= 1.0 + crest * 0.18;
             `);
         };
         return material;
     }
     function mountainMaterial() {
-        const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(0x8d8177).convertSRGBToLinear(), roughness: 1, metalness: 0, vertexColors: true });
+        const material = new THREE.MeshStandardMaterial({ color: new THREE.Color(0xcbb894).convertSRGBToLinear(), roughness: 1, metalness: 0, vertexColors: true });
         material.extensions = { derivatives: true };
         material.onBeforeCompile = shader => {
             shader.vertexShader = 'varying vec3 vMountainPosition;\n' + shader.vertexShader;
             shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvMountainPosition = position;');
-            shader.fragmentShader = 'varying vec3 vMountainPosition;\n' + terrainNoiseShader + `
-                float rockRelief(vec2 p) {
-                    return lunarNoise(p * 0.067) * 2.8 + lunarNoise(p * 0.19) * 0.45;
-                }
-            ` + shader.fragmentShader;
+            shader.fragmentShader = 'varying vec3 vMountainPosition;\n' + terrainNoiseShader + shader.fragmentShader;
             shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
-                vec2 rockPoint = vMountainPosition.xz + vMountainPosition.y * vec2(0.35, 0.17);
-                float footprint = max(length(dFdx(rockPoint)), length(dFdy(rockPoint)));
-                float rockDetail = 1.0 - smoothstep(2.0, 7.0, footprint);
-                float largePatches = lunarNoise(rockPoint * 0.011);
-                float fracturedRock = lunarNoise(rockPoint * 0.063 + vec2(largePatches * 3.0));
-                float grains = mix(0.5, lunarNoise(rockPoint * 0.29), rockDetail);
-                float crevices = smoothstep(0.35, 0.62, fracturedRock);
-                diffuseColor.rgb *= 0.54 + largePatches * 0.44 + crevices * 0.3 + grains * 0.16;
-            `);
-            shader.fragmentShader = shader.fragmentShader.replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
-                float reliefX = (rockRelief(rockPoint + vec2(1.0, 0.0)) - rockRelief(rockPoint - vec2(1.0, 0.0))) * 0.5;
-                float reliefZ = (rockRelief(rockPoint + vec2(0.0, 1.0)) - rockRelief(rockPoint - vec2(0.0, 1.0))) * 0.5;
-                vec3 reliefNormal = mat3(viewMatrix) * vec3(reliefX, 0.0, reliefZ);
-                normal = normalize(normal - reliefNormal * (0.4 + rockDetail * 0.6));
+                vec2 cloudPoint = vMountainPosition.xz;
+                float billow = lunarNoise(cloudPoint * 0.012) * 0.6 + lunarNoise(cloudPoint * 0.05 + 9.0) * 0.4;
+                float streaks = sin(vMountainPosition.z * 0.02 + lunarNoise(cloudPoint * 0.006) * 6.0);
+                diffuseColor.rgb *= 0.62 + billow * 0.38 + streaks * 0.08;
             `);
         };
         return material;
@@ -321,15 +312,15 @@
         const p = geometry.attributes.position;
         for (let i = 0; i < p.count; i++) {
             const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
-            const f = 0.8 + JupiterAtmo.noise(x * 3 + seed, y * 3 + z * 2) * 0.35;
-            p.setXYZ(i, x * f, y * (1.35 + JupiterAtmo.noise(x * 2, z * 2 + seed) * 0.4), z * f);
+            const f = 0.7 + JupiterAtmo.noise(x * 3 + seed, y * 3 + z * 2) * 0.3;
+            p.setXYZ(i, x * f, y * (2.1 + JupiterAtmo.noise(x * 2, z * 2 + seed) * 0.5), z * f);
         }
         geometry.computeVertexNormals();
         return geometry;
     }
     function buildRocks() {
         const rand = JupiterAtmo.random(19690720);
-        const material = new THREE.MeshStandardMaterial({ color: 0xf4f9ff, roughness: 0.25, metalness: 0.1, transparent: true, opacity: 0.92, flatShading: true, emissive: 0x223040, emissiveIntensity: 0.35 });
+        const material = new THREE.MeshStandardMaterial({ color: 0xeef4fb, roughness: 0.18, metalness: 0.05, transparent: true, opacity: 0.6, flatShading: true, emissive: 0x384a5c, emissiveIntensity: 0.5 });
         const transform = new THREE.Object3D();
         crystalField = [];
         for (let group = 0; group < 3; group++) {
@@ -338,8 +329,8 @@
             const items = [];
             for (let i = 0; i < count; i++) {
                 let x = (rand() - 0.5) * 640, z = (rand() - 0.5) * 640;
-                const size = 0.25 + Math.pow(rand(), 2.4) * 1.4;
-                const y = JupiterAtmo.sampleSurface(surface, x, z) + 14 + rand() * 80;
+                const size = 0.12 + Math.pow(rand(), 2.8) * 0.7;
+                const y = JupiterAtmo.sampleSurface(surface, x, z) + 10 + rand() * 90;
                 const drift = { x, y, z, size, spin: rand() * Math.PI * 2, spinRate: (rand() - 0.5) * 0.5, bob: rand() * Math.PI * 2 };
                 items.push(drift);
                 transform.position.set(x, y, z);
@@ -357,6 +348,68 @@
         featuredRock.position.set(62, JupiterAtmo.sampleSurface(surface, 62, 84) + 26, 84);
         scene.add(featuredRock);
     }
+    function buildStorm() {
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+        ctx.translate(256, 256);
+        const palette = ['rgba(168,80,60,0.9)', 'rgba(196,120,80,0.75)', 'rgba(232,214,180,0.8)', 'rgba(140,70,52,0.85)'];
+        for (let arm = 0; arm < 3; arm++) {
+            for (let i = 0; i < 260; i++) {
+                const t = i / 260;
+                const angle = t * Math.PI * 5 + arm * (Math.PI * 2 / 3);
+                const r = 18 + t * 218;
+                const jitter = (rand() - 0.5) * 9;
+                ctx.fillStyle = palette[(i + arm) % palette.length];
+                ctx.globalAlpha = (1 - t) * 0.5 + 0.12;
+                ctx.beginPath();
+                ctx.ellipse(Math.cos(angle) * r + jitter, Math.sin(angle) * r + jitter, 9 - t * 5, 4 - t * 2, angle + 1.4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        ctx.globalAlpha = 1;
+        const eye = ctx.createRadialGradient(0, 0, 0, 0, 0, 42);
+        eye.addColorStop(0, 'rgba(120,50,40,0.95)');
+        eye.addColorStop(0.6, 'rgba(150,80,58,0.8)');
+        eye.addColorStop(1, 'rgba(150,80,58,0)');
+        ctx.fillStyle = eye;
+        ctx.fillRect(-42, -42, 84, 84);
+        const texture = new THREE.CanvasTexture(canvas);
+        const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthWrite: false, opacity: 0.95 });
+        const s = JupiterAtmo.storm;
+        stormDisc = new THREE.Mesh(new THREE.CircleGeometry(s.radius * 1.5, 48), material);
+        stormDisc.rotation.x = -Math.PI / 2;
+        stormDisc.position.set(s.x, JupiterAtmo.deckHeight(s.x, s.z) + s.rim + 4, s.z);
+        stormDisc.renderOrder = 2;
+        scene.add(stormDisc);
+    }
+    function boltTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 64; canvas.height = 256;
+        const ctx = canvas.getContext('2d');
+        ctx.strokeStyle = 'rgba(220,235,255,0.95)';
+        ctx.lineWidth = 3;
+        ctx.shadowColor = 'rgba(160,190,255,0.9)';
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        let x = 32;
+        ctx.moveTo(x, 6);
+        for (let y = 6; y < 246; y += 18) { x += (rand() - 0.5) * 26; ctx.lineTo(Math.max(6, Math.min(58, x)), y); }
+        ctx.stroke();
+        return new THREE.CanvasTexture(canvas);
+    }
+    function buildBolts() {
+        const texture = boltTexture();
+        for (let i = 0; i < 4; i++) {
+            const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+            const bolt = new THREE.Mesh(new THREE.PlaneGeometry(14, 56), material);
+            const angle = rand() * Math.PI * 2, r = 40 + rand() * 160;
+            bolt.position.set(Math.cos(angle) * r, -55 - rand() * 110, Math.sin(angle) * r);
+            bolt.visible = false;
+            scene.add(bolt);
+            bolts.push(bolt);
+        }
+    }
     function buildSky() {
         skyMaterial = new THREE.ShaderMaterial({
             side: THREE.BackSide, depthWrite: false, depthTest: false,
@@ -365,14 +418,19 @@
             fragmentShader: `uniform float darkening; uniform float flash; varying vec3 vP;
                 float h21(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
                 float n2(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(h21(i),h21(i+vec2(1,0)),f.x),mix(h21(i+vec2(0,1)),h21(i+vec2(1,1)),f.x),f.y);}
+                float fbm(vec2 p){return n2(p)*0.55+n2(p*2.3)*0.28+n2(p*5.1)*0.17;}
                 void main(){
                     vec3 dir = normalize(vP);
                     float up = clamp(dir.y, -1.0, 1.0);
-                    float bandNoise = n2(vec2(dir.x * 4.0 + dir.z * 3.0, up * 9.0)) * 0.9;
-                    float band = sin(up * 22.0 + bandNoise * 3.0);
-                    vec3 cream = vec3(0.82, 0.74, 0.60), tan_ = vec3(0.62, 0.47, 0.33), brown = vec3(0.34, 0.24, 0.17);
-                    vec3 sky = mix(tan_, cream, smoothstep(-0.4, 0.7, band));
-                    sky = mix(brown, sky, smoothstep(-0.25, 0.5, up));
+                    float az = atan(dir.z, dir.x);
+                    float turb = fbm(vec2(az * 3.0, up * 12.0)) - 0.5;
+                    float band = sin(up * 26.0 + turb * 4.2);
+                    vec3 cream = vec3(0.86, 0.79, 0.64), tan_ = vec3(0.60, 0.44, 0.30), rust = vec3(0.52, 0.30, 0.22), brown = vec3(0.30, 0.20, 0.14);
+                    vec3 sky = mix(tan_, cream, smoothstep(-0.35, 0.55, band));
+                    sky = mix(rust, sky, smoothstep(-0.6, -0.05, band));
+                    float filament = smoothstep(0.92, 1.0, abs(sin(up * 26.0 + turb * 6.5))) * smoothstep(0.3, 0.0, up);
+                    sky = mix(sky, vec3(0.92, 0.88, 0.78), filament * 0.5);
+                    sky = mix(brown, sky, smoothstep(-0.25, 0.4, up));
                     sky = mix(sky, vec3(0.10, 0.09, 0.11), smoothstep(0.55, 0.95, up));
                     sky = mix(sky, vec3(0.16, 0.11, 0.08), smoothstep(-0.15, -0.8, up));
                     sky += flash * vec3(0.5, 0.55, 0.7);
@@ -632,6 +690,7 @@
         if (exploring && dt > 0) {
             updateDust(dt);
             flashTimer -= dt;
+            boltTimer -= dt;
             if (skyMaterial) {
                 skyMaterial.uniforms.flash.value = Math.max(0, skyMaterial.uniforms.flash.value - dt * 2.4);
                 const depth = THREE.MathUtils.clamp((0 - walker.y) / (0 - JupiterAtmo.MIN_ALTITUDE + 60), 0, 1);
@@ -639,12 +698,25 @@
                 if (ambientLight) ambientLight.intensity = 1.4 * (1 - depth * 0.75);
                 sunlight.intensity = 2.6 * (1 - depth * 0.8);
                 scene.fog.density = 0.0016 + depth * 0.012;
+                scene.fog.color.setHex(0x8a7454).lerp(new THREE.Color(0x241812), depth);
             }
             if (flashTimer <= 0) {
                 flashTimer = 4 + rand() * 9;
                 if (skyMaterial) skyMaterial.uniforms.flash.value = 0.4 + rand() * 0.7;
                 if (audio && rand() < 0.8) audio.thunder();
+                if (bolts.length && walker && walker.y < 60) {
+                    const bolt = bolts[Math.floor(rand() * bolts.length)];
+                    const angle = rand() * Math.PI * 2, dist = 30 + rand() * 120;
+                    bolt.position.set(position.x + Math.cos(angle) * dist, walker.y - 40 - rand() * 80, position.z + Math.sin(angle) * dist);
+                    bolt.rotation.y = yaw + Math.PI / 2;
+                    bolt.visible = true;
+                    bolt.material.opacity = 0.9;
+                    boltTimer = 0.55 + rand() * 0.4;
+                    bolt.userData.life = boltTimer;
+                }
             }
+            if (boltTimer <= 0) for (const bolt of bolts) if (bolt.visible) { bolt.material.opacity -= dt * 3; if (bolt.material.opacity <= 0) bolt.visible = false; }
+            if (stormDisc) stormDisc.rotation.z += dt * 0.06;
             for (const field of crystalField) field.mesh.rotation.y += dt * 0.008;
             if (featuredRock) { featuredRock.rotation.y += dt * 0.5; featuredRock.rotation.x += dt * 0.2; }
         }
@@ -781,6 +853,8 @@
             buildTerrain(texture);
             await new Promise(resolve => setTimeout(resolve, 20));
             buildRocks();
+            buildStorm();
+            buildBolts();
             buildAstronaut(texture);
             walker = JupiterAtmo.createWalker(surface, position);
             walker.y = stations[0].y || 260;
