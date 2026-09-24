@@ -80,7 +80,7 @@
     const dust = { bursts: [], texture: null };
     const keys = new Set(), touchKeys = new Set(), obstacles = [];
     const stations = expedition.stations;
-    let discoveryUI = null, featuredRock = null;
+    let discoveryUI = null, featuredRock = null, composer = null, fxaaPass = null, cinePass = null;
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open;
     const position = { x: stations[0].x, z: stations[0].z };
     const touchDevice = matchMedia('(pointer: coarse)').matches;
@@ -757,7 +757,8 @@
             sunlight.shadow.needsUpdate = true;
         }
         if (discoveryUI) discoveryUI.update(now);
-        renderer.render(scene, camera);
+        if (cinePass) cinePass.material.uniforms.uTime.value = now * 0.001;
+        if (composer) composer.render(); else renderer.render(scene, camera);
         if (!sampleTime) sampleTime = now;
         frameCount++;
         if (now - sampleTime > 6000) {
@@ -765,6 +766,8 @@
             if (preference === 'auto' && fps < 27 && pixelRelief < 2) {
                 pixelRelief++;
                 renderer.setPixelRatio(Math.max(0.75, Math.min(devicePixelRatio, profile.ratio) * (1 - pixelRelief * 0.2)));
+                if (composer) composer.setPixelRatio(Math.max(0.75, Math.min(devicePixelRatio, profile.ratio) * (1 - pixelRelief * 0.2)));
+                if (fxaaPass) fxaaPass.material.uniforms.resolution.value.set(1 / (innerWidth * renderer.getPixelRatio()), 1 / (innerHeight * renderer.getPixelRatio()));
                 notify('adjusted');
             }
             frameCount = 0; sampleTime = now;
@@ -844,6 +847,8 @@
             camera.aspect = innerWidth / innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(innerWidth, innerHeight);
+            if (composer) composer.setSize(innerWidth, innerHeight);
+            if (fxaaPass) fxaaPass.material.uniforms.resolution.value.set(1 / (innerWidth * renderer.getPixelRatio()), 1 / (innerHeight * renderer.getPixelRatio()));
         });
         canvas.addEventListener('webglcontextlost', event => { event.preventDefault(); fail('lost'); });
     }
@@ -872,6 +877,31 @@
             sunlight.shadow.autoUpdate = false;
             sunlight.shadow.needsUpdate = true;
             scene.add(sunlight, sunlight.target);
+            if (THREE.EffectComposer && quality !== 'low') {
+                composer = new THREE.EffectComposer(renderer);
+                composer.addPass(new THREE.RenderPass(scene, camera));
+                composer.addPass(new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.6, 0.55, 0.8));
+                composer.addPass(new THREE.ShaderPass(THREE.GammaCorrectionShader));
+                if (THREE.FXAAShader) {
+                    fxaaPass = new THREE.ShaderPass(THREE.FXAAShader);
+                    fxaaPass.material.uniforms.resolution.value.set(1 / (innerWidth * renderer.getPixelRatio()), 1 / (innerHeight * renderer.getPixelRatio()));
+                    composer.addPass(fxaaPass);
+                }
+                cinePass = new THREE.ShaderPass({
+                    uniforms: { tDiffuse: { value: null }, uTime: { value: 0 }, uVig: { value: 0.4 }, uGrain: { value: 0.028 } },
+                    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+                    fragmentShader: `uniform sampler2D tDiffuse; uniform float uTime, uVig, uGrain; varying vec2 vUv;
+                        float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+                        void main(){
+                            vec4 c = texture2D(tDiffuse, vUv);
+                            vec2 d = vUv - 0.5;
+                            float vig = 1.0 - uVig * dot(d, d) * 1.5;
+                            float g = (hash(vUv * vec2(1920.0, 1080.0) + fract(uTime) * 7.13) - 0.5) * uGrain;
+                            gl_FragColor = vec4(clamp(c.rgb * vig + g, 0.0, 1.0), c.a);
+                        }`
+                });
+                composer.addPass(cinePass);
+            }
             await new Promise(resolve => setTimeout(resolve, 30));
             const texture = makeTexture();
             buildTerrain(texture);
@@ -883,7 +913,7 @@
             walker = LunarTerrain.createWalker(surface, position);
             await buildSky();
             updateCamera();
-            renderer.render(scene, camera);
+            if (composer) composer.render(); else renderer.render(scene, camera);
             if (typeof window.createMoonDiscoveries !== 'function') throw new Error('Discovery interface is unavailable');
             discoveryUI = window.createMoonDiscoveries({ scene, camera, surface, rock: featuredRock, getWalker: () => walker, isExploring: () => exploring, isPhotoMode: () => photoMode, clearMovement, onPhoto: () => setPhoto(true), onDiscover: () => { if (audio) audio.chime(); }, getNotes: () => t('notes'), language });
             ready = true;
@@ -913,7 +943,7 @@
     });
     $('capture-button').addEventListener('click', () => {
         try {
-            renderer.render(scene, camera);
+            if (composer) composer.render(); else renderer.render(scene, camera);
             renderer.domElement.toBlob(blob => {
                 if (!blob) { notify('saveFailed'); return; }
                 const url = URL.createObjectURL(blob);
