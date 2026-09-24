@@ -105,7 +105,7 @@
     const stations = expedition.stations;
     let discoveryUI = null, featuredRock = null;
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
-    let skyPivot = null, earthPivot = null, crystalField = [], skyMaterial = null, ambientLight = null, flashTimer = 6, thrustActive = false, stormDisc = null, bolts = [], boltTimer = 0, deckShader = null, puffGroup = null, composer = null;
+    let skyPivot = null, earthPivot = null, crystalField = [], skyMaterial = null, ambientLight = null, flashTimer = 6, thrustActive = false, stormDisc = null, bolts = [], boltTimer = 0, deckShader = null, puffGroup = null, composer = null, fxaaPass = null, cinePass = null, stormPts = null, stormVel = null;
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
     const position = { x: stations[0].x, z: stations[0].z };
     const touchDevice = matchMedia('(pointer: coarse)').matches;
@@ -457,6 +457,39 @@
         puffGroup.renderOrder = 1;
         scene.add(puffGroup);
     }
+    function dotTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = 32;
+        const ctx = canvas.getContext('2d');
+        const g = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+        g.addColorStop(0, 'rgba(255,250,235,1)');
+        g.addColorStop(0.35, 'rgba(255,244,220,0.55)');
+        g.addColorStop(1, 'rgba(255,244,220,0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, 32, 32);
+        return new THREE.CanvasTexture(canvas);
+    }
+    function buildCrystalStorm() {
+        const count = quality === 'high' ? 5200 : 2600;
+        const positions = new Float32Array(count * 3);
+        stormVel = new Float32Array(count);
+        for (let i = 0; i < count; i++) {
+            const a = rand() * Math.PI * 2, r = 15 + Math.sqrt(rand()) * 420;
+            positions[i * 3] = Math.cos(a) * r;
+            positions[i * 3 + 1] = -360 + rand() * 800;
+            positions[i * 3 + 2] = Math.sin(a) * r;
+            stormVel[i] = 0.8 + rand() * 2.6;
+        }
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const mat = new THREE.PointsMaterial({
+            size: 1.5, map: dotTexture(), transparent: true, opacity: 0.5,
+            depthWrite: false, blending: THREE.AdditiveBlending, color: 0xfff0d8, sizeAttenuation: true
+        });
+        stormPts = new THREE.Points(geo, mat);
+        stormPts.frustumCulled = false;
+        scene.add(stormPts);
+    }
     function buildSky() {
         skyMaterial = new THREE.ShaderMaterial({
             side: THREE.BackSide, depthWrite: false, depthTest: false,
@@ -771,6 +804,16 @@
                     puff.position.y += Math.cos(now * 0.00013 + puff.userData.phase) * dt * 0.6;
                 }
             }
+            if (stormPts) {
+                const arr = stormPts.geometry.attributes.position.array;
+                for (let i = 0; i < stormVel.length; i++) {
+                    arr[i * 3 + 1] -= stormVel[i] * dt;
+                    if (arr[i * 3 + 1] < -370) arr[i * 3 + 1] = 430;
+                }
+                stormPts.geometry.attributes.position.needsUpdate = true;
+                stormPts.rotation.y += dt * 0.003;
+            }
+            if (cinePass) cinePass.material.uniforms.uTime.value = now * 0.001;
             for (const field of crystalField) field.mesh.rotation.y += dt * 0.008;
             if (featuredRock) { featuredRock.rotation.y += dt * 0.5; featuredRock.rotation.x += dt * 0.2; }
         }
@@ -789,6 +832,7 @@
                 pixelRelief++;
                 renderer.setPixelRatio(Math.max(0.75, Math.min(devicePixelRatio, profile.ratio) * (1 - pixelRelief * 0.2)));
                 if (composer) composer.setPixelRatio(Math.max(0.75, Math.min(devicePixelRatio, profile.ratio) * (1 - pixelRelief * 0.2)));
+                if (fxaaPass) fxaaPass.material.uniforms.resolution.value.set(1 / (innerWidth * renderer.getPixelRatio()), 1 / (innerHeight * renderer.getPixelRatio()));
                 notify('adjusted');
             }
             frameCount = 0; sampleTime = now;
@@ -873,6 +917,7 @@
             camera.updateProjectionMatrix();
             renderer.setSize(innerWidth, innerHeight);
             if (composer) composer.setSize(innerWidth, innerHeight);
+            if (fxaaPass) fxaaPass.material.uniforms.resolution.value.set(1 / (innerWidth * renderer.getPixelRatio()), 1 / (innerHeight * renderer.getPixelRatio()));
         });
         canvas.addEventListener('webglcontextlost', event => { event.preventDefault(); fail('lost'); });
     }
@@ -909,6 +954,25 @@
                 composer.addPass(new THREE.RenderPass(scene, camera));
                 composer.addPass(new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.5, 0.55, 0.74));
                 composer.addPass(new THREE.ShaderPass(THREE.GammaCorrectionShader));
+                if (THREE.FXAAShader) {
+                    fxaaPass = new THREE.ShaderPass(THREE.FXAAShader);
+                    fxaaPass.material.uniforms.resolution.value.set(1 / (innerWidth * renderer.getPixelRatio()), 1 / (innerHeight * renderer.getPixelRatio()));
+                    composer.addPass(fxaaPass);
+                }
+                cinePass = new THREE.ShaderPass({
+                    uniforms: { tDiffuse: { value: null }, uTime: { value: 0 }, uVig: { value: 0.42 }, uGrain: { value: 0.028 } },
+                    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+                    fragmentShader: `uniform sampler2D tDiffuse; uniform float uTime, uVig, uGrain; varying vec2 vUv;
+                        float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+                        void main(){
+                            vec4 c = texture2D(tDiffuse, vUv);
+                            vec2 d = vUv - 0.5;
+                            float vig = 1.0 - uVig * dot(d, d) * 1.5;
+                            float g = (hash(vUv * vec2(1920.0, 1080.0) + fract(uTime) * 7.13) - 0.5) * uGrain;
+                            gl_FragColor = vec4(clamp(c.rgb * vig + g, 0.0, 1.0), c.a);
+                        }`
+                });
+                composer.addPass(cinePass);
             }
             await new Promise(resolve => setTimeout(resolve, 30));
             const texture = makeTexture();
@@ -918,6 +982,7 @@
             buildStorm();
             buildBolts();
             buildPuffs();
+            buildCrystalStorm();
             buildAstronaut(texture);
             walker = JupiterAtmo.createWalker(surface, position);
             walker.y = stations[0].y || 260;
