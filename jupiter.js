@@ -105,7 +105,7 @@
     const stations = expedition.stations;
     let discoveryUI = null, featuredRock = null;
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
-    let skyPivot = null, earthPivot = null, crystalField = [], skyMaterial = null, ambientLight = null, flashTimer = 6, thrustActive = false, stormDisc = null, bolts = [], boltTimer = 0, deckShader = null, puffGroup = null;
+    let skyPivot = null, earthPivot = null, crystalField = [], skyMaterial = null, ambientLight = null, flashTimer = 6, thrustActive = false, stormDisc = null, bolts = [], boltTimer = 0, deckShader = null, puffGroup = null, composer = null;
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
     const position = { x: stations[0].x, z: stations[0].z };
     const touchDevice = matchMedia('(pointer: coarse)').matches;
@@ -780,7 +780,7 @@
             sunlight.shadow.needsUpdate = true;
         }
         if (discoveryUI) discoveryUI.update(now);
-        renderer.render(scene, camera);
+        if (composer) composer.render(); else renderer.render(scene, camera);
         if (!sampleTime) sampleTime = now;
         frameCount++;
         if (now - sampleTime > 6000) {
@@ -788,6 +788,7 @@
             if (preference === 'auto' && fps < 27 && pixelRelief < 2) {
                 pixelRelief++;
                 renderer.setPixelRatio(Math.max(0.75, Math.min(devicePixelRatio, profile.ratio) * (1 - pixelRelief * 0.2)));
+                if (composer) composer.setPixelRatio(Math.max(0.75, Math.min(devicePixelRatio, profile.ratio) * (1 - pixelRelief * 0.2)));
                 notify('adjusted');
             }
             frameCount = 0; sampleTime = now;
@@ -871,6 +872,7 @@
             camera.aspect = innerWidth / innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(innerWidth, innerHeight);
+            if (composer) composer.setSize(innerWidth, innerHeight);
         });
         canvas.addEventListener('webglcontextlost', event => { event.preventDefault(); fail('lost'); });
     }
@@ -902,6 +904,12 @@
             sunlight.shadow.autoUpdate = false;
             sunlight.shadow.needsUpdate = true;
             scene.add(sunlight, sunlight.target);
+            if (THREE.EffectComposer && quality !== 'low') {
+                composer = new THREE.EffectComposer(renderer);
+                composer.addPass(new THREE.RenderPass(scene, camera));
+                composer.addPass(new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.5, 0.55, 0.74));
+                composer.addPass(new THREE.ShaderPass(THREE.GammaCorrectionShader));
+            }
             await new Promise(resolve => setTimeout(resolve, 30));
             const texture = makeTexture();
             buildTerrain(texture);
@@ -915,7 +923,7 @@
             walker.y = stations[0].y || 260;
             await buildSky();
             updateCamera();
-            renderer.render(scene, camera);
+            if (composer) composer.render(); else renderer.render(scene, camera);
             if (typeof window.createMoonDiscoveries !== 'function') throw new Error('Discovery interface is unavailable');
             discoveryUI = window.createMoonDiscoveries({ scene, camera, surface, rock: featuredRock, getWalker: () => walker, isExploring: () => exploring, isPhotoMode: () => photoMode, clearMovement, onPhoto: () => setPhoto(true), onDiscover: () => { if (audio) audio.chime(); }, getNotes: () => t('notes'), language, expedition: window.JupiterExpedition, terrain: JupiterAtmo, strings: discoveryStrings });
             ready = true;
@@ -946,7 +954,7 @@
     });
     $('capture-button').addEventListener('click', () => {
         try {
-            renderer.render(scene, camera);
+            if (composer) composer.render(); else renderer.render(scene, camera);
             renderer.domElement.toBlob(blob => {
                 if (!blob) { notify('saveFailed'); return; }
                 const url = URL.createObjectURL(blob);
