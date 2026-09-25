@@ -558,6 +558,9 @@
                 float cloudDensity(vec3 p) {
                     vec3 uvw = (p - uBoxMin) / (uBoxMax - uBoxMin);
                     float hFade = smoothstep(0.0, 0.16, uvw.y) * (1.0 - smoothstep(0.42, 0.95, uvw.y));
+                    // Cylindrical rim fade — a square boundary leaves a brightness step on diagonal rays
+                    float rad = length(p.xz);
+                    float edgeF = 1.0 - smoothstep(520.0, 780.0, rad);
                     // Storm swirl: rotate the density lookup around the vortex
                     vec2 rel = p.xz - uStormCenter;
                     float sd = length(rel);
@@ -576,7 +579,7 @@
                     dens *= 1.0 - detail * 0.3;
                     dens = dens * dens * (3.0 - 2.0 * dens); // smoothstep softens silhouettes
                     dens = pow(dens, 1.4); // push mids down — soft fringe, dense cores
-                    return dens * hFade;
+                    return dens * hFade * edgeF;
                 }
                 void main() {
                     vec3 ro = cameraPosition;
@@ -668,7 +671,8 @@
                     vec3 dir = normalize(vP);
                     float up = clamp(dir.y, -1.0, 1.0);
                     float az = atan(dir.z, dir.x);
-                    float turb = fbm(vec2(az * 3.0, up * 12.0)) - 0.5;
+                    // Sample turbulence on dir.xz (continuous around the dome) — atan() would jump at the ±π wrap
+                    float turb = fbm(dir.xz * 3.0 + vec2(0.0, up * 12.0)) - 0.5;
                     float band = sin(up * 26.0 + turb * 4.2);
                     vec3 cream = vec3(0.86, 0.79, 0.64), tan_ = vec3(0.60, 0.44, 0.30), rust = vec3(0.52, 0.30, 0.22), brown = vec3(0.30, 0.20, 0.14);
                     vec3 sky = mix(tan_, cream, smoothstep(-0.35, 0.55, band));
@@ -1248,7 +1252,7 @@
             buildStorm();
             buildBolts();
             buildPuffs();
-            buildVolumeClouds();
+            if (!location.search.includes('nocloud')) buildVolumeClouds();
             buildCrystalStorm();
             await buildAstronaut(texture);
             buildOrbiter();
