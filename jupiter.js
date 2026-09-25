@@ -105,7 +105,7 @@
     const stations = expedition.stations;
     let discoveryUI = null, featuredRock = null;
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
-    let skyPivot = null, earthPivot = null, crystalField = [], skyMaterial = null, ambientLight = null, flashTimer = 6, thrustActive = false, stormDisc = null, bolts = [], boltTimer = 0, deckShader = null, puffGroup = null, composer = null, fxaaPass = null, cinePass = null, stormPts = null, stormVel = null;
+    let skyPivot = null, earthPivot = null, crystalField = [], skyMaterial = null, ambientLight = null, flashTimer = 6, thrustActive = false, stormDisc = null, bolts = [], boltTimer = 0, deckShader = null, puffGroup = null, composer = null, fxaaPass = null, cinePass = null, stormPts = null, stormVel = null, volCloud = null;
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
     const position = { x: stations[0].x, z: stations[0].z };
     const touchDevice = matchMedia('(pointer: coarse)').matches;
@@ -458,6 +458,161 @@
         }
         puffGroup.renderOrder = 1;
         scene.add(puffGroup);
+    }
+    // Bake a tileable 3D noise volume (Perlin-style fbm in R, inverted Worley cells in G).
+    // The raymarch shader samples this to know how dense the cloud is at any point in space.
+    function bakeCloudNoise3D(size = 64) {
+        const data = new Uint8Array(size * size * size * 4);
+        const prand = JupiterAtmo.random(4242);
+        // Worley feature points on a wrapped grid (4 cells per axis)
+        const WC = 4, wpts = [];
+        for (let z = 0; z < WC; z++) for (let y = 0; y < WC; y++) for (let x = 0; x < WC; x++)
+            wpts.push([(x + prand()) / WC, (y + prand()) / WC, (z + prand()) / WC]);
+        function hash3(x, y, z) {
+            let h = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453;
+            return h - Math.floor(h);
+        }
+        function vnoise(x, y, z) {
+            const ix = Math.floor(x), iy = Math.floor(y), iz = Math.floor(z);
+            let fx = x - ix, fy = y - iy, fz = z - iz;
+            fx = fx * fx * (3 - 2 * fx); fy = fy * fy * (3 - 2 * fy); fz = fz * fz * (3 - 2 * fz);
+            const g = (dx, dy, dz) => hash3(((ix + dx) % size + size) % size, ((iy + dy) % size + size) % size, ((iz + dz) % size + size) % size);
+            const x00 = g(0, 0, 0) * (1 - fx) + g(1, 0, 0) * fx, x10 = g(0, 1, 0) * (1 - fx) + g(1, 1, 0) * fx;
+            const x01 = g(0, 0, 1) * (1 - fx) + g(1, 0, 1) * fx, x11 = g(0, 1, 1) * (1 - fx) + g(1, 1, 1) * fx;
+            return (x00 * (1 - fy) + x10 * fy) * (1 - fz) + (x01 * (1 - fy) + x11 * fy) * fz;
+        }
+        function fbm(x, y, z) {
+            return vnoise(x * 4, y * 4, z * 4) * 0.55 + vnoise(x * 8, y * 8, z * 8) * 0.3 + vnoise(x * 16, y * 16, z * 16) * 0.15;
+        }
+        for (let z = 0; z < size; z++) for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+            const u = x / size, v = y / size, w = z / size;
+            // Worley F1 (toroidal wrap)
+            let f1 = 9;
+            for (const p of wpts) {
+                let dx = Math.abs(u - p[0]); if (dx > 0.5) dx = 1 - dx;
+                let dy = Math.abs(v - p[1]); if (dy > 0.5) dy = 1 - dy;
+                let dz = Math.abs(w - p[2]); if (dz > 0.5) dz = 1 - dz;
+                const d = dx * dx + dy * dy + dz * dz;
+                if (d < f1) f1 = d;
+            }
+            const worley = 1 - Math.min(1, Math.sqrt(f1) * 2.2);
+            const i = (z * size * size + y * size + x) * 4;
+            data[i] = Math.max(0, Math.min(255, fbm(u, v, w) * 255));
+            data[i + 1] = Math.max(0, Math.min(255, Math.pow(worley, 1.4) * 255));
+            data[i + 2] = Math.max(0, Math.min(255, vnoise(u * 3 + 9, v * 3, w * 3) * 255));
+            data[i + 3] = 255;
+        }
+        const tex = new THREE.DataTexture3D(data, size, size, size);
+        tex.format = THREE.RGBAFormat; tex.type = THREE.UnsignedByteType;
+        tex.minFilter = tex.magFilter = THREE.LinearFilter;
+        tex.wrapS = tex.wrapT = tex.wrapR = THREE.RepeatWrapping;
+        tex.needsUpdate = true;
+        return tex;
+    }
+    // Volumetric cloud slab: a box volume raymarched per-pixel, inspired by
+    // github.com/leoawen/volumetric_cloud_atmosphere_scattering (MIT).
+    function buildVolumeClouds() {
+        if (!renderer.capabilities.isWebGL2 || !THREE.DataTexture3D) return;
+        const noiseTex = bakeCloudNoise3D(64);
+        const boxMin = new THREE.Vector3(-800, -38, -800), boxMax = new THREE.Vector3(800, 105, 800);
+        const geo = new THREE.BoxGeometry(boxMax.x - boxMin.x, boxMax.y - boxMin.y, boxMax.z - boxMin.z);
+        const mat = new THREE.ShaderMaterial({
+            glslVersion: THREE.GLSL3,
+            side: THREE.BackSide, transparent: true, depthWrite: false,
+            uniforms: {
+                uNoise: { value: noiseTex },
+                uBoxMin: { value: boxMin }, uBoxMax: { value: boxMax },
+                uTime: { value: 0 }, uDarkness: { value: 0 },
+                uCoverage: { value: 0.34 }, uExtinct: { value: 4.5 },
+                uSunDir: { value: new THREE.Vector3(-0.58, 0.4, -0.52).normalize() },
+                uStormCenter: { value: new THREE.Vector2(-230, -150) },
+                uLit: { value: new THREE.Color(0xfff2dc) },
+                uShade: { value: new THREE.Color(0x8a6f52) },
+                uCream: { value: new THREE.Color(0xf5ecd8) },
+                uTan: { value: new THREE.Color(0xc9a172) },
+                uRust: { value: new THREE.Color(0xb8553c) },
+            },
+            vertexShader: `
+                varying vec3 vWorldPos;
+                void main() {
+                    vec4 wp = modelMatrix * vec4(position, 1.0);
+                    vWorldPos = wp.xyz;
+                    gl_Position = projectionMatrix * viewMatrix * wp;
+                }`,
+            fragmentShader: `
+                precision highp sampler3D;
+                uniform sampler3D uNoise;
+                uniform vec3 uBoxMin, uBoxMax, uSunDir, uLit, uShade, uCream, uTan, uRust;
+                uniform vec2 uStormCenter;
+                uniform float uTime, uDarkness, uCoverage, uExtinct;
+                varying vec3 vWorldPos;
+                out vec4 fragColor;
+
+                vec2 boxHit(vec3 ro, vec3 rd) {
+                    vec3 inv = 1.0 / rd;
+                    vec3 t1 = (uBoxMin - ro) * inv, t2 = (uBoxMax - ro) * inv;
+                    vec3 tmin = min(t1, t2), tmax = max(t1, t2);
+                    return vec2(max(max(tmin.x, tmin.y), tmin.z), min(min(tmax.x, tmax.y), tmax.z));
+                }
+                float cloudDensity(vec3 p) {
+                    vec3 uvw = (p - uBoxMin) / (uBoxMax - uBoxMin);
+                    float hFade = smoothstep(0.0, 0.16, uvw.y) * (1.0 - smoothstep(0.5, 1.0, uvw.y));
+                    // Storm swirl: rotate the density lookup around the vortex
+                    vec2 rel = p.xz - uStormCenter;
+                    float sd = length(rel);
+                    float ang = exp(-pow(sd / 260.0, 2.0)) * 1.35;
+                    mat2 rot = mat2(cos(ang), -sin(ang), sin(ang), cos(ang));
+                    vec2 sxz = uStormCenter + rot * rel;
+                    vec3 wp = vec3(sxz.x, p.y, sxz.y) * 0.006 + vec3(uTime * 0.005, 0.0, uTime * 0.001);
+                    vec4 n = texture(uNoise, wp);
+                    float base = n.r * 0.5 + n.g * 0.65;
+                    float band = 0.78 + 0.22 * sin(p.z * 0.018 + n.b * 5.0);
+                    float dens = clamp((base * band - (1.0 - uCoverage)) * 1.8, 0.0, 1.0);
+                    // Worley erosion carves wispy edges into each puff
+                    float detail = texture(uNoise, wp * 3.9 + vec3(0.31)).g;
+                    dens *= 1.0 - detail * 0.45;
+                    return dens * hFade;
+                }
+                void main() {
+                    vec3 ro = cameraPosition;
+                    vec3 rd = normalize(vWorldPos - ro);
+                    vec2 hit = boxHit(ro, rd);
+                    float t0 = max(hit.x, 0.0), t1 = hit.y;
+                    if (t1 <= t0) discard;
+                    const int STEPS = 36;
+                    float dt = (t1 - t0) / float(STEPS);
+                    // Jitter the ray origin so fixed step positions don't show as banding
+                    float jit = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+                    t0 += dt * jit;
+                    vec3 acc = vec3(0.0);
+                    float T = 1.0;
+                    float phase = 0.4 + 0.6 * pow(max(dot(rd, uSunDir), 0.0), 3.0);
+                    for (int i = 0; i < STEPS; i++) {
+                        vec3 p = ro + rd * (t0 + dt * (float(i) + 0.5));
+                        float d = cloudDensity(p);
+                        if (d > 0.003) {
+                            float ld = cloudDensity(p + uSunDir * 14.0);
+                            float shade = clamp(1.0 - ld * 1.8, 0.12, 1.0);
+                            float bnd = sin(p.z * 0.045 + texture(uNoise, p * 0.0012).b * 4.0);
+                            vec3 tint = mix(uTan, uCream, smoothstep(-0.5, 0.5, bnd));
+                            float sd = length(p.xz - uStormCenter);
+                            tint = mix(tint, uRust, exp(-pow(sd / 210.0, 2.0)) * 0.85);
+                            vec3 c = mix(uShade, uLit, shade) * tint * phase;
+                            float a = 1.0 - exp(-d * uExtinct * dt);
+                            acc += T * a * c;
+                            T *= 1.0 - a;
+                            if (T < 0.02) break;
+                        }
+                    }
+                    acc *= 1.0 - uDarkness * 0.82;
+                    fragColor = vec4(acc, 1.0 - T);
+                }`
+        });
+        volCloud = new THREE.Mesh(geo, mat);
+        volCloud.position.set(0, (boxMin.y + boxMax.y) / 2, 0);
+        volCloud.frustumCulled = false;
+        volCloud.renderOrder = 2;
+        scene.add(volCloud);
     }
     function dotTexture() {
         const canvas = document.createElement('canvas');
@@ -816,6 +971,10 @@
                 sunlight.intensity = 2.6 * (1 - depth * 0.8);
                 scene.fog.density = 0.0022 + depth * 0.012;
                 scene.fog.color.setHex(0xa08b6b).lerp(new THREE.Color(0x241812), depth);
+                if (volCloud) {
+                    volCloud.material.uniforms.uTime.value = now * 0.001;
+                    volCloud.material.uniforms.uDarkness.value = depth;
+                }
             }
             if (flashTimer <= 0) {
                 flashTimer = 4 + rand() * 9;
@@ -1019,6 +1178,7 @@
             buildStorm();
             buildBolts();
             buildPuffs();
+            buildVolumeClouds();
             buildCrystalStorm();
             buildAstronaut(texture);
             buildOrbiter();
