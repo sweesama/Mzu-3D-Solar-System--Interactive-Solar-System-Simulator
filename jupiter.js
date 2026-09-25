@@ -105,7 +105,7 @@
     const stations = expedition.stations;
     let discoveryUI = null, featuredRock = null;
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
-    let skyPivot = null, earthPivot = null, crystalField = [], skyMaterial = null, ambientLight = null, flashTimer = 6, thrustActive = false, stormDisc = null, bolts = [], boltTimer = 0, deckShader = null, puffGroup = null, composer = null, fxaaPass = null, cinePass = null, stormPts = null, stormVel = null, volCloud = null;
+    let skyPivot = null, earthPivot = null, crystalField = [], skyMaterial = null, ambientLight = null, flashTimer = 6, thrustActive = false, stormDisc = null, bolts = [], boltTimer = 0, deckShader = null, puffGroup = null, composer = null, fxaaPass = null, cinePass = null, stormPts = null, stormVel = null, volCloud = null, sunMesh = null, shaftPass = null;
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
     const position = { x: stations[0].x, z: stations[0].z };
     const touchDevice = matchMedia('(pointer: coarse)').matches;
@@ -650,9 +650,9 @@
     function buildSky() {
         skyMaterial = new THREE.ShaderMaterial({
             side: THREE.BackSide, depthWrite: false, depthTest: false,
-            uniforms: { darkening: { value: 0 }, flash: { value: 0 } },
+            uniforms: { darkening: { value: 0 }, flash: { value: 0 }, tJupiter: { value: null }, hasMap: { value: 0 } },
             vertexShader: 'varying vec3 vP; void main(){vP=position; vec4 mv=modelViewMatrix*vec4(position,1.0); gl_Position=projectionMatrix*mv; gl_Position.z=gl_Position.w;}',
-            fragmentShader: `uniform float darkening; uniform float flash; varying vec3 vP;
+            fragmentShader: `uniform float darkening; uniform float flash; uniform sampler2D tJupiter; uniform float hasMap; varying vec3 vP;
                 float h21(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
                 float n2(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(h21(i),h21(i+vec2(1,0)),f.x),mix(h21(i+vec2(0,1)),h21(i+vec2(1,1)),f.x),f.y);}
                 float fbm(vec2 p){return n2(p)*0.55+n2(p*2.3)*0.28+n2(p*5.1)*0.17;}
@@ -667,6 +667,10 @@
                     sky = mix(rust, sky, smoothstep(-0.6, -0.05, band));
                     float filament = smoothstep(0.92, 1.0, abs(sin(up * 26.0 + turb * 6.5))) * smoothstep(0.3, 0.0, up);
                     sky = mix(sky, vec3(0.92, 0.88, 0.78), filament * 0.5);
+                    // Real Cassini/Juno cloud map on the upper dome
+                    vec2 juv = vec2(az / 6.2831853 + 0.5, clamp(0.62 - up * 0.26, 0.02, 0.98));
+                    vec3 realMap = texture2D(tJupiter, juv).rgb * vec3(0.95, 0.92, 0.88);
+                    sky = mix(sky, realMap, hasMap * smoothstep(-0.05, 0.45, up) * 0.78);
                     sky = mix(brown, sky, smoothstep(-0.25, 0.4, up));
                     sky = mix(sky, vec3(0.10, 0.09, 0.11), smoothstep(0.55, 0.95, up));
                     sky = mix(sky, vec3(0.16, 0.11, 0.08), smoothstep(-0.15, -0.8, up));
@@ -693,8 +697,8 @@
         gradient.addColorStop(1, 'rgba(255,230,195,0)');
         haloContext.fillStyle = gradient;
         haloContext.fillRect(0, 0, 128, 128);
-        const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(haloCanvas), transparent: true, opacity: 0.85, depthWrite: false }));
-        halo.scale.set(90, 90, 1);
+        const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(haloCanvas), transparent: true, opacity: 0.55, depthWrite: false }));
+        halo.scale.set(60, 60, 1);
         halo.position.copy(sun.position);
         skyPivot.add(halo);
         const proxy = new THREE.Mesh(new THREE.SphereGeometry(140, 8, 6), new THREE.MeshBasicMaterial({ visible: false }));
@@ -702,7 +706,18 @@
         proxy.userData.body = 'sun';
         skyPivot.add(proxy);
         skyBodies.push(proxy);
-        return Promise.resolve();
+        sunMesh = sun;
+        return new Promise(resolve => {
+            new THREE.TextureLoader().load('textures/2k_jupiter.jpg', tex => {
+                tex.encoding = THREE.sRGBEncoding;
+                tex.wrapS = THREE.RepeatWrapping;
+                tex.wrapT = THREE.ClampToEdgeWrapping;
+                tex.minFilter = THREE.LinearMipmapLinearFilter;
+                skyMaterial.uniforms.tJupiter.value = tex;
+                skyMaterial.uniforms.hasMap.value = 1;
+                resolve();
+            }, undefined, () => resolve());
+        });
     }
     function createGltfLoader() {
         const loader = new THREE.GLTFLoader();
@@ -975,6 +990,13 @@
                     volCloud.material.uniforms.uTime.value = now * 0.001;
                     volCloud.material.uniforms.uDarkness.value = depth;
                 }
+                if (shaftPass && sunMesh) {
+                    const sp = sunMesh.getWorldPosition(new THREE.Vector3()).project(camera);
+                    const sx = sp.x * 0.5 + 0.5, sy = sp.y * 0.5 + 0.5;
+                    const onScreen = sp.z < 1 && sx > -0.4 && sx < 1.4 && sy > -0.4 && sy < 1.4;
+                    shaftPass.uniforms.uSunPos.value.set(sx, sy);
+                    shaftPass.uniforms.uIntensity.value = onScreen ? 0.25 * (1 - depth * 0.7) : 0;
+                }
             }
             if (flashTimer <= 0) {
                 flashTimer = 4 + rand() * 9;
@@ -1149,6 +1171,30 @@
                 composer = new THREE.EffectComposer(renderer);
                 composer.addPass(new THREE.RenderPass(scene, camera));
                 composer.addPass(new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.5, 0.55, 0.74));
+                // Cheap radial god-rays: blur bright sky toward the Sun's screen position
+                shaftPass = new THREE.ShaderPass({
+                    uniforms: { tDiffuse: { value: null }, uSunPos: { value: new THREE.Vector2(0.5, 0.5) }, uIntensity: { value: 0 } },
+                    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+                    fragmentShader: `uniform sampler2D tDiffuse; uniform vec2 uSunPos; uniform float uIntensity; varying vec2 vUv;
+                        void main(){
+                            vec4 base = texture2D(tDiffuse, vUv);
+                            if (uIntensity <= 0.001) { gl_FragColor = base; return; }
+                            vec2 stepDir = (uSunPos - vUv) / 22.0;
+                            vec2 uv2 = vUv;
+                            vec3 shaft = vec3(0.0);
+                            float w = 1.0, tot = 0.0;
+                            for (int i = 0; i < 22; i++) {
+                                uv2 += stepDir;
+                                vec3 s = texture2D(tDiffuse, uv2).rgb;
+                                float lum = max(0.0, dot(s, vec3(0.35, 0.45, 0.2)) - 0.72) * 1.6;
+                                shaft += s * lum * w;
+                                tot += w; w *= 0.90;
+                            }
+                            base.rgb += shaft / max(tot, 0.001) * uIntensity * vec3(1.0, 0.88, 0.68);
+                            gl_FragColor = base;
+                        }`
+                });
+                composer.addPass(shaftPass);
                 composer.addPass(new THREE.ShaderPass(THREE.GammaCorrectionShader));
                 if (THREE.FXAAShader) {
                     fxaaPass = new THREE.ShaderPass(THREE.FXAAShader);
