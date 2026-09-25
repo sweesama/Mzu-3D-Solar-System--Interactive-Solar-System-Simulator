@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const root = __dirname;
-const pages = ['index', 'mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'moon', 'mars-expedition', 'venus-expedition', 'mercury-expedition', 'jupiter-expedition'];
+const pages = ['index', 'mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'moon', 'mars-expedition', 'venus-expedition', 'mercury-expedition', 'jupiter-expedition', 'saturn-expedition'];
 const errors = [];
 const titles = new Set();
 const canonicals = new Set();
@@ -302,6 +302,37 @@ assert.match(mercuryHtml, /id="touch-pad"/);
 assert.match(mercuryHtml, /id="return-orbit"/);
 assert.match(mercuryHtml, /index\.html\?focus=Mercury/);
 assert.match(fs.readFileSync(path.join(root, 'index.html'), 'utf8'), /href="mercury-expedition\.html"/);
+const saturnRings = loadBrowserModule('saturn-rings.js', 'SaturnRings');
+const saturnExpedition = loadBrowserModule('saturn-expedition.js', 'SaturnExpedition');
+assert.equal(saturnExpedition.discoveries.length, 5);
+assert.equal(saturnExpedition.parseProgress('not-json').length, 0);
+assert.equal(saturnExpedition.parseProgress('["ice","invalid"]').length, 1);
+assert.equal(saturnExpedition.canDiscover({ x: 42, z: 196, y: 8 }, 1), true);
+assert.equal(saturnExpedition.canDiscover({ x: 42, z: 196, y: 120 }, 1), false);
+assert.equal(saturnRings.sampleSurface(null, 5, 5), 0);
+const saturnBody = saturnRings.createWalker({ x: 0, z: 0 });
+saturnBody.y = 50;
+saturnRings.updateWalker(saturnBody, { forward: 0, right: 0, yaw: 0 }, 1 / 60);
+assert.ok(Number.isFinite(saturnBody.x) && Number.isFinite(saturnBody.y));
+assert.ok(saturnBody.y <= 50 + saturnRings.VERTICAL_SPEED + 1, 'Cruise must respect the altitude cap');
+const saturnGuidance = saturnExpedition.guidance({ x: 0, z: 140 }, 0);
+assert.ok(saturnGuidance.distance >= 0 && Number.isFinite(saturnGuidance.x));
+const saturnHtml = fs.readFileSync(path.join(root, 'saturn-expedition.html'), 'utf8');
+assert.match(saturnHtml, /id="discover-button"/);
+assert.match(saturnHtml, /id="discovery-dialog"/);
+assert.match(saturnHtml, /saturn-expedition\.js/);
+assert.match(saturnHtml, /saturn-rings\.js/);
+assert.match(saturnHtml, /saturn-audio\.js/);
+assert.match(saturnHtml, /moon-discoveries\.js/);
+assert.match(saturnHtml, /saturn\.js/);
+assert.match(saturnHtml, /id="visor"/);
+assert.match(saturnHtml, /id="gravity-button"/);
+assert.match(saturnHtml, /id="touch-pad"/);
+assert.match(saturnHtml, /id="return-orbit"/);
+assert.match(saturnHtml, /index\.html\?focus=Saturn/);
+assert.match(fs.readFileSync(path.join(root, 'index.html'), 'utf8'), /href="saturn-expedition\.html"/);
+assert.match(fs.readFileSync(path.join(root, 'saturn.html'), 'utf8'), /href="saturn-expedition\.html"/);
+assert.ok(fs.existsSync(path.join(root, 'models', 'cassini.glb')), 'Cassini model must exist');
 const venusHtml = fs.readFileSync(path.join(root, 'venus-expedition.html'), 'utf8');
 assert.match(venusHtml, /id="discover-button"/);
 assert.match(venusHtml, /id="discovery-dialog"/);
@@ -404,16 +435,17 @@ for (const page of pages) {
   if (page === 'venus-expedition' && !/Venus/i.test(heading)) errors.push(`${file}: heading must identify the Venus expedition`);
   if (page === 'mercury-expedition' && !/Mercury/i.test(heading)) errors.push(`${file}: heading must identify the Mercury expedition`);
   if (page === 'jupiter-expedition' && !/Jupiter/i.test(heading)) errors.push(`${file}: heading must identify the Jupiter descent`);
+  if (page === 'saturn-expedition' && !/Saturn/i.test(heading)) errors.push(`${file}: heading must identify the Saturn cruise`);
   if (/id="seo-content"|SEO Content for Crawlers|style="display:\s*none/i.test(html)) errors.push(`${file}: hidden crawler-only content found`);
   if (/GA_MEASUREMENT_ID|ca-pub-XXXXXXXXXX/i.test(html)) errors.push(`${file}: analytics or advertising placeholder found`);
   if (/\b(ultimate|professional-grade|smooth 60fps|ultra-realistic|therapeutic solar system)\b/i.test(html)) errors.push(`${file}: unsupported marketing claim found`);
-  const isExpedition = page === 'moon' || page === 'mars-expedition' || page === 'venus-expedition' || page === 'mercury-expedition' || page === 'jupiter-expedition';
+  const isExpedition = page === 'moon' || page === 'mars-expedition' || page === 'venus-expedition' || page === 'mercury-expedition' || page === 'jupiter-expedition' || page === 'saturn-expedition';
   if (!isExpedition && !/data-focus="Mercury"[\s\S]*data-focus="Neptune"/i.test(html)) errors.push(`${file}: planet navigation is incomplete`);
   const qualityId = isExpedition ? 'moon-quality' : 'quality-select';
   if (!new RegExp(`<select id="${qualityId}"[\\s\\S]*value="auto"[\\s\\S]*value="high"[\\s\\S]*value="balanced"[\\s\\S]*value="low"`, 'i').test(html)) {
     errors.push(`${file}: accessible quality selector is incomplete`);
   }
-  const engine = page === 'moon' ? 'moon' : page === 'mars-expedition' ? 'mars' : page === 'venus-expedition' ? 'venus' : page === 'mercury-expedition' ? 'mercury' : page === 'jupiter-expedition' ? 'jupiter' : 'main';
+  const engine = page === 'moon' ? 'moon' : page === 'mars-expedition' ? 'mars' : page === 'venus-expedition' ? 'venus' : page === 'mercury-expedition' ? 'mercury' : page === 'jupiter-expedition' ? 'jupiter' : page === 'saturn-expedition' ? 'saturn' : 'main';
   if (!new RegExp(`<script src="quality-policy\\.js"></script>[\\s\\S]*<script src="${engine}\\.js"></script>`, 'i').test(html)) {
     errors.push(`${file}: quality policy must load before the scene engine`);
   }
@@ -421,6 +453,7 @@ for (const page of pages) {
   if (!isExpedition && !/href="mars-expedition\.html"/.test(html)) errors.push(`${file}: missing Mars expedition link`);
   if (!isExpedition && !/href="venus-expedition\.html"/.test(html)) errors.push(`${file}: missing Venus expedition link`);
   if (!isExpedition && !/href="mercury-expedition\.html"/.test(html)) errors.push(`${file}: missing Mercury expedition link`);
+  if (!isExpedition && !/href="saturn-expedition\.html"/.test(html)) errors.push(`${file}: missing Saturn expedition link`);
 
   const jsonLd = capture(html, /<script id="app-structured-data" type="application\/ld\+json">([\s\S]*?)<\/script>/i, 'structured data', file);
   if (jsonLd) {

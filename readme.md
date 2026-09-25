@@ -149,7 +149,20 @@ The public page is `https://www.3dsolarsystem.net/jupiter-expedition.html` (the 
 - Five discoveries sit at different altitudes and require matching the layer (±42 m): ammonia cirrus veil (~190 m), ice crystal (~60 m), storm rim (~45 m), lightning shelf (−60 m), and the abyss (−150 m). Stations carry a `y` altitude used by quick travel. Progress saves under `mzu-jupiter-descent-v1`.
 - Files mirror the other expeditions: `jupiter-expedition.html`, `jupiter.js`, `jupiter-atmosphere.js`, `jupiter-expedition.js`, `jupiter-audio.js`. `moon-discoveries.js` and `moon.css` remain shared.
 
-All five expedition field guides open with a "What you are seeing" feature list — a localized card list (`planet-facts` markup, `feature-list` element, per-page `features` dictionary entries rendered by `applyLanguage`) that names each visible landmark and ties it to the real observation it is based on, so visitors can read the planet's signature features without walking.
+## Saturn ring-plane cruise
+
+The public page is `https://www.3dsolarsystem.net/saturn-expedition.html` (the name avoids colliding with the existing `saturn.html` orbital detail page). It is listed in `sitemap.xml`, linked from the homepage and generated planet pages, and carries the same indexable metadata as the other expeditions.
+
+- Saturn's rings have no surface to walk or sink through, so this expedition uses **ring-plane cruise**: the probe drifts forward on its own (`CRUISE_SPEED`), WASD/arrows add lateral drift and speed (Shift faster), **Space** rises and **C** sinks below the sheet. There is no gravity descent — instead the ring plane exerts a gentle tidal pull toward y = 0, scaled by the G gravity toggle (Saturn 10.44 m/s² vs Earth 9.8 m/s²).
+- `saturn-rings.js` exposes `SaturnRings` — the same `sampleSurface`/`createWalker`/`updateWalker` contract (sampleSurface returns 0 — the "surface" is the ring plane), plus `ringDensity(x, z)` which both drives the banded sheet texture and gates how densely the instanced ice field populates each band. Altitude is clamped between `MIN_ALTITUDE` (−140) and `MAX_ALTITUDE` (300).
+- The ring sheet is a pair of translucent 6 km planes (a second offset copy fakes thickness at grazing angles) textured with a generated band map matching `ringDensity`: bright B ring, dark Cassini division, dim C ring, plus fine ringlet streaks. Around Saturn's distant globe sits the real `2k_saturn_ring_alpha.png` ring disc, coplanar with the sheet so the two read as one system.
+- Two instanced ice fields surround the probe: metre-scale tumbling boulders (three geometry variants, placement weighted by band density) recycled in a wrap-around volume as the probe moves, and thousands of additive "snow" specks. A shepherd moonlet (irregular icy body) and a rotating propeller swirl sprite sit in the sheet as discoveries. NASA's real **Cassini** model (`models/cassini.glb`, Draco-compressed) holds formation off the port bow as a wingman; the probe hull under the camera is simple geometry.
+- The sky is a starfield dome, a Sun ~10× dimmer than Earth's, clickable Sun/Earth/Saturn bodies, and the banded Saturn globe half-submerged in the plane. Sky materials use `fog: false` — the scene's subtle FogExp2 exists to melt the local sheet's far edge, not to swallow celestial bodies. Below the plane, the "ring shadow" dims lights and thickens fog.
+- Post chain mirrors Jupiter (bloom 0.45/0.8 → gamma → FXAA → vignette+grain, plus the radial sun-shaft pass). Audio (`saturn-audio.js`) is a quiet cabin hum, occasional radio hiss, thruster whoosh, and ice-grain `icePing()` ticks when skimming dense bands.
+- Five discoveries pair with the three stations (vista, ice specimen, the division, moonlet, propeller); progress saves under `mzu-saturn-rings-v1`.
+- Files mirror the other expeditions: `saturn-expedition.html`, `saturn.js`, `saturn-rings.js`, `saturn-expedition.js`, `saturn-audio.js`. `moon-discoveries.js` and `moon.css` remain shared.
+
+All six expedition field guides open with a "What you are seeing" feature list — a localized card list (`planet-facts` markup, `feature-list` element, per-page `features` dictionary entries rendered by `applyLanguage`) that names each visible landmark and ties it to the real observation it is based on, so visitors can read the planet's signature features without walking.
 
 After changes, run:
 
@@ -177,6 +190,10 @@ node --check jupiter.js
 node --check jupiter-atmosphere.js
 node --check jupiter-expedition.js
 node --check jupiter-audio.js
+node --check saturn.js
+node --check saturn-rings.js
+node --check saturn-expedition.js
+node --check saturn-audio.js
 ```
 
 Route verification includes both directions of every route segment at all three terrain detail levels, distant/airborne discovery rejection, duplicate prevention, and invalid saved-data handling. Browser checks should cover walking the complete route with scene obstacles, specimen rotation/zoom, quick-travel without automatic progress, refresh persistence, storage-disabled fallback, and touch discovery controls.
