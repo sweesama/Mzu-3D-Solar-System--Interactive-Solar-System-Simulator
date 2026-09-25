@@ -523,13 +523,14 @@
                 uNoise: { value: noiseTex },
                 uBoxMin: { value: boxMin }, uBoxMax: { value: boxMax },
                 uTime: { value: 0 }, uDarkness: { value: 0 },
-                uCoverage: { value: 0.34 }, uExtinct: { value: 4.5 },
+                uCoverage: { value: 0.46 }, uExtinct: { value: 3.2 },
                 uSunDir: { value: new THREE.Vector3(-0.58, 0.4, -0.52).normalize() },
                 uStormCenter: { value: new THREE.Vector2(-230, -150) },
                 uLit: { value: new THREE.Color(0xfff2dc) },
-                uShade: { value: new THREE.Color(0x8a6f52) },
+                uShade: { value: new THREE.Color(0xbca88e) },
+                uFogCol: { value: new THREE.Color(0xa08b6b) },
                 uCream: { value: new THREE.Color(0xf5ecd8) },
-                uTan: { value: new THREE.Color(0xc9a172) },
+                uTan: { value: new THREE.Color(0xd8b284) },
                 uRust: { value: new THREE.Color(0xb8553c) },
             },
             vertexShader: `
@@ -542,7 +543,7 @@
             fragmentShader: `
                 precision highp sampler3D;
                 uniform sampler3D uNoise;
-                uniform vec3 uBoxMin, uBoxMax, uSunDir, uLit, uShade, uCream, uTan, uRust;
+                uniform vec3 uBoxMin, uBoxMax, uSunDir, uLit, uShade, uCream, uTan, uRust, uFogCol;
                 uniform vec2 uStormCenter;
                 uniform float uTime, uDarkness, uCoverage, uExtinct;
                 varying vec3 vWorldPos;
@@ -556,21 +557,25 @@
                 }
                 float cloudDensity(vec3 p) {
                     vec3 uvw = (p - uBoxMin) / (uBoxMax - uBoxMin);
-                    float hFade = smoothstep(0.0, 0.16, uvw.y) * (1.0 - smoothstep(0.5, 1.0, uvw.y));
+                    float hFade = smoothstep(0.0, 0.16, uvw.y) * (1.0 - smoothstep(0.42, 0.95, uvw.y));
                     // Storm swirl: rotate the density lookup around the vortex
                     vec2 rel = p.xz - uStormCenter;
                     float sd = length(rel);
                     float ang = exp(-pow(sd / 260.0, 2.0)) * 1.35;
                     mat2 rot = mat2(cos(ang), -sin(ang), sin(ang), cos(ang));
                     vec2 sxz = uStormCenter + rot * rel;
-                    vec3 wp = vec3(sxz.x, p.y, sxz.y) * 0.006 + vec3(uTime * 0.005, 0.0, uTime * 0.001);
+                    // Zonal stretch: Jupiter clouds elongate along the band direction (x),
+                    // so sample x at a much lower frequency than z → streamers, not lumps
+                    vec3 wp = vec3(sxz.x * 0.0032, p.y * 0.011, sxz.y * 0.010) + vec3(uTime * 0.004, 0.0, uTime * 0.0008);
                     vec4 n = texture(uNoise, wp);
-                    float base = n.r * 0.5 + n.g * 0.65;
+                    float base = n.r * 0.68 + n.g * 0.4;
                     float band = 0.78 + 0.22 * sin(p.z * 0.018 + n.b * 5.0);
                     float dens = clamp((base * band - (1.0 - uCoverage)) * 1.8, 0.0, 1.0);
                     // Worley erosion carves wispy edges into each puff
                     float detail = texture(uNoise, wp * 3.9 + vec3(0.31)).g;
-                    dens *= 1.0 - detail * 0.45;
+                    dens *= 1.0 - detail * 0.3;
+                    dens = dens * dens * (3.0 - 2.0 * dens); // smoothstep softens silhouettes
+                    dens = pow(dens, 1.4); // push mids down — soft fringe, dense cores
                     return dens * hFade;
                 }
                 void main() {
@@ -579,10 +584,10 @@
                     vec2 hit = boxHit(ro, rd);
                     float t0 = max(hit.x, 0.0), t1 = hit.y;
                     if (t1 <= t0) discard;
-                    const int STEPS = 36;
+                    const int STEPS = 48;
                     float dt = (t1 - t0) / float(STEPS);
-                    // Jitter the ray origin so fixed step positions don't show as banding
-                    float jit = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+                    // Interleaved gradient noise jitter kills step banding better than a hash
+                    float jit = fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715))));
                     t0 += dt * jit;
                     vec3 acc = vec3(0.0);
                     float T = 1.0;
@@ -592,12 +597,12 @@
                         float d = cloudDensity(p);
                         if (d > 0.003) {
                             float ld = cloudDensity(p + uSunDir * 14.0);
-                            float shade = clamp(1.0 - ld * 1.8, 0.12, 1.0);
+                            float shade = clamp(1.0 - ld * 1.4, 0.5, 1.0);
                             float bnd = sin(p.z * 0.045 + texture(uNoise, p * 0.0012).b * 4.0);
                             vec3 tint = mix(uTan, uCream, smoothstep(-0.5, 0.5, bnd));
                             float sd = length(p.xz - uStormCenter);
                             tint = mix(tint, uRust, exp(-pow(sd / 210.0, 2.0)) * 0.85);
-                            vec3 c = mix(uShade, uLit, shade) * tint * phase;
+                            vec3 c = mix(uShade, uLit, shade) * tint * phase * 1.18;
                             float a = 1.0 - exp(-d * uExtinct * dt);
                             acc += T * a * c;
                             T *= 1.0 - a;
@@ -605,6 +610,9 @@
                         }
                     }
                     acc *= 1.0 - uDarkness * 0.82;
+                    // Distant clouds dissolve into the ambient haze instead of staying hard-edged
+                    float hazeF = 1.0 - exp(-t0 * 0.005);
+                    acc = mix(acc, uFogCol * (1.0 - uDarkness * 0.82) * (1.0 - T), hazeF * 0.85);
                     fragColor = vec4(acc, 1.0 - T);
                 }`
         });
@@ -710,7 +718,7 @@
         return new Promise(resolve => {
             new THREE.TextureLoader().load('textures/2k_jupiter.jpg', tex => {
                 tex.encoding = THREE.sRGBEncoding;
-                tex.wrapS = THREE.RepeatWrapping;
+                tex.wrapS = THREE.MirroredRepeatWrapping;
                 tex.wrapT = THREE.ClampToEdgeWrapping;
                 tex.minFilter = THREE.LinearMipmapLinearFilter;
                 skyMaterial.uniforms.tJupiter.value = tex;
@@ -753,7 +761,7 @@
         orbiter.rotation.set(0.35, 0.7, 0.15);
         scene.add(orbiter);
     }
-    function buildAstronaut(texture) {
+    async function buildAstronaut(texture) {
         const hull = new THREE.MeshStandardMaterial({ color: 0x6e6a5e, roughness: 0.55, metalness: 0.6 });
         const dark = new THREE.MeshStandardMaterial({ color: 0x1d1f21, roughness: 0.85, metalness: 0.25 });
         astronaut = new THREE.Group();
@@ -775,6 +783,20 @@
         astronaut.userData.legs = [];
         astronaut.visible = false;
         scene.add(astronaut);
+        // Real descent probe: NASA's Huygens model (the probe Cassini dropped into Titan)
+        const model = await loadSceneModel('models/huygens.glb');
+        if (!model) return;
+        const box = new THREE.Box3().setFromObject(model);
+        const size = new THREE.Vector3(); box.getSize(size);
+        const center = new THREE.Vector3(); box.getCenter(center);
+        model.position.sub(center);
+        model.scale.setScalar(0.62 / Math.max(size.x, size.y, size.z));
+        astronaut.children.forEach(c => c.visible = false);
+        const wrap = new THREE.Group();
+        wrap.add(model);
+        wrap.position.set(0.3, -1.25, -0.35);
+        wrap.rotation.set(1.15, -0.55, 0.35);
+        astronaut.add(wrap);
     }
     function dustTexture() {
         if (dust.texture) return dust.texture;
@@ -989,13 +1011,15 @@
                 if (volCloud) {
                     volCloud.material.uniforms.uTime.value = now * 0.001;
                     volCloud.material.uniforms.uDarkness.value = depth;
+                    volCloud.material.uniforms.uFogCol.value.copy(scene.fog.color);
                 }
                 if (shaftPass && sunMesh) {
                     const sp = sunMesh.getWorldPosition(new THREE.Vector3()).project(camera);
                     const sx = sp.x * 0.5 + 0.5, sy = sp.y * 0.5 + 0.5;
-                    const onScreen = sp.z < 1 && sx > -0.4 && sx < 1.4 && sy > -0.4 && sy < 1.4;
+                    const edge = Math.min(1, Math.max(0, (sx + 0.35) / 0.3)) * Math.min(1, Math.max(0, (1.35 - sx) / 0.3))
+                               * Math.min(1, Math.max(0, (sy + 0.35) / 0.3)) * Math.min(1, Math.max(0, (1.35 - sy) / 0.3));
                     shaftPass.uniforms.uSunPos.value.set(sx, sy);
-                    shaftPass.uniforms.uIntensity.value = onScreen ? 0.25 * (1 - depth * 0.7) : 0;
+                    shaftPass.uniforms.uIntensity.value = sp.z < 1 ? 0.25 * (1 - depth * 0.7) * edge : 0;
                 }
             }
             if (flashTimer <= 0) {
@@ -1226,7 +1250,7 @@
             buildPuffs();
             buildVolumeClouds();
             buildCrystalStorm();
-            buildAstronaut(texture);
+            await buildAstronaut(texture);
             buildOrbiter();
             walker = JupiterAtmo.createWalker(surface, position);
             walker.y = stations[0].y || 260;
