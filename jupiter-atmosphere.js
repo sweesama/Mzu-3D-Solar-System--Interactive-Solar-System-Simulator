@@ -38,9 +38,9 @@
         return Math.hypot(x - storm.x, z - storm.z) / storm.radius;
     }
     function deckHeight(x, z) {
-        let h = (noise(x * 0.006 + 3, z * 0.006 - 8) - 0.5) * 46;
-        h += (noise(x * 0.02 - 5, z * 0.02 + 11) - 0.5) * 14;
-        h += (noise(x * 0.09, z * 0.09) - 0.5) * 3.5;
+        let h = (noise(x * 0.008 + 3, z * 0.008 - 8) - 0.5) * 9;
+        h += (noise(x * 0.032 - 5, z * 0.032 + 11) - 0.5) * 4;
+        h += (noise(x * 0.11, z * 0.11) - 0.5) * 3;
         const s = stormDistance(x, z);
         if (s < 2.6) {
             const bowl = s < 1 ? -storm.depth * Math.pow(1 - s * s, 1.4) : 0;

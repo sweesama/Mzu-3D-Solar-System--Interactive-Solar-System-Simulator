@@ -184,9 +184,9 @@
         for (let z = 0; z < size; z++) {
             for (let x = 0; x < size; x++) {
                 const u = x / size, v = z / size;
-                const grain = (rand() - 0.5) * 17;
-                const cloud = (tileNoise(u, v, fields[0]) - 0.5) * 33 + (tileNoise(u, v, fields[1]) - 0.5) * 27 + (tileNoise(u, v, fields[2]) - 0.5) * 20;
-                const ripple = Math.sin((u * 46 + tileNoise(u, v, fields[1]) * 4.5) * Math.PI) * 4;
+                const grain = (rand() - 0.5) * 9;
+                const cloud = (tileNoise(u, v, fields[0]) - 0.5) * 33 + (tileNoise(u, v, fields[1]) - 0.5) * 27 + (tileNoise(u, v, fields[2]) - 0.5) * 12;
+                const ripple = Math.sin((u * 46 + tileNoise(u, v, fields[1]) * 4.5) * Math.PI) * 3;
                 const value = Math.max(48, Math.min(190, 118 + grain + cloud + ripple + (rand() > 0.999 ? -35 : 0)));
                 const i = (z * size + x) * 4;
                 pixels[i] = Math.min(255, value * 1.08); pixels[i + 1] = value * 0.94; pixels[i + 2] = value * 0.72; pixels[i + 3] = 255;
@@ -213,7 +213,7 @@
         const map = texture.clone();
         map.repeat.set(repeats, repeats);
         map.needsUpdate = true;
-        const material = new THREE.MeshStandardMaterial({ map, bumpMap: map, bumpScale: 0.03, roughness: 1, metalness: 0, vertexColors: true, emissive: 0x40301e, emissiveIntensity: 0.55 });
+        const material = new THREE.MeshStandardMaterial({ map, bumpMap: map, bumpScale: 0.012, roughness: 1, metalness: 0, vertexColors: true, emissive: 0x52453a, emissiveIntensity: 0.75 });
         material.onBeforeCompile = shader => {
             shader.uniforms.uTime = { value: 0 };
             material.userData.shader = shader;
@@ -250,7 +250,7 @@
                 vec2 cloudPoint = vMountainPosition.xz;
                 float billow = lunarNoise(cloudPoint * 0.012) * 0.6 + lunarNoise(cloudPoint * 0.05 + 9.0) * 0.4;
                 float streaks = sin(vMountainPosition.z * 0.02 + lunarNoise(cloudPoint * 0.006) * 6.0);
-                diffuseColor.rgb *= 0.62 + billow * 0.38 + streaks * 0.08;
+                diffuseColor.rgb *= 0.72 + billow * 0.26 + streaks * 0.05;
             `);
         };
         return material;
@@ -261,7 +261,7 @@
         geometry.rotateX(-Math.PI / 2);
         const positions = geometry.attributes.position;
         const colors = new Float32Array(positions.count * 3);
-        const cream = new THREE.Color(0xf2e8d0), tan = new THREE.Color(0xd4ad80), brown = new THREE.Color(0x9a7050), rust = new THREE.Color(0xc05c42), pale = new THREE.Color(0xfaf4e8);
+        const cream = new THREE.Color(0xf5ecd8), tan = new THREE.Color(0xdcc094), brown = new THREE.Color(0xa87e5c), rust = new THREE.Color(0xc05c42), pale = new THREE.Color(0xfbf7ec);
         const c1 = new THREE.Color(), c2 = new THREE.Color();
         for (let i = 0; i < positions.count; i++) {
             const px = positions.getX(i), pz = positions.getZ(i);
@@ -269,7 +269,9 @@
             const n = JupiterAtmo.noise(px * 0.085, pz * 0.085);
             const patch = JupiterAtmo.noise(px * 0.011 + 7, pz * 0.011 - 3);
             const band = Math.sin(pz * 0.055 + JupiterAtmo.noise(px * 0.012, pz * 0.004) * 2.2);
-            c1.copy(band > 0 ? cream : tan).lerp(band > 0 ? pale : brown, Math.abs(band) * 0.6);
+            c1.copy(band > 0 ? cream : tan).lerp(band > 0 ? pale : brown, Math.abs(band) * 0.85);
+            const cap = JupiterAtmo.noise(px * 0.03 + 21, pz * 0.03 - 14);
+            if (cap > 0.64) c1.lerp(pale, Math.min(1, (cap - 0.64) * 4) * 0.75);
             const sd = JupiterAtmo.stormDistance(px, pz);
             if (sd < 1.7) {
                 const s = THREE.MathUtils.clamp(1.7 - sd, 0, 1);
@@ -277,7 +279,7 @@
                 c2.copy(rust).lerp(pale, ring * 0.55);
                 c1.lerp(c2, Math.min(1, s * 0.8 + ring * 0.35));
             }
-            const shade = 0.78 + n * 0.26 + patch * 0.12;
+            const shade = 0.85 + n * 0.3 + patch * 0.14;
             colors.set([c1.r * shade, c1.g * shade, c1.b * shade], i * 3);
         }
         geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
@@ -294,11 +296,11 @@
         for (let i = 0; i < farPositions.count; i++) {
             const x = farPositions.getX(i), z = farPositions.getZ(i);
             const n = JupiterAtmo.noise(x * 0.003 + 3, z * 0.003 - 1);
-            const billow = JupiterAtmo.noise(x * 0.009, z * 0.009) * 26 + n * 60;
+            const billow = JupiterAtmo.noise(x * 0.009, z * 0.009) * 9 + n * 16;
             farPositions.setY(i, JupiterAtmo.height(x, z) - 2 + billow);
             const band = Math.sin(z * 0.0045 + JupiterAtmo.noise(x * 0.001, z * 0.0008) * 3);
-            const color = 0.74 + n * 0.22 + band * 0.12;
-            farColors.set([color, color * 0.88, color * 0.68], i * 3);
+            const color = 0.82 + n * 0.26 + band * 0.2;
+            farColors.set([color, color * 0.86, color * 0.62], i * 3);
         }
         const outerIndices = [];
         const indices = farGeometry.index.array;
@@ -439,16 +441,16 @@
         puffGroup = new THREE.Group();
         const tint = new THREE.Color();
         const palette = [0xf2e6cc, 0xe0c8a4, 0xd8b088, 0xc89878, 0xf8f2e4];
-        for (let i = 0; i < 190; i++) {
+        for (let i = 0; i < 240; i++) {
             const layer = rand();
-            const y = layer < 0.62 ? -30 + rand() * 70 : layer < 0.85 ? 40 + rand() * 120 : 160 + rand() * 120;
-            const angle = rand() * Math.PI * 2, r = 30 + Math.sqrt(rand()) * 330;
+            const y = layer < 0.5 ? -15 + rand() * 45 : layer < 0.82 ? 30 + rand() * 130 : 160 + rand() * 120;
+            const angle = rand() * Math.PI * 2, r = 20 + Math.sqrt(rand()) * 340;
             const x = Math.cos(angle) * r, z = Math.sin(angle) * r;
             const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
                 map: tex, color: tint.setHex(palette[Math.floor(rand() * palette.length)]).clone(),
-                transparent: true, opacity: 0.14 + rand() * 0.2, depthWrite: false
+                transparent: true, opacity: 0.18 + rand() * 0.22, depthWrite: false
             }));
-            const w = 50 + rand() * 160;
+            const w = 60 + rand() * 200;
             sprite.scale.set(w, w * (0.3 + rand() * 0.25), 1);
             sprite.position.set(x, y, z);
             sprite.userData.phase = rand() * Math.PI * 2;
@@ -812,8 +814,8 @@
                 skyMaterial.uniforms.darkening.value = depth;
                 if (ambientLight) ambientLight.intensity = 1.4 * (1 - depth * 0.75);
                 sunlight.intensity = 2.6 * (1 - depth * 0.8);
-                scene.fog.density = 0.0016 + depth * 0.012;
-                scene.fog.color.setHex(0x8a7454).lerp(new THREE.Color(0x241812), depth);
+                scene.fog.density = 0.0022 + depth * 0.012;
+                scene.fog.color.setHex(0xa08b6b).lerp(new THREE.Color(0x241812), depth);
             }
             if (flashTimer <= 0) {
                 flashTimer = 4 + rand() * 9;
@@ -969,7 +971,7 @@
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x6b5a44);
-            scene.fog = new THREE.FogExp2(0x8a7454, 0.0028);
+            scene.fog = new THREE.FogExp2(0xa08b6b, 0.0024);
             camera = new THREE.PerspectiveCamera(58, innerWidth / innerHeight, 0.08, 7200);
             ambientLight = new THREE.AmbientLight(0xcbb894, 1.4);
             scene.add(ambientLight);
