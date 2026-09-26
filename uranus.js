@@ -454,17 +454,10 @@
         const uranusRadius = 1450;
         uranusMesh = new THREE.Mesh(
             new THREE.SphereGeometry(uranusRadius, 64, 48),
-            new THREE.MeshBasicMaterial({ color: 0xa8d8d4, fog: false })
+            new THREE.MeshLambertMaterial({ color: 0x8fb8b4, fog: false })
         );
         uranusMesh.position.copy(uranusPos);
         scene.add(uranusMesh);
-        // Faint atmosphere halo — sells the globe as a planet, not a flat disc.
-        const atmosphere = new THREE.Mesh(
-            new THREE.SphereGeometry(uranusRadius * 1.04, 48, 32),
-            new THREE.MeshBasicMaterial({ color: 0x7fd4cc, transparent: true, opacity: 0.16, side: THREE.BackSide, blending: THREE.AdditiveBlending, depthWrite: false, fog: false })
-        );
-        atmosphere.position.copy(uranusPos);
-        scene.add(atmosphere);
         const uranusProxy = new THREE.Mesh(new THREE.SphereGeometry(uranusRadius * 1.02, 8, 6), new THREE.MeshBasicMaterial({ visible: false }));
         uranusProxy.position.copy(uranusPos);
         uranusProxy.userData.body = 'venus';
@@ -472,7 +465,7 @@
         skyBodies.push(uranusProxy);
         // Uranus's far rings — thin dark threads seen edge-on from inside the
         // plane: they project as a narrow band cutting straight across the globe.
-        const innerR = uranusRadius * 1.5, outerR = uranusRadius * 2.1;
+        const innerR = uranusRadius * 1.6, outerR = uranusRadius * 1.95;
         const ringGeo = new THREE.RingGeometry(innerR, outerR, 180, 8);
         {
             const pos = ringGeo.attributes.position, uv = ringGeo.attributes.uv;
@@ -490,9 +483,9 @@
             const t = x / 63;
             const bands = [0.16, 0.3, 0.44, 0.58, 0.78, 0.95];
             let a = 0;
-            for (const b of bands) a = Math.max(a, Math.max(0, 1 - Math.abs(t - b) * 22));
-            const shade = 96 + Math.round(a * 30);
-            ringCtx.fillStyle = `rgba(${shade * 0.55},${shade * 0.68},${shade * 0.72},${a * 0.75})`;
+            for (const b of bands) a = Math.max(a, Math.max(0, 1 - Math.abs(t - b) * 30));
+            const shade = 74 + Math.round(a * 26);
+            ringCtx.fillStyle = `rgba(${shade * 0.55},${shade * 0.68},${shade * 0.72},${a * 0.42})`;
             ringCtx.fillRect(x, 0, 1, 4);
         }
         const ringTex = new THREE.CanvasTexture(ringCanvas);
@@ -504,24 +497,9 @@
         scene.add(uranusRing);
         return new Promise(resolve => {
             new THREE.TextureLoader().load('textures/2k_uranus.jpg', tex => {
-                // Bake lighting into the texture: bright near the sunlit pole
-                // (top), fading toward the far limb, plus spherical edge falloff.
-                const src = tex.image;
-                const c = document.createElement('canvas');
-                c.width = src.width || 1024; c.height = src.height || 512;
-                const ctx = c.getContext('2d');
-                ctx.drawImage(src, 0, 0, c.width, c.height);
-                const light = ctx.createLinearGradient(0, 0, 0, c.height);
-                light.addColorStop(0.0, 'rgba(40,70,72,0)');      // pole lit by the high Sun
-                light.addColorStop(0.55, 'rgba(20,42,46,0.18)');
-                light.addColorStop(1.0, 'rgba(8,22,28,0.55)');    // far side in shadow
-                ctx.fillStyle = light;
-                ctx.fillRect(0, 0, c.width, c.height);
-                const shaded = new THREE.CanvasTexture(c);
-                shaded.encoding = THREE.sRGBEncoding;
-                shaded.wrapS = THREE.MirroredRepeatWrapping;
-                uranusMesh.material.map = shaded;
-                uranusMesh.material.color.set(0xade0dc);
+                tex.encoding = THREE.sRGBEncoding;
+                tex.wrapS = THREE.MirroredRepeatWrapping;
+                uranusMesh.material.map = tex;
                 uranusMesh.material.needsUpdate = true;
                 resolve();
             }, undefined, () => resolve());
