@@ -36,21 +36,26 @@
         return (a + (b - a) * fx) * (1 - fz) + (c + (d - c) * fx) * fz;
     }
 
-    // Ring optical depth by "radius" — drives both the sheet texture and how dense the
-    // ice-chunk field feels at a given x/z. Written as bands across z for readability.
+    // Ring optical depth by radius — drives both the sheet texture and how dense
+    // the ice-chunk field feels at a given x/z. Bands are concentric annuli
+    // around Saturn's centre (RING_CX, RING_CZ), matching the globe position.
+    const RING_CX = -3200, RING_CZ = -4300;
+    const RING_R0 = Math.hypot(RING_CX, RING_CZ); // radius of the ring passing the origin
     function ringDensity(x, z) {
-        // Bands along z: C ring (dim inner), Cassini division (gap), B ring (bright), Encke gap, A ring.
+        // Annuli around Saturn, inner → outer: C ring, B ring, Cassini division,
+        // A/B bright run, Encke-like gap, A ring outer.
+        const r = Math.hypot(x - RING_CX, z - RING_CZ) - RING_R0; // + = outward from Saturn
         const bands = [
-            { z0: -560, z1: -340, d: 0.55 },   // A ring outer
-            { z0: -300, z1: -260, d: 0.05 },   // Encke-like gap
-            { z0: -260, z1: -40,  d: 0.85 },   // A/B bright run
-            { z0: -40,  z1: 60,   d: 0.08 },   // Cassini division
-            { z0: 60,   z1: 340,  d: 0.9 },    // B ring — the bright one
-            { z0: 340,  z1: 560,  d: 0.35 },   // C ring, dimmer
+            { r0: -560, r1: -340, d: 0.35 },   // C ring, dimmer (inward = toward Saturn)
+            { r0: -340, r1: -60,  d: 0.9 },    // B ring — the bright one
+            { r0: -60,  r1: 40,   d: 0.08 },   // Cassini division
+            { r0: 40,   r1: 300,  d: 0.85 },   // A/B bright run
+            { r0: 300,  r1: 340,  d: 0.05 },   // Encke-like gap
+            { r0: 340,  r1: 560,  d: 0.55 },   // A ring outer
         ];
         for (const b of bands) {
-            if (z >= b.z0 && z < b.z1) {
-                const t = (z - b.z0) / (b.z1 - b.z0);
+            if (r >= b.r0 && r < b.r1) {
+                const t = (r - b.r0) / (b.r1 - b.r0);
                 const edge = Math.min(1, Math.min(t, 1 - t) * 8); // soft band edges
                 return b.d * edge * (0.75 + noise(x * 0.02, z * 0.05) * 0.5);
             }
@@ -102,5 +107,5 @@
         }
         return body;
     }
-    root.SaturnRings = Object.freeze({ DRIFT_RADIUS, GRAVITY, EARTH_GRAVITY, CRUISE_SPEED, DRIFT_SPEED, FAST_SPEED, VERTICAL_SPEED, MIN_ALTITUDE, MAX_ALTITUDE, RING_PLANE_Y, random, noise, ringDensity, sampleSurface, createWalker, updateWalker });
+    root.SaturnRings = Object.freeze({ DRIFT_RADIUS, GRAVITY, EARTH_GRAVITY, CRUISE_SPEED, DRIFT_SPEED, FAST_SPEED, VERTICAL_SPEED, MIN_ALTITUDE, MAX_ALTITUDE, RING_PLANE_Y, RING_CX, RING_CZ, RING_R0, random, noise, ringDensity, sampleSurface, createWalker, updateWalker });
 }(typeof globalThis !== 'undefined' ? globalThis : this));

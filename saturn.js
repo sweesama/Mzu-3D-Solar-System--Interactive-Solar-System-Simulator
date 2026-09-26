@@ -170,8 +170,8 @@
         document.querySelectorAll('.station-button, #begin-button, #photo-button').forEach(button => { button.disabled = true; });
         if (error) console.error('Saturn expedition:', error);
     }
-    // Ring sheet texture: bands along z matching SaturnRings.ringDensity,
-    // streaked along x so the sheet reads as countless fine ringlets.
+    // Ring sheet texture: concentric annuli matching SaturnRings.ringDensity,
+    // streaked tangentially so the sheet reads as countless fine ringlets.
     function makeRingTexture() {
         const size = profile.texture;
         const canvas = document.createElement('canvas');
@@ -180,14 +180,17 @@
         const image = ctx.createImageData(size, size);
         const px = image.data;
         const zSpan = 6000; // texture v axis covers the full 6 km sheet
+        const cx = SaturnRings.RING_CX, cz = SaturnRings.RING_CZ;
         for (let y = 0; y < size; y++) {
             const wz = (y / size - 0.5) * zSpan;
-            const dens = SaturnRings.ringDensity(0, wz);
             for (let x = 0; x < size; x++) {
                 const wx = (x / size - 0.5) * zSpan;
-                // fine ringlets: banded noise streaks stretched along x
-                const ripple = SaturnRings.noise(wx * 0.9, wz * 0.12) * 0.5 + SaturnRings.noise(wx * 0.15, wz * 0.6) * 0.5;
-                const flecks = SaturnRings.noise(wx * 3.1, wz * 0.25) > 0.82 ? 0.3 : 0;
+                const dens = SaturnRings.ringDensity(wx, wz);
+                // fine ringlets: banded noise streaked along the arc direction
+                const ang = Math.atan2(wz - cz, wx - cx);
+                const rad = Math.hypot(wx - cx, wz - cz);
+                const ripple = SaturnRings.noise(ang * 60 + rad * 0.002, rad * 0.12) * 0.5 + SaturnRings.noise(ang * 24, rad * 0.6) * 0.5;
+                const flecks = SaturnRings.noise(ang * 160, rad * 0.25) > 0.82 ? 0.3 : 0;
                 let a = dens * (0.55 + ripple * 0.75 + flecks) + 0.04;
                 a = Math.max(0, Math.min(1, a));
                 const i = (y * size + x) * 4;
@@ -445,7 +448,7 @@
         skyBodies.push(earthProxy);
         // Saturn itself — a banded giant half-submerged in the ring plane,
         // its equator on y = 0 so our sheet reads as the same ring system.
-        const saturnPos = new THREE.Vector3(-3200, 0, -4300);
+        const saturnPos = new THREE.Vector3(SaturnRings.RING_CX, 0, SaturnRings.RING_CZ);
         const saturnRadius = 1050;
         // Basic material: at this distance the globe just needs its true texture brightness.
         saturnMesh = new THREE.Mesh(
