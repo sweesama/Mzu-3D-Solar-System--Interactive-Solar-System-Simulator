@@ -447,8 +447,11 @@
         skyBodies.push(earthProxy);
         // Uranus itself — a featureless turquoise ball half-submerged in the
         // ring plane, its tipped equator on y = 0 so our sheet is the same system.
-        const uranusPos = new THREE.Vector3(-2300, 0, -3100);
-        const uranusRadius = 1100;
+        // Real proportions: we fly inside the ring system, and the rings sit at
+        // ~1.6-2.0 Uranus radii — so the planet must span ~60° of sky, a looming
+        // wall of turquoise, not a neat ball viewed from outside.
+        const uranusPos = new THREE.Vector3(-2000, 0, -2100);
+        const uranusRadius = 1450;
         uranusMesh = new THREE.Mesh(
             new THREE.SphereGeometry(uranusRadius, 64, 48),
             new THREE.MeshBasicMaterial({ color: 0xa8d8d4, fog: false })
