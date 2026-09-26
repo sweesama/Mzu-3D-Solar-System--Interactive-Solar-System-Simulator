@@ -29,6 +29,7 @@
                 ['Pancake dome', 'The low flat-topped rise to the north-west: thick, sticky lava that piled up in place.'],
                 ['Tessera highlands', 'Ridged, criss-crossed terrain to the far south-east — among the oldest surfaces on Venus.'],
                 ['Venera-style lander', 'A tribute to the Soviet probes that photographed this world for barely two hours.'],
+                ['A shadow overhead', 'The silhouette circling high in the haze is NASA’s Magellan orbiter — the spacecraft whose radar mapped this very terrain.'],
                 ['The crushing sky', 'No sun disk, no stars, no moons — directionless amber light, heavy air, and rare thunder with a flash. Heat shimmer bends the far horizon.']
             ],
             error: 'The 3D scene could not start. Try reloading in a browser with WebGL enabled.', lost: 'The graphics connection was interrupted. Reload this page to resume.', boundary: 'You have reached the edge of this expedition. Try another observation point.', saved: 'Photograph saved.', saveFailed: 'This browser could not save the photograph.', fullscreenFailed: 'Full screen is not available in this browser.', textureFailed: 'A texture was unavailable; a simpler material is shown instead.', adjusted: 'Render resolution reduced to keep exploring smoothly.',
@@ -63,6 +64,7 @@
                 ['薄饼穹丘', '西北方向那座低平的圆顶：粘稠的熔岩原地堆积而成。'],
                 ['镶嵌高地', '东南远处纵横交错的脊状地形——金星上最古老的表面之一。'],
                 ['金星号着陆器', '向当年只工作了两小时就牺牲的苏联探测器致敬。'],
+                ['天上掠过的剪影', '在雾霭高空盘旋的黑影是 NASA 麦哲伦号轨道器——正是它的雷达测绘了这片地形。'],
                 ['压抑的天空', '没有日轮、没有星星、没有卫星——只有无方向的琥珀色微光、沉重的空气和偶尔一声闷雷。远处的地平线在热气中微微晃动。']
             ],
             error: '三维场景未能启动，请在支持 WebGL 的浏览器中重新加载。', lost: '图形连接中断，请重新加载页面继续。', boundary: '已到达本次探索区域边缘，可以前往另一个观察点。', saved: '照片已保存。', saveFailed: '当前浏览器无法保存照片。', fullscreenFailed: '当前浏览器无法进入全屏。', textureFailed: '纹理暂时不可用，已显示简化材质。', adjusted: '已适当降低渲染分辨率，让探索更流畅。',
@@ -103,7 +105,7 @@
     const dust = { bursts: [], texture: null };
     const keys = new Set(), touchKeys = new Set(), obstacles = [], walkables = [];
     const stations = expedition.stations;
-    let discoveryUI = null, featuredRock = null, composer = null, fxaaPass = null, cinePass = null;
+    let discoveryUI = null, featuredRock = null, composer = null, fxaaPass = null, cinePass = null, orbiter = null, orbiterAngle = 0;
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
     const position = { x: stations[0].x, z: stations[0].z };
@@ -522,6 +524,40 @@
         skyBodies.push(sunProxy);
         return Promise.resolve();
     }
+    function createGltfLoader() {
+        const loader = new THREE.GLTFLoader();
+        if (THREE.DRACOLoader) {
+            const draco = new THREE.DRACOLoader();
+            draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/draco/gltf/');
+            loader.setDRACOLoader(draco);
+        }
+        return loader;
+    }
+    function loadSceneModel(url) {
+        return new Promise(resolve => {
+            if (!THREE.GLTFLoader) return resolve(null);
+            createGltfLoader().load(url, gltf => resolve(gltf.scene), undefined, () => resolve(null));
+        });
+    }
+    async function buildOrbiter() {
+        const model = await loadSceneModel('models/magellan.glb');
+        if (!model) return;
+        const box = new THREE.Box3().setFromObject(model);
+        const size = new THREE.Vector3();
+        box.getSize(size);
+        if (!size.y || !isFinite(size.y)) return;
+        model.scale.setScalar(6 / Math.max(size.x, size.y, size.z));
+        box.setFromObject(model);
+        const center = new THREE.Vector3();
+        box.getCenter(center);
+        model.position.set(-center.x, -center.y, -center.z);
+        model.traverse(o => { if (o.isMesh) o.castShadow = false; });
+        orbiter = new THREE.Group();
+        orbiter.add(model);
+        orbiter.position.set(position.x + 140, 58, position.z);
+        orbiter.rotation.set(0.3, 0, 0.18);
+        scene.add(orbiter);
+    }
     function buildAstronaut(texture) {
         const suit = new THREE.MeshStandardMaterial({ color: 0xb8b5ab, roughness: 0.92, bumpMap: texture, bumpScale: 0.012 });
         const joint = new THREE.MeshStandardMaterial({ color: 0x34383a, roughness: 1 });
@@ -918,6 +954,11 @@
         }
         if (exploring && dt > 0) updateDust(dt);
         if (stationBeacon) stationBeacon.material.opacity = 0.15 + 0.75 * (0.5 + 0.5 * Math.sin(now * 0.0028));
+        if (orbiter && dt > 0) {
+            orbiterAngle += dt * 0.055;
+            orbiter.position.set(position.x + Math.cos(orbiterAngle) * 140, 56 + Math.sin(orbiterAngle * 0.6) * 6, position.z + Math.sin(orbiterAngle) * 140);
+            orbiter.rotation.y = -orbiterAngle;
+        }
         timeUniform.value = now * 0.001;
         if (channelGlow) channelGlow.material.opacity = 0.1 + 0.12 * (0.5 + 0.5 * Math.sin(now * 0.0009)) + flash * 0.15;
         if (flash > 0.001) { flash *= Math.exp(-dt * 3.4); hemisphereLight.intensity = 0.62 * (1 + flash * 1.7); if (skyMat) skyMat.uniforms.flashBoost.value = flash; }
@@ -1090,6 +1131,7 @@
             buildChannelGlow();
             walker = VenusTerrain.createWalker(surface, position);
             await buildSky();
+            buildOrbiter();
             updateCamera();
             if (composer) composer.render(); else renderer.render(scene, camera);
             if (typeof window.createMoonDiscoveries !== 'function') throw new Error('Discovery interface is unavailable');
