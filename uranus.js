@@ -447,14 +447,21 @@
         skyBodies.push(earthProxy);
         // Uranus itself — a featureless turquoise ball half-submerged in the
         // ring plane, its tipped equator on y = 0 so our sheet is the same system.
-        const uranusPos = new THREE.Vector3(-3200, 0, -4300);
-        const uranusRadius = 880;
+        const uranusPos = new THREE.Vector3(-2300, 0, -3100);
+        const uranusRadius = 1100;
         uranusMesh = new THREE.Mesh(
             new THREE.SphereGeometry(uranusRadius, 64, 48),
             new THREE.MeshBasicMaterial({ color: 0xa8d8d4, fog: false })
         );
         uranusMesh.position.copy(uranusPos);
         scene.add(uranusMesh);
+        // Faint atmosphere halo — sells the globe as a planet, not a flat disc.
+        const atmosphere = new THREE.Mesh(
+            new THREE.SphereGeometry(uranusRadius * 1.04, 48, 32),
+            new THREE.MeshBasicMaterial({ color: 0x7fd4cc, transparent: true, opacity: 0.16, side: THREE.BackSide, blending: THREE.AdditiveBlending, depthWrite: false, fog: false })
+        );
+        atmosphere.position.copy(uranusPos);
+        scene.add(atmosphere);
         const uranusProxy = new THREE.Mesh(new THREE.SphereGeometry(uranusRadius * 1.02, 8, 6), new THREE.MeshBasicMaterial({ visible: false }));
         uranusProxy.position.copy(uranusPos);
         uranusProxy.userData.body = 'venus';
@@ -494,9 +501,23 @@
         scene.add(uranusRing);
         return new Promise(resolve => {
             new THREE.TextureLoader().load('textures/2k_uranus.jpg', tex => {
-                tex.encoding = THREE.sRGBEncoding;
-                tex.wrapS = THREE.MirroredRepeatWrapping;
-                uranusMesh.material.map = tex;
+                // Bake lighting into the texture: bright near the sunlit pole
+                // (top), fading toward the far limb, plus spherical edge falloff.
+                const src = tex.image;
+                const c = document.createElement('canvas');
+                c.width = src.width || 1024; c.height = src.height || 512;
+                const ctx = c.getContext('2d');
+                ctx.drawImage(src, 0, 0, c.width, c.height);
+                const light = ctx.createLinearGradient(0, 0, 0, c.height);
+                light.addColorStop(0.0, 'rgba(40,70,72,0)');      // pole lit by the high Sun
+                light.addColorStop(0.55, 'rgba(20,42,46,0.18)');
+                light.addColorStop(1.0, 'rgba(8,22,28,0.55)');    // far side in shadow
+                ctx.fillStyle = light;
+                ctx.fillRect(0, 0, c.width, c.height);
+                const shaded = new THREE.CanvasTexture(c);
+                shaded.encoding = THREE.sRGBEncoding;
+                shaded.wrapS = THREE.MirroredRepeatWrapping;
+                uranusMesh.material.map = shaded;
                 uranusMesh.material.color.set(0xade0dc);
                 uranusMesh.material.needsUpdate = true;
                 resolve();
