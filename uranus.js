@@ -170,8 +170,8 @@
         document.querySelectorAll('.station-button, #begin-button, #photo-button').forEach(button => { button.disabled = true; });
         if (error) console.error('Uranus expedition:', error);
     }
-    // Ring sheet texture: bands along z matching UranusRings.ringDensity,
-    // streaked along x so the sheet reads as countless fine ringlets.
+    // Ring sheet texture: concentric arcs matching UranusRings.ringDensity,
+    // streaked tangentially so the sheet reads as countless fine ringlets.
     function makeRingTexture() {
         const size = profile.texture;
         const canvas = document.createElement('canvas');
@@ -180,14 +180,17 @@
         const image = ctx.createImageData(size, size);
         const px = image.data;
         const zSpan = 6000; // texture v axis covers the full 6 km sheet
+        const cx = UranusRings.RING_CX, cz = UranusRings.RING_CZ;
         for (let y = 0; y < size; y++) {
             const wz = (y / size - 0.5) * zSpan;
-            const dens = UranusRings.ringDensity(0, wz);
             for (let x = 0; x < size; x++) {
                 const wx = (x / size - 0.5) * zSpan;
-                // fine ringlets: banded noise streaks stretched along x
-                const ripple = UranusRings.noise(wx * 0.9, wz * 0.12) * 0.5 + UranusRings.noise(wx * 0.15, wz * 0.6) * 0.5;
-                const flecks = UranusRings.noise(wx * 3.1, wz * 0.25) > 0.82 ? 0.3 : 0;
+                const dens = UranusRings.ringDensity(wx, wz);
+                // fine ringlets: banded noise streaked along the arc direction
+                const ang = Math.atan2(wz - cz, wx - cx);
+                const rad = Math.hypot(wx - cx, wz - cz);
+                const ripple = UranusRings.noise(ang * 60 + rad * 0.002, rad * 0.12) * 0.5 + UranusRings.noise(ang * 24, rad * 0.6) * 0.5;
+                const flecks = UranusRings.noise(ang * 160, rad * 0.25) > 0.82 ? 0.3 : 0;
                 let a = dens * (0.6 + ripple * 0.8 + flecks) + 0.02;
                 a = Math.max(0, Math.min(1, a));
                 const i = (y * size + x) * 4;
@@ -450,7 +453,7 @@
         // Real proportions: we fly inside the ring system, and the rings sit at
         // ~1.6-2.0 Uranus radii — so the planet must span ~60° of sky, a looming
         // wall of turquoise, not a neat ball viewed from outside.
-        const uranusPos = new THREE.Vector3(-2000, 0, -2100);
+        const uranusPos = new THREE.Vector3(UranusRings.RING_CX, 0, UranusRings.RING_CZ);
         const uranusRadius = 1450;
         uranusMesh = new THREE.Mesh(
             new THREE.SphereGeometry(uranusRadius, 64, 48),
@@ -465,7 +468,7 @@
         skyBodies.push(uranusProxy);
         // Uranus's far rings — thin dark threads seen edge-on from inside the
         // plane: they project as a narrow band cutting straight across the globe.
-        const innerR = uranusRadius * 1.6, outerR = uranusRadius * 1.95;
+        const innerR = uranusRadius * 1.6, outerR = uranusRadius * 2.2;
         const ringGeo = new THREE.RingGeometry(innerR, outerR, 180, 8);
         {
             const pos = ringGeo.attributes.position, uv = ringGeo.attributes.uv;

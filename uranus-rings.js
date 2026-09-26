@@ -36,23 +36,27 @@
         return (a + (b - a) * fx) * (1 - fz) + (c + (d - c) * fx) * fz;
     }
 
-    // Uranus's rings are thirteen narrow, charcoal-dark bands — nothing like
-    // Saturn's broad bright sheet. Densities stay low even inside a band.
+    // Uranus's rings are narrow, charcoal-dark CONCENTRIC ARCS centred on the
+    // planet — nothing like Saturn's broad bright sheet. The flight sheet shares
+    // the planet's equatorial plane, so band density is radial: each band is a
+    // ring of radius r around (RING_CX, RING_CZ), not a straight stripe.
+    const RING_CX = -2000, RING_CZ = -2100;   // matches the globe position in uranus.js
     function ringDensity(x, z) {
+        const dist = Math.hypot(x - RING_CX, z - RING_CZ);
         const bands = [
-            { z0: -430, z1: -396, d: 0.6 },   // ε ring — the brightest, outermost
-            { z0: -302, z1: -284, d: 0.34 },  // δ ring
-            { z0: -192, z1: -180, d: 0.38 },  // γ ring
-            { z0: -84,  z1: -66,  d: 0.42 },  // η-like band
-            { z0: 38,   z1: 76,   d: 0.52 },  // β ring group
-            { z0: 118,  z1: 132,  d: 0.48 },  // α ring
-            { z0: 188,  z1: 224,  d: 0.36 },  // inner rings 6/5/4 merged
-            { z0: 330,  z1: 430,  d: 0.1 },   // ζ diffuse inner haze
+            { r: 2400, w: 55, d: 0.10 },  // ζ — diffuse inner haze
+            { r: 2470, w: 14, d: 0.30 },  // inner narrow rings merged
+            { r: 2540, w: 16, d: 0.42 },  // α
+            { r: 2600, w: 12, d: 0.38 },  // η
+            { r: 2670, w: 30, d: 0.62 },  // ε — the brightest band; station 02 sits inside
+            { r: 2780, w: 14, d: 0.34 },  // δ
+            { r: 2960, w: 18, d: 0.40 },  // shepherd-moonlet band
+            { r: 3100, w: 14, d: 0.32 },  // outer thread
         ];
         for (const b of bands) {
-            if (z >= b.z0 && z < b.z1) {
-                const t = (z - b.z0) / (b.z1 - b.z0);
-                const edge = Math.min(1, Math.min(t, 1 - t) * 8);
+            const t = Math.abs(dist - b.r) / b.w;
+            if (t < 1) {
+                const edge = Math.min(1, (1 - t) * 4);
                 return b.d * edge * (0.7 + noise(x * 0.03, z * 0.06) * 0.6);
             }
         }
@@ -101,5 +105,5 @@
         }
         return body;
     }
-    root.UranusRings = Object.freeze({ DRIFT_RADIUS, GRAVITY, EARTH_GRAVITY, CRUISE_SPEED, DRIFT_SPEED, FAST_SPEED, VERTICAL_SPEED, MIN_ALTITUDE, MAX_ALTITUDE, RING_PLANE_Y, random, noise, ringDensity, sampleSurface, createWalker, updateWalker });
+    root.UranusRings = Object.freeze({ DRIFT_RADIUS, GRAVITY, EARTH_GRAVITY, CRUISE_SPEED, DRIFT_SPEED, FAST_SPEED, VERTICAL_SPEED, MIN_ALTITUDE, MAX_ALTITUDE, RING_PLANE_Y, RING_CX, RING_CZ, random, noise, ringDensity, sampleSurface, createWalker, updateWalker });
 }(typeof globalThis !== 'undefined' ? globalThis : this));
