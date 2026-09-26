@@ -174,7 +174,18 @@ The public page is `https://www.3dsolarsystem.net/uranus-expedition.html` (the n
 - Five discoveries pair with the three stations (vista, ring-charcoal specimen, the dark gap, shepherd moonlet, the 98° tilt marker); progress saves under `mzu-uranus-rings-v1`.
 - Files mirror the other expeditions: `uranus-expedition.html`, `uranus.js`, `uranus-rings.js`, `uranus-expedition.js`, `uranus-audio.js`. `moon-discoveries.js` and `moon.css` remain shared.
 
-All seven expedition field guides open with a "What you are seeing" feature list — a localized card list (`planet-facts` markup, `feature-list` element, per-page `features` dictionary entries rendered by `applyLanguage`) that names each visible landmark and ties it to the real observation it is based on, so visitors can read the planet's signature features without walking.
+## Neptune storm-layer flight
+
+The public page is `https://www.3dsolarsystem.net/neptune-expedition.html` (the name avoids colliding with the existing `neptune.html` orbital detail page). It is listed in `sitemap.xml`, linked from the homepage and generated planet pages, and carries the same indexable metadata as the other expeditions.
+
+- Neptune reuses the cruise engine but moves it inside an atmosphere: instead of a ring plane there is a deep-blue **cirrus deck** (y = 0) whose streak lanes spiral around a **Great Dark Spot** vortex at `(VORTEX_X, VORTEX_Z)` — `stormDensity(x, z)` returns higher density along winding spiral arms and near zero inside the dark eye. The probe cruises forward on its own; WASD/arrows drift, Shift is faster, Space rises to `MAX_ALTITUDE` (300), C sinks to `MIN_ALTITUDE` (−140) where the haze thickens. Pressing G compares Earth's 9.8 m/s² with Neptune's **11.15 m/s²**.
+- `neptune-storm.js` exposes `NeptuneStorm` — the same `sampleSurface`/`createWalker`/`updateWalker` contract as the ring modules, plus `VORTEX_R` so the painted vortex disc and the density eye share one radius.
+- The deck is two translucent canvas-textured sheets streaked tangentially around the vortex; an instanced field of pale methane-ice crystals recycles around the probe; the **vortex disc** (radius `VORTEX_R`, spiral-streak texture) turns slowly on the deck; a white Scooter-style racing cloud and a small spinning-disc marker sit as discoveries. **Triton** hangs in the haze as a clickable sky body alongside the Sun and Earth. NASA's real **Voyager 2** model (`models/voyager.glb`) — the only spacecraft ever to visit Neptune — holds formation off the port bow, the same ship as Uranus's flyby.
+- Post chain mirrors Uranus (bloom → gamma → FXAA → vignette+grain, plus the radial sun-shaft pass). Audio (`neptune-audio.js`) adds a restless wind howl under the cabin hum, with `icePing()` ticks gating on `stormDensity` inside the lanes.
+- Five discoveries pair with the three stations (storm vista, cirrus crystal specimen, the storm wall, the shear line, the vortex spinner); progress saves under `mzu-neptune-storm-v1`.
+- Files mirror the other expeditions: `neptune-expedition.html`, `neptune.js`, `neptune-storm.js`, `neptune-expedition.js`, `neptune-audio.js`. `moon-discoveries.js` and `moon.css` remain shared.
+
+All eight expedition field guides open with a "What you are seeing" feature list — a localized card list (`planet-facts` markup, `feature-list` element, per-page `features` dictionary entries rendered by `applyLanguage`) that names each visible landmark and ties it to the real observation it is based on, so visitors can read the planet's signature features without walking.
 
 After changes, run:
 
@@ -210,6 +221,10 @@ node --check uranus.js
 node --check uranus-rings.js
 node --check uranus-expedition.js
 node --check uranus-audio.js
+node --check neptune.js
+node --check neptune-storm.js
+node --check neptune-expedition.js
+node --check neptune-audio.js
 ```
 
 Route verification includes both directions of every route segment at all three terrain detail levels, distant/airborne discovery rejection, duplicate prevention, and invalid saved-data handling. Browser checks should cover walking the complete route with scene obstacles, specimen rotation/zoom, quick-travel without automatic progress, refresh persistence, storage-disabled fallback, and touch discovery controls.

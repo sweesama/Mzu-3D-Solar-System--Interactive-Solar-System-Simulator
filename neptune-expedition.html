@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#04070e">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <title>Neptune Storm-Layer Flight in 3D | Mzu Solar System</title>
+    <meta name="description" content="Fly Neptune's storm layer beside Voyager 2 — methane cirrus, the Great Dark Spot on the horizon, and five discoveries in the fastest winds known.">
+    <link rel="canonical" href="https://www.3dsolarsystem.net/neptune-expedition.html">
+    <meta property="og:title" content="Neptune Storm-Layer Flight in 3D | Mzu Solar System">
+    <meta property="og:description" content="Cruise Neptune's storm layer beside Voyager 2 — methane cirrus, the Great Dark Spot, and five discoveries in the fastest winds known.">
+    <meta property="og:url" content="https://www.3dsolarsystem.net/neptune-expedition.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Mzu 3D Solar System">
+    <meta property="og:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
+    <meta property="og:image:alt" content="Mzu 3D Solar System logo">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Neptune Storm-Layer Flight in 3D | Mzu Solar System">
+    <meta name="twitter:description" content="Fly into the fastest winds in the Solar System beside Voyager 2 — a science-inspired artistic storm-layer cruise. Free browser-based exploration.">
+    <meta name="twitter:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
+    <meta name="twitter:image:alt" content="Mzu 3D Solar System logo">
+    <script id="app-structured-data" type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Mzu Neptune Storm-Layer Flight",
+      "url": "https://www.3dsolarsystem.net/neptune-expedition.html",
+      "description": "A science-inspired artistic flight through Neptune's storm layer — first-person probe view, methane cirrus lanes, the Great Dark Spot vortex, five discoveries, and a local exploration journal.",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Any modern web browser with WebGL support",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "inLanguage": ["en", "zh-CN"],
+      "about": { "@type": "Thing", "name": "Neptune" },
+      "isPartOf": { "@type": "WebSite", "name": "Mzu 3D Solar System", "url": "https://www.3dsolarsystem.net/" }
+    }
+    </script>
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="moon.css">
+</head>
+<body>
+    <main id="expedition" aria-label="Interactive Neptune storm layer">
+        <canvas id="moon-canvas" tabindex="0" aria-label="Neptune's storm layer. Drag to look; use W A S D or arrow keys to drift, Space to rise, C to sink."></canvas>
+        <div class="scene-shade" aria-hidden="true"></div>
+        <div class="visor" id="visor" aria-hidden="true" hidden></div>
+        <header class="expedition-header">
+            <a class="brand" href="index.html" aria-label="Mzu Solar System"><span class="brand-orbit" aria-hidden="true"></span>MZU <span class="brand-divider">/</span> <span class="brand-sub" data-i18n="expeditions">EXPEDITIONS</span></a>
+            <div class="header-actions">
+                <button id="language-button" class="quiet-button" type="button" aria-label="Switch language">中文</button>
+                <button id="fullscreen-button" class="quiet-button" type="button" data-i18n="fullscreen">Full screen</button>
+                <a id="return-orbit" class="return-link" href="index.html?focus=Neptune"><span aria-hidden="true">↗</span> <span data-i18n="return">Return to orbit</span></a>
+            </div>
+        </header>
+
+        <div class="location-label"><span class="live-dot"></span><span data-i18n="destination">NEPTUNE</span><span class="location-line"></span><span data-i18n="surfaceMode">STORM-LAYER FLIGHT</span></div>
+        <div class="compass" aria-label="View heading"><span>W</span><span>·</span><span id="heading">000°</span><span>·</span><span>E</span><i></i></div>
+
+        <section id="arrival-card" class="arrival-card">
+            <p class="eyebrow" data-i18n="chapter">EXPEDITION 008 / THE LAST GIANT</p>
+            <h1 data-i18n="title">Ride Neptune's<br>fastest winds.</h1>
+            <p class="arrival-description" data-i18n="intro">Cruise Neptune's storm layer — white methane cirrus streaming below, the Great Dark Spot turning on the horizon, Voyager 2 flying formation.</p>
+            <button id="begin-button" class="primary-button" type="button" disabled><span data-i18n="begin">Begin the flight</span><span aria-hidden="true">→</span></button>
+            <p class="arrival-hint" data-i18n="arrivalHint">No download. Just a little curiosity.</p>
+        </section>
+
+        <section id="field-card" class="field-card route-card" hidden>
+            <p class="eyebrow"><span data-i18n="fieldRoute">YOUR CRUISE ROUTE</span><span id="discovery-count" role="status" aria-live="polite">0 / 5</span></p>
+            <progress id="discovery-progress" max="5" value="0" aria-label="Discoveries completed"></progress>
+            <p id="route-complete" class="route-complete" hidden data-i18n="allFound">All five discoveries are in your journal. Stay a little longer.</p>
+            <p id="station-number" class="route-number">01 / 05</p>
+            <h2 id="station-title"></h2>
+            <p id="station-description"></p>
+            <div class="route-bearing"><span id="route-arrow" aria-hidden="true">↑</span><div><strong id="route-distance"></strong><span id="route-instruction"></span></div></div>
+            <div class="route-actions"><button id="discover-button" type="button" disabled data-i18n="discover">Discover · E</button><button id="next-discovery" type="button" data-i18n="chooseStop">Next stop</button></div>
+            <p id="progress-storage" class="field-footnote"></p>
+        </section>
+        <button id="discovery-pin" class="discovery-pin" type="button" hidden aria-label="Discovery destination"><span id="pin-number">01</span><span id="pin-distance"></span></button>
+
+        <div class="telemetry" aria-label="Neptune storm environment">
+            <div><span data-i18n="gravity">GRAVITY</span><strong><span id="gravity-value">11.15</span> <small>m/s²</small></strong><small id="gravity-mode" class="gravity-mode">NEPTUNE</small></div>
+            <div><span data-i18n="atmosphere">ENVIRONMENT</span><strong data-i18n="vacuum">Atmosphere · methane haze</strong></div>
+            <div><span data-i18n="temperature">STORM TEMP</span><strong data-i18n="tempValue">about −200°C</strong></div>
+            <div><span data-i18n="distance">STORM DECK</span><strong id="distance-value">+130 <small>m</small></strong></div>
+        </div>
+
+        <div id="reticle" aria-hidden="true" hidden><i></i><i></i></div>
+        <div id="walking-hint" class="walking-hint" hidden data-i18n="walkingHint">W A S D to drift · drag to look · Space to rise · C to sink</div>
+        <div id="locomotion-status" class="locomotion-state" hidden><span data-i18n="astronaut">PROBE</span><span aria-hidden="true">/</span><span id="movement-state">Cruising</span></div>
+        <div id="touch-pad" class="touch-pad" hidden role="group" aria-label="Movement controls">
+            <button data-move="forward" type="button" aria-label="Drift forward">↑</button>
+            <button data-move="left" type="button" aria-label="Drift left">←</button>
+            <button data-move="back" type="button" aria-label="Drift backward">↓</button>
+            <button data-move="right" type="button" aria-label="Drift right">→</button>
+            <button id="jump-button" type="button" data-i18n="jump" aria-label="Rise above the deck">Burn</button>
+        </div>
+
+        <footer class="expedition-footer">
+            <nav class="station-nav" aria-label="Observation points">
+                <button class="station-button selected" data-station="0" type="button" disabled><span>01</span><span data-i18n="station0">Storm vista</span></button>
+                <button class="station-button" data-station="1" type="button" disabled><span>02</span><span data-i18n="station1">The storm wall</span></button>
+                <button class="station-button" data-station="2" type="button" disabled><span>03</span><span data-i18n="station2">Cirrus field</span></button>
+            </nav>
+            <div class="footer-tools">
+                <button id="help-button" class="tool-button" type="button" aria-controls="guide-dialog" data-i18n="guide">Field guide</button>
+                <button id="photo-button" class="tool-button" type="button" disabled data-i18n="photo">Photo mode</button>
+                <label class="quality-label"><span data-i18n="quality">Quality</span><select id="moon-quality" aria-label="Render quality"><option value="auto" data-i18n="auto">Auto</option><option value="high" data-i18n="high">High</option><option value="balanced" data-i18n="balanced">Balanced</option><option value="low" data-i18n="low">Low</option></select></label>
+            </div>
+        </footer>
+        <p class="art-note" data-i18n="artNote">SCIENCE-INSPIRED ARTISTIC RECONSTRUCTION · NOT A SURVEYED STORM SECTION</p>
+        <div id="photo-controls" hidden><button id="capture-button" class="primary-button" type="button" data-i18n="capture">Save photograph</button><button id="exit-photo-button" class="quiet-button" type="button" data-i18n="exitPhoto">Exit photo mode</button></div>
+        <div id="notice" role="status" aria-live="polite"></div>
+        <div id="loading-overlay" role="status" aria-live="polite"><span class="loading-orbit" aria-hidden="true"></span><p class="eyebrow">MZU / EXPEDITION 008</p><p id="loading-label" data-i18n="loading">Setting course for the storm layer…</p><a href="index.html" data-i18n="return">Return to orbit</a></div>
+    </main>
+    <dialog id="guide-dialog" aria-labelledby="guide-title">
+        <form method="dialog"><button class="dialog-close" aria-label="Close guide">×</button></form>
+        <p class="eyebrow" data-i18n="fieldGuide">THE EXPEDITION FIELD GUIDE</p>
+        <h2 id="guide-title" data-i18n="guideTitle">A deep-blue sky with a storm on the horizon.</h2>
+        <p data-i18n="guideIntro">This is a small, freely explorable stretch of Neptune's storm layer, not a whole-atmosphere simulation. The five observation points are different views of the same cruise.</p>
+        <p data-discovery-i18n="routeHelp">Follow the amber guide dots and distance arrow. Drift to a stop and press E or Discover to add it to your journal. Quick travel does not automatically record a discovery.</p>
+        <h3 data-i18n="controlsTitle">Moving around</h3>
+        <p data-i18n="controlsText">You are a probe cruising Neptune's storm layer — there is no ground and no falling. The probe cruises forward on its own; W A S D drift sideways, Space rises, C sinks toward the deck. Drag to look. H hides notes; P opens photo mode; Esc closes it.</p>
+        <div class="motion-choice"><button id="motion-button" type="button" aria-pressed="true">Camera motion: On</button><span data-i18n="motionHint">Disable camera drift for a steadier view.</span></div>
+        <div class="motion-choice"><button id="gravity-button" type="button" aria-pressed="false" aria-label="Compare Earth gravity">Compare Earth gravity · G</button><span data-i18n="gravityHint">Same probe, different pull. Neptune's gravity is 11.15 m/s² — a touch stronger than Earth's.</span></div>
+        <div class="motion-choice"><button id="sound-button" type="button" aria-pressed="true" aria-label="Toggle probe sounds">Probe sounds: On</button><span data-i18n="soundHint">A cabin hum under a restless wind howl, radio hiss, and ice grains ticking off the hull. M toggles.</span></div>
+        <h3 data-i18n="featuresTitle">What you are seeing</h3>
+        <ul id="feature-list" class="feature-list"></ul>
+        <h3 data-i18n="scienceTitle">Science meets imagination</h3>
+        <p data-i18n="scienceText">Neptune has the fastest winds in the Solar System — up to about 2,100 km/h. The Great Dark Spot was a storm wider than Earth when Voyager 2 flew past in 1989. The deck, winds and vortex here are artistic reconstructions.</p>
+        <p data-i18n="soundText">The flight is far gentler than real Neptunian weather. Press G to compare Earth gravity — Neptune pulls a little harder than home. Listen for the wind howl rising inside the cirrus lanes.</p>
+        <p data-i18n="skyHint">Click the small Sun, Triton, or the distant storm to learn about it — you can then visit it in the Solar System view.</p>
+        <p class="asset-note" data-i18n="assetText">Voyager 2 is a real NASA 3D model — the only probe ever to visit Neptune, in August 1989. The storm deck, particle field, and starfield are generated locally.</p>
+    </dialog>
+    <dialog id="discovery-dialog" aria-labelledby="discovery-title">
+        <form method="dialog"><button class="dialog-close" aria-label="Close discovery">×</button></form>
+        <p class="eyebrow" id="discovery-label"></p>
+        <h2 id="discovery-title"></h2>
+        <div id="specimen-view" hidden>
+            <canvas id="specimen-canvas" tabindex="0" aria-label="Cirrus crystal specimen. Drag or use arrow keys to rotate."></canvas>
+            <div class="specimen-controls"><span data-i18n="rotateRock">Drag to rotate the crystal</span><button id="specimen-out" type="button" aria-label="Zoom out">−</button><button id="specimen-in" type="button" aria-label="Zoom in">+</button></div>
+        </div>
+        <p id="discovery-description"></p>
+        <p id="discovery-detail"></p>
+        <p class="asset-note" data-i18n="discoveryDisclaimer">This is an imagined site, not a surveyed storm section or an identified aerosol.</p>
+        <div class="discovery-actions"><button id="continue-route" class="primary-button" type="button" data-i18n="continueRoute">Continue exploring</button><button id="discovery-photo" class="quiet-button" type="button" data-i18n="takePhoto">Frame a photograph</button></div>
+    </dialog>
+    <dialog id="moonlet-dialog" aria-labelledby="moonlet-title">
+        <form method="dialog"><button class="dialog-close" aria-label="Close">×</button></form>
+        <p class="eyebrow" data-i18n="skyEyebrow">IN NEPTUNE'S SKY</p>
+        <h2 id="moonlet-title"></h2>
+        <p id="moonlet-text"></p>
+        <div class="discovery-actions"><a id="moonlet-link" class="primary-button" href="index.html" style="text-decoration:none" data-i18n="viewOrbit">See it in the Solar System</a><form method="dialog"><button class="quiet-button" type="submit" data-i18n="keepExploring">Keep exploring</button></form></div>
+    </dialog>
+    <noscript><div class="no-script">JavaScript and WebGL are needed for this expedition. <a href="index.html">Return to the Solar System</a>.</div></noscript>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://unpkg.com/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://unpkg.com/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://unpkg.com/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://unpkg.com/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="https://unpkg.com/three@0.128.0/examples/js/shaders/GammaCorrectionShader.js"></script>
+    <script src="https://unpkg.com/three@0.128.0/examples/js/shaders/FXAAShader.js"></script>
+    <script src="https://unpkg.com/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
+    <script src="quality-policy.js"></script>
+    <script src="neptune-storm.js"></script>
+    <script src="neptune-expedition.js"></script>
+    <script src="neptune-audio.js"></script>
+    <script src="moon-discoveries.js"></script>
+    <script src="neptune.js"></script>
+</body>
+</html>
