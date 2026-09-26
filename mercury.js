@@ -537,38 +537,46 @@
     function flareGhostTexture(streak) {
         const canvas = document.createElement('canvas');
         if (streak) {
-            canvas.width = 256; canvas.height = 24;
+            // Anamorphic beam: a radial gradient squashed into a thin sliver —
+            // soft in BOTH directions so the band has no hard edges.
+            canvas.width = 512; canvas.height = 64;
             const context = canvas.getContext('2d');
-            const g = context.createLinearGradient(0, 0, 256, 0);
-            g.addColorStop(0, 'rgba(255,244,220,0)');
-            g.addColorStop(0.5, 'rgba(255,244,220,0.7)');
-            g.addColorStop(1, 'rgba(255,244,220,0)');
+            context.translate(256, 32);
+            context.scale(8, 1);
+            const g = context.createRadialGradient(0, 0, 0, 0, 0, 31);
+            g.addColorStop(0, 'rgba(255,246,226,0.9)');
+            g.addColorStop(0.25, 'rgba(255,242,216,0.28)');
+            g.addColorStop(0.6, 'rgba(214,226,255,0.08)');
+            g.addColorStop(1, 'rgba(214,226,255,0)');
             context.fillStyle = g;
-            context.fillRect(0, 0, 256, 24);
+            context.fillRect(-256, -32, 512, 64);
         } else {
-            canvas.width = canvas.height = 64;
+            // Ghost circle: a thin hollow ring, like a real lens element
+            // reflection — soft falloff both inside and outside the rim.
+            canvas.width = canvas.height = 128;
             const context = canvas.getContext('2d');
-            const g = context.createRadialGradient(32, 32, 4, 32, 32, 32);
+            const g = context.createRadialGradient(64, 64, 0, 64, 64, 64);
             g.addColorStop(0, 'rgba(255,242,214,0)');
-            g.addColorStop(0.55, 'rgba(255,242,214,0.16)');
-            g.addColorStop(0.82, 'rgba(196,214,255,0.34)');
-            g.addColorStop(1, 'rgba(196,214,255,0)');
+            g.addColorStop(0.62, 'rgba(255,242,214,0)');
+            g.addColorStop(0.78, 'rgba(226,236,255,0.30)');
+            g.addColorStop(0.86, 'rgba(255,246,226,0.16)');
+            g.addColorStop(1, 'rgba(255,246,226,0)');
             context.fillStyle = g;
-            context.fillRect(0, 0, 64, 64);
+            context.fillRect(0, 0, 128, 128);
         }
         return new THREE.CanvasTexture(canvas);
     }
     function buildLensFlare() {
         const ghostTex = flareGhostTexture(false), streakTex = flareGhostTexture(true);
         const specs = [
-            { k: 1, sx: 0.55, sy: 0.016, alpha: 0.4, streak: true },
-            { k: 1, sx: 0.014, sy: 0.22, alpha: 0.45, streak: true },
-            { k: -0.35, frac: 0.045, alpha: 0.3 },
-            { k: -0.72, frac: 0.09, alpha: 0.2 },
-            { k: -1.12, frac: 0.06, alpha: 0.26 },
-            { k: -1.55, frac: 0.12, alpha: 0.14 },
-            { k: 0.4, frac: 0.03, alpha: 0.3 },
-            { k: 0.78, frac: 0.055, alpha: 0.22 }
+            { k: 1, sx: 0.5, sy: 0.02, alpha: 0.3, streak: true },
+            { k: 1, sx: 0.012, sy: 0.16, alpha: 0.28, streak: true },
+            { k: -0.35, frac: 0.045, alpha: 0.22 },
+            { k: -0.72, frac: 0.09, alpha: 0.15 },
+            { k: -1.12, frac: 0.06, alpha: 0.2 },
+            { k: -1.55, frac: 0.12, alpha: 0.1 },
+            { k: 0.4, frac: 0.03, alpha: 0.24 },
+            { k: 0.78, frac: 0.055, alpha: 0.17 }
         ];
         for (const spec of specs) {
             const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
