@@ -106,10 +106,10 @@
     const dust = { bursts: [], texture: null };
     const keys = new Set(), touchKeys = new Set(), obstacles = [];
     const stations = expedition.stations;
-    let discoveryUI = null, featuredRock = null, composer = null, fxaaPass = null, cinePass = null;
+    let discoveryUI = null, featuredRock = null, composer = null, fxaaPass = null, cinePass = null, flarePass = null;
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
     let mercurySun = null;
-    const lensFlare = [], flareV = new THREE.Vector3(), flareDir = new THREE.Vector3();
+    const flareV = new THREE.Vector3();
     let skyPivot = null, earthPivot = null;
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
     const position = { x: stations[0].x, z: stations[0].z };
@@ -534,76 +534,20 @@
         }
         return Promise.resolve();
     }
-    function flareGhostTexture(streak) {
-        const canvas = document.createElement('canvas');
-        if (streak) {
-            // Anamorphic beam: a radial gradient squashed into a thin sliver —
-            // soft in BOTH directions so the band has no hard edges.
-            canvas.width = 512; canvas.height = 64;
-            const context = canvas.getContext('2d');
-            context.translate(256, 32);
-            context.scale(8, 1);
-            const g = context.createRadialGradient(0, 0, 0, 0, 0, 31);
-            g.addColorStop(0, 'rgba(255,246,226,0.9)');
-            g.addColorStop(0.25, 'rgba(255,242,216,0.28)');
-            g.addColorStop(0.6, 'rgba(214,226,255,0.08)');
-            g.addColorStop(1, 'rgba(214,226,255,0)');
-            context.fillStyle = g;
-            context.fillRect(-256, -32, 512, 64);
-        } else {
-            // Ghost circle: a thin hollow ring, like a real lens element
-            // reflection — soft falloff both inside and outside the rim.
-            canvas.width = canvas.height = 128;
-            const context = canvas.getContext('2d');
-            const g = context.createRadialGradient(64, 64, 0, 64, 64, 64);
-            g.addColorStop(0, 'rgba(255,242,214,0)');
-            g.addColorStop(0.62, 'rgba(255,242,214,0)');
-            g.addColorStop(0.78, 'rgba(226,236,255,0.30)');
-            g.addColorStop(0.86, 'rgba(255,246,226,0.16)');
-            g.addColorStop(1, 'rgba(255,246,226,0)');
-            context.fillStyle = g;
-            context.fillRect(0, 0, 128, 128);
-        }
-        return new THREE.CanvasTexture(canvas);
-    }
-    function buildLensFlare() {
-        const ghostTex = flareGhostTexture(false), streakTex = flareGhostTexture(true);
-        const specs = [
-            { k: 1, sx: 0.5, sy: 0.02, alpha: 0.3, streak: true },
-            { k: 1, sx: 0.012, sy: 0.16, alpha: 0.28, streak: true },
-            { k: -0.35, frac: 0.045, alpha: 0.22 },
-            { k: -0.72, frac: 0.09, alpha: 0.15 },
-            { k: -1.12, frac: 0.06, alpha: 0.2 },
-            { k: -1.55, frac: 0.12, alpha: 0.1 },
-            { k: 0.4, frac: 0.03, alpha: 0.24 },
-            { k: 0.78, frac: 0.055, alpha: 0.17 }
-        ];
-        for (const spec of specs) {
-            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-                map: spec.streak ? streakTex : ghostTex, transparent: true, opacity: 0,
-                depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending
-            }));
-            sprite.frustumCulled = false;
-            scene.add(sprite);
-            lensFlare.push({ sprite, ...spec });
-        }
-    }
+    // Screen-space lens flare: no sprites — the shader pass reads the rendered
+    // frame, finds the sun's bright pixel, and generates anamorphic beams,
+    // a halo, and a chromatic ghost chain mirrored about the screen centre.
+    // Whatever dims the sun in the frame (haze, terrain silhouette) dims the
+    // flare for real.
     function updateLensFlare() {
-        if (!mercurySun || !lensFlare.length) return;
+        if (!mercurySun || !flarePass) return;
         mercurySun.getWorldPosition(flareV);
         flareV.project(camera);
         const visible = flareV.z < 1 && Math.abs(flareV.x) < 1.45 && Math.abs(flareV.y) < 1.45;
         const edge = Math.max(0, 1 - Math.hypot(flareV.x, flareV.y) / 1.5);
-        const depth = 30, halfFov = Math.tan(camera.fov * Math.PI / 360);
-        for (const g of lensFlare) {
-            if (!visible || !edge) { g.sprite.material.opacity = 0; continue; }
-            flareDir.set(flareV.x * g.k, flareV.y * g.k, 0.5).unproject(camera).sub(camera.position).normalize();
-            g.sprite.position.copy(camera.position).addScaledVector(flareDir, depth);
-            const w = 2 * depth * halfFov;
-            if (g.streak) g.sprite.scale.set(g.sx * w * camera.aspect, g.sy * w, 1);
-            else g.sprite.scale.set(g.frac * w * camera.aspect, g.frac * w, 1);
-            g.sprite.material.opacity = g.alpha * edge;
-        }
+        const uniforms = flarePass.material.uniforms;
+        uniforms.uSunPos.value.set(flareV.x * 0.5 + 0.5, flareV.y * 0.5 + 0.5);
+        uniforms.uIntensity.value = visible ? edge * edge : 0;
     }
     function buildAstronaut(texture) {
         const suit = new THREE.MeshStandardMaterial({ color: 0xb8b5ab, roughness: 0.92, bumpMap: texture, bumpScale: 0.012 });
@@ -1108,6 +1052,7 @@
             renderer.setSize(innerWidth, innerHeight);
             if (composer) composer.setSize(innerWidth, innerHeight);
             if (fxaaPass) fxaaPass.material.uniforms.resolution.value.set(1 / (innerWidth * renderer.getPixelRatio()), 1 / (innerHeight * renderer.getPixelRatio()));
+            if (flarePass) flarePass.material.uniforms.uAspect.value = innerWidth / innerHeight;
         });
         canvas.addEventListener('webglcontextlost', event => { event.preventDefault(); fail('lost'); });
     }
@@ -1141,6 +1086,60 @@
                 composer = new THREE.EffectComposer(renderer);
                 composer.addPass(new THREE.RenderPass(scene, camera));
                 composer.addPass(new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.65, 0.55, 0.72));
+                flarePass = new THREE.ShaderPass({
+                    uniforms: {
+                        tDiffuse: { value: null },
+                        uSunPos: { value: new THREE.Vector2(0.5, 0.5) },
+                        uIntensity: { value: 0 },
+                        uAspect: { value: innerWidth / innerHeight }
+                    },
+                    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+                    fragmentShader: `uniform sampler2D tDiffuse;
+                        uniform vec2 uSunPos; uniform float uIntensity, uAspect; varying vec2 vUv;
+                        // luminance of the rendered frame — the flare derives
+                        // from the actual pixels, so occluding the sun dims it
+                        float sunLum(vec2 uv){
+                            vec3 c = texture2D(tDiffuse, uv).rgb;
+                            return smoothstep(0.5, 0.9, max(c.r, max(c.g, c.b)));
+                        }
+                        void main(){
+                            vec4 base = texture2D(tDiffuse, vUv);
+                            vec3 acc = vec3(0.0);
+                            if (uIntensity > 0.002) {
+                                vec2 center = vec2(0.5);
+                                vec2 sd = uSunPos - center;
+                                float sl = sunLum(uSunPos) * 0.6
+                                         + sunLum(uSunPos + vec2(0.006, 0.0)) * 0.2
+                                         + sunLum(uSunPos - vec2(0.006, 0.0)) * 0.2;
+                                sl *= uIntensity;
+                                // anamorphic beam: razor-thin vertically, long
+                                // horizontal taper — like an anamorphic lens
+                                float dx = (vUv.x - uSunPos.x) * uAspect;
+                                float dy = vUv.y - uSunPos.y;
+                                float beam = exp(-dy * dy / 1.4e-5) * (0.45 + 0.55 * exp(-abs(dx) * 2.4));
+                                float vbeam = exp(-dx * dx / 1.0e-5) * exp(-abs(dy) * 5.0) * 0.22;
+                                // halo ring hugging the sun
+                                float rd = length(vec2(dx, dy));
+                                float halo = exp(-pow(rd - 0.085, 2.0) / 0.0005) * 0.4;
+                                acc += vec3(1.0, 0.96, 0.88) * beam * sl * 0.55
+                                     + vec3(0.82, 0.88, 1.0) * vbeam * sl
+                                     + vec3(0.9, 0.92, 1.0) * halo * sl;
+                                // ghost chain: hollow rings at centre-mirrored
+                                // positions — the signature of multi-element glass
+                                for (int i = 0; i < 6; i++) {
+                                    float k = 0.55 + float(i) * 0.42;
+                                    float r = 0.016 + float(i) * 0.009;
+                                    vec2 g = center - sd * k;
+                                    float d = length(vec2((vUv.x - g.x) * uAspect, vUv.y - g.y));
+                                    float ring = exp(-pow((d - r) / (r * 0.30), 2.0));
+                                    vec3 tint = (i == 0 || i == 2 || i == 4) ? vec3(1.0, 0.9, 0.72) : vec3(0.68, 0.8, 1.0);
+                                    acc += tint * ring * sl * (0.22 - float(i) * 0.016);
+                                }
+                            }
+                            gl_FragColor = vec4(base.rgb + acc, base.a);
+                        }`
+                });
+                composer.addPass(flarePass);
                 composer.addPass(new THREE.ShaderPass(THREE.GammaCorrectionShader));
                 if (THREE.FXAAShader) {
                     fxaaPass = new THREE.ShaderPass(THREE.FXAAShader);
@@ -1173,7 +1172,6 @@
             buildRelay();
             walker = MercuryTerrain.createWalker(surface, position);
             await buildSky();
-            buildLensFlare();
             updateCamera();
             if (composer) composer.render(); else renderer.render(scene, camera);
             if (typeof window.createMoonDiscoveries !== 'function') throw new Error('Discovery interface is unavailable');
