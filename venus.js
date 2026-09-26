@@ -105,7 +105,7 @@
     const dust = { bursts: [], texture: null };
     const keys = new Set(), touchKeys = new Set(), obstacles = [], walkables = [];
     const stations = expedition.stations;
-    let discoveryUI = null, featuredRock = null, composer = null, fxaaPass = null, cinePass = null, orbiter = null, orbiterAngle = 0;
+    let discoveryUI = null, featuredRock = null, composer = null, fxaaPass = null, cinePass = null, orbiter = null, orbiterAngle = 0, drizzle = null;
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
     const position = { x: stations[0].x, z: stations[0].z };
@@ -715,6 +715,37 @@
             }
         }
     }
+    function buildDrizzle() {
+        const count = quality === 'high' ? 1100 : quality === 'low' ? 400 : 700;
+        const positions = new Float32Array(count * 3);
+        for (let i = 0; i < count; i++) {
+            const x = position.x + (rand() - 0.5) * 150, z = position.z + (rand() - 0.5) * 150;
+            positions[i * 3] = x;
+            positions[i * 3 + 1] = VenusTerrain.sampleSurface(surface, x, z) + 0.4 + rand() * 20;
+            positions[i * 3 + 2] = z;
+        }
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const material = new THREE.PointsMaterial({ size: 0.07, map: dustTexture(), color: 0xf2d2a2, transparent: true, opacity: 0.26, depthWrite: false, sizeAttenuation: true });
+        const points = new THREE.Points(geometry, material);
+        points.frustumCulled = false;
+        scene.add(points);
+        drizzle = { points, count };
+    }
+    function updateDrizzle(dt, now) {
+        if (!drizzle) return;
+        const arr = drizzle.points.geometry.attributes.position.array;
+        for (let i = 0; i < drizzle.count; i++) {
+            arr[i * 3] += (0.5 + Math.sin(now * 0.0003 + i) * 0.2) * dt;
+            arr[i * 3 + 1] -= (1.1 + Math.sin(i * 2.1) * 0.35) * dt;
+            arr[i * 3 + 2] += Math.cos(now * 0.0005 + i) * 0.15 * dt;
+            if (arr[i * 3] - position.x > 75) arr[i * 3] -= 150; else if (arr[i * 3] - position.x < -75) arr[i * 3] += 150;
+            if (arr[i * 3 + 2] - position.z > 75) arr[i * 3 + 2] -= 150; else if (arr[i * 3 + 2] - position.z < -75) arr[i * 3 + 2] += 150;
+            const ground = VenusTerrain.sampleSurface(surface, arr[i * 3], arr[i * 3 + 2]);
+            if (arr[i * 3 + 1] < ground + 0.3) arr[i * 3 + 1] = ground + 16 + rand() * 6;
+        }
+        drizzle.points.geometry.attributes.position.needsUpdate = true;
+    }
     let channelGlow = null;
     function buildChannelGlow() {
         const pts = VenusTerrain.CHANNEL.points;
@@ -953,6 +984,7 @@
             if (cameraTween.t >= 1) { const target = cameraTween.body; cameraTween = null; showMoonlet(target); }
         }
         if (exploring && dt > 0) updateDust(dt);
+        if (dt > 0) updateDrizzle(dt, now);
         if (stationBeacon) stationBeacon.material.opacity = 0.15 + 0.75 * (0.5 + 0.5 * Math.sin(now * 0.0028));
         if (orbiter && dt > 0) {
             orbiterAngle += dt * 0.055;
@@ -1132,6 +1164,7 @@
             walker = VenusTerrain.createWalker(surface, position);
             await buildSky();
             buildOrbiter();
+            buildDrizzle();
             updateCamera();
             if (composer) composer.render(); else renderer.render(scene, camera);
             if (typeof window.createMoonDiscoveries !== 'function') throw new Error('Discovery interface is unavailable');

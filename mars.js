@@ -106,7 +106,7 @@
     const dust = { bursts: [], texture: null };
     const keys = new Set(), touchKeys = new Set(), obstacles = [];
     const stations = expedition.stations;
-    let discoveryUI = null, featuredRock = null, composer = null, fxaaPass = null, cinePass = null;
+    let discoveryUI = null, featuredRock = null, composer = null, fxaaPass = null, cinePass = null, motes = null;
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
     const position = { x: stations[0].x, z: stations[0].z };
@@ -711,6 +711,38 @@
             old.points.geometry.dispose(); old.points.material.dispose();
         }
     }
+    function buildMotes() {
+        const count = quality === 'high' ? 1400 : quality === 'low' ? 500 : 900;
+        const positions = new Float32Array(count * 3);
+        for (let i = 0; i < count; i++) {
+            const x = position.x + (rand() - 0.5) * 160, z = position.z + (rand() - 0.5) * 160;
+            positions[i * 3] = x;
+            positions[i * 3 + 1] = MarsTerrain.sampleSurface(surface, x, z) + 0.3 + rand() * 14;
+            positions[i * 3 + 2] = z;
+        }
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const material = new THREE.PointsMaterial({ size: 0.09, map: dustTexture(), color: 0xe8bb92, transparent: true, opacity: 0.5, depthWrite: false, sizeAttenuation: true });
+        const points = new THREE.Points(geometry, material);
+        points.frustumCulled = false;
+        scene.add(points);
+        motes = { points, count };
+    }
+    function updateMotes(dt, now) {
+        if (!motes) return;
+        const arr = motes.points.geometry.attributes.position.array;
+        for (let i = 0; i < motes.count; i++) {
+            arr[i * 3] += (0.9 + Math.sin(now * 0.0004 + i) * 0.25) * dt;
+            arr[i * 3 + 1] += Math.sin(now * 0.0011 + i * 1.7) * 0.12 * dt;
+            arr[i * 3 + 2] += Math.cos(now * 0.0007 + i * 0.9) * 0.18 * dt;
+            if (arr[i * 3] - position.x > 80) arr[i * 3] -= 160; else if (arr[i * 3] - position.x < -80) arr[i * 3] += 160;
+            if (arr[i * 3 + 2] - position.z > 80) arr[i * 3 + 2] -= 160; else if (arr[i * 3 + 2] - position.z < -80) arr[i * 3 + 2] += 160;
+            const ground = MarsTerrain.sampleSurface(surface, arr[i * 3], arr[i * 3 + 2]);
+            if (arr[i * 3 + 1] < ground + 0.25) arr[i * 3 + 1] = ground + 0.25 + rand() * 6;
+            else if (arr[i * 3 + 1] > ground + 15) arr[i * 3 + 1] = ground + 15;
+        }
+        motes.points.geometry.attributes.position.needsUpdate = true;
+    }
     function updateDust(dt) {
         for (let i = dust.bursts.length - 1; i >= 0; i--) {
             const burst = dust.bursts[i];
@@ -1021,6 +1053,7 @@
             if (cameraTween.t >= 1) { const target = cameraTween.body; cameraTween = null; showMoonlet(target); }
         }
         if (exploring && dt > 0) updateDust(dt);
+        if (dt > 0) updateMotes(dt, now);
         if (stationBeacon) stationBeacon.material.opacity = 0.15 + 0.75 * (0.5 + 0.5 * Math.sin(now * 0.0028));
         if (exploring && dt > 0) updateDustDevil(now);
         if (Math.hypot(sunlight.target.position.x - position.x, sunlight.target.position.z - position.z) > 20) {
@@ -1191,6 +1224,7 @@
             buildDustDevil();
             walker = MarsTerrain.createWalker(surface, position);
             await buildSky();
+            buildMotes();
             updateCamera();
             if (composer) composer.render(); else renderer.render(scene, camera);
             if (typeof window.createMoonDiscoveries !== 'function') throw new Error('Discovery interface is unavailable');

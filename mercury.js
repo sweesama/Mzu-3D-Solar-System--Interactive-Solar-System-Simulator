@@ -108,6 +108,8 @@
     const stations = expedition.stations;
     let discoveryUI = null, featuredRock = null, composer = null, fxaaPass = null, cinePass = null;
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
+    let mercurySun = null;
+    const lensFlare = [], flareV = new THREE.Vector3(), flareDir = new THREE.Vector3();
     let skyPivot = null, earthPivot = null;
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
     const position = { x: stations[0].x, z: stations[0].z };
@@ -496,6 +498,7 @@
         const sun = new THREE.Mesh(new THREE.SphereGeometry(26, 32, 24), new THREE.MeshBasicMaterial({ color: 0xfffaf0 }));
         sun.position.copy(sunlight.position).normalize().multiplyScalar(2100);
         skyPivot.add(sun);
+        mercurySun = sun;
         const haloCanvas = document.createElement('canvas');
         haloCanvas.width = haloCanvas.height = 128;
         const haloContext = haloCanvas.getContext('2d');
@@ -530,6 +533,69 @@
             skyBodies.push(proxy);
         }
         return Promise.resolve();
+    }
+    function flareGhostTexture(streak) {
+        const canvas = document.createElement('canvas');
+        if (streak) {
+            canvas.width = 256; canvas.height = 24;
+            const context = canvas.getContext('2d');
+            const g = context.createLinearGradient(0, 0, 256, 0);
+            g.addColorStop(0, 'rgba(255,244,220,0)');
+            g.addColorStop(0.5, 'rgba(255,244,220,0.7)');
+            g.addColorStop(1, 'rgba(255,244,220,0)');
+            context.fillStyle = g;
+            context.fillRect(0, 0, 256, 24);
+        } else {
+            canvas.width = canvas.height = 64;
+            const context = canvas.getContext('2d');
+            const g = context.createRadialGradient(32, 32, 4, 32, 32, 32);
+            g.addColorStop(0, 'rgba(255,242,214,0)');
+            g.addColorStop(0.55, 'rgba(255,242,214,0.16)');
+            g.addColorStop(0.82, 'rgba(196,214,255,0.34)');
+            g.addColorStop(1, 'rgba(196,214,255,0)');
+            context.fillStyle = g;
+            context.fillRect(0, 0, 64, 64);
+        }
+        return new THREE.CanvasTexture(canvas);
+    }
+    function buildLensFlare() {
+        const ghostTex = flareGhostTexture(false), streakTex = flareGhostTexture(true);
+        const specs = [
+            { k: 1, sx: 0.55, sy: 0.016, alpha: 0.4, streak: true },
+            { k: 1, sx: 0.014, sy: 0.22, alpha: 0.45, streak: true },
+            { k: -0.35, frac: 0.045, alpha: 0.3 },
+            { k: -0.72, frac: 0.09, alpha: 0.2 },
+            { k: -1.12, frac: 0.06, alpha: 0.26 },
+            { k: -1.55, frac: 0.12, alpha: 0.14 },
+            { k: 0.4, frac: 0.03, alpha: 0.3 },
+            { k: 0.78, frac: 0.055, alpha: 0.22 }
+        ];
+        for (const spec of specs) {
+            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
+                map: spec.streak ? streakTex : ghostTex, transparent: true, opacity: 0,
+                depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending
+            }));
+            sprite.frustumCulled = false;
+            scene.add(sprite);
+            lensFlare.push({ sprite, ...spec });
+        }
+    }
+    function updateLensFlare() {
+        if (!mercurySun || !lensFlare.length) return;
+        mercurySun.getWorldPosition(flareV);
+        flareV.project(camera);
+        const visible = flareV.z < 1 && Math.abs(flareV.x) < 1.45 && Math.abs(flareV.y) < 1.45;
+        const edge = Math.max(0, 1 - Math.hypot(flareV.x, flareV.y) / 1.5);
+        const depth = 30, halfFov = Math.tan(camera.fov * Math.PI / 360);
+        for (const g of lensFlare) {
+            if (!visible || !edge) { g.sprite.material.opacity = 0; continue; }
+            flareDir.set(flareV.x * g.k, flareV.y * g.k, 0.5).unproject(camera).sub(camera.position).normalize();
+            g.sprite.position.copy(camera.position).addScaledVector(flareDir, depth);
+            const w = 2 * depth * halfFov;
+            if (g.streak) g.sprite.scale.set(g.sx * w * camera.aspect, g.sy * w, 1);
+            else g.sprite.scale.set(g.frac * w * camera.aspect, g.frac * w, 1);
+            g.sprite.material.opacity = g.alpha * edge;
+        }
     }
     function buildAstronaut(texture) {
         const suit = new THREE.MeshStandardMaterial({ color: 0xb8b5ab, roughness: 0.92, bumpMap: texture, bumpScale: 0.012 });
@@ -936,6 +1002,7 @@
             sunlight.position.set(position.x - 180, 105, position.z - 160);
             sunlight.shadow.needsUpdate = true;
         }
+        updateLensFlare();
         if (discoveryUI) discoveryUI.update(now);
         if (cinePass) cinePass.material.uniforms.uTime.value = now * 0.001;
         if (composer) composer.render(); else renderer.render(scene, camera);
@@ -1098,6 +1165,7 @@
             buildRelay();
             walker = MercuryTerrain.createWalker(surface, position);
             await buildSky();
+            buildLensFlare();
             updateCamera();
             if (composer) composer.render(); else renderer.render(scene, camera);
             if (typeof window.createMoonDiscoveries !== 'function') throw new Error('Discovery interface is unavailable');
