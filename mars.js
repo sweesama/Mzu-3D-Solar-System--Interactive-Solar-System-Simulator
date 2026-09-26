@@ -106,7 +106,7 @@
     const dust = { bursts: [], texture: null };
     const keys = new Set(), touchKeys = new Set(), obstacles = [];
     const stations = expedition.stations;
-    let discoveryUI = null, featuredRock = null, composer = null, fxaaPass = null, cinePass = null, motes = null;
+    let discoveryUI = null, featuredRock = null, composer = null, fxaaPass = null, cinePass = null, flarePass = null, sunMesh = null, motes = null;
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
     const position = { x: stations[0].x, z: stations[0].z };
@@ -522,6 +522,7 @@
         const sun = new THREE.Mesh(new THREE.SphereGeometry(4.6, 24, 16), new THREE.MeshBasicMaterial({ color: 0xfff3dd, fog: false }));
         sun.position.copy(sunlight.position).normalize().multiplyScalar(2100);
         scene.add(sun);
+        sunMesh = sun;
         const haloCanvas = document.createElement('canvas');
         haloCanvas.width = haloCanvas.height = 128;
         const haloContext = haloCanvas.getContext('2d');
@@ -1063,6 +1064,7 @@
         }
         if (discoveryUI) discoveryUI.update(now);
         if (cinePass) cinePass.material.uniforms.uTime.value = now * 0.001;
+        if (flarePass && sunMesh) window.SolarFlare.update(flarePass, sunMesh, camera);
         if (composer) composer.render(); else renderer.render(scene, camera);
         if (!sampleTime) sampleTime = now;
         frameCount++;
@@ -1191,6 +1193,8 @@
                 composer = new THREE.EffectComposer(renderer);
                 composer.addPass(new THREE.RenderPass(scene, camera));
                 composer.addPass(new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.45, 0.55, 0.8));
+                flarePass = window.SolarFlare ? window.SolarFlare.create() : null;
+                if (flarePass) composer.addPass(flarePass);
                 composer.addPass(new THREE.ShaderPass(THREE.GammaCorrectionShader));
                 if (THREE.FXAAShader) {
                     fxaaPass = new THREE.ShaderPass(THREE.FXAAShader);

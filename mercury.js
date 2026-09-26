@@ -109,7 +109,7 @@
     let discoveryUI = null, featuredRock = null, composer = null, fxaaPass = null, cinePass = null, flarePass = null;
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
     let mercurySun = null;
-    const flareV = new THREE.Vector3();
+
     let skyPivot = null, earthPivot = null;
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
     const position = { x: stations[0].x, z: stations[0].z };
@@ -534,20 +534,11 @@
         }
         return Promise.resolve();
     }
-    // Screen-space lens flare: no sprites — the shader pass reads the rendered
-    // frame, finds the sun's bright pixel, and generates anamorphic beams,
-    // a halo, and a chromatic ghost chain mirrored about the screen centre.
-    // Whatever dims the sun in the frame (haze, terrain silhouette) dims the
-    // flare for real.
+    // Screen-space lens flare lives in the shared flare-pass.js module — the
+    // shader reads the rendered frame and derives the flare from the sun's
+    // real pixel brightness, so occluding the sun dims it for real.
     function updateLensFlare() {
-        if (!mercurySun || !flarePass) return;
-        mercurySun.getWorldPosition(flareV);
-        flareV.project(camera);
-        const visible = flareV.z < 1 && Math.abs(flareV.x) < 1.45 && Math.abs(flareV.y) < 1.45;
-        const edge = Math.max(0, 1 - Math.hypot(flareV.x, flareV.y) / 1.5);
-        const uniforms = flarePass.material.uniforms;
-        uniforms.uSunPos.value.set(flareV.x * 0.5 + 0.5, flareV.y * 0.5 + 0.5);
-        uniforms.uIntensity.value = visible ? edge * edge : 0;
+        if (flarePass && mercurySun) window.SolarFlare.update(flarePass, mercurySun, camera);
     }
     function buildAstronaut(texture) {
         const suit = new THREE.MeshStandardMaterial({ color: 0xb8b5ab, roughness: 0.92, bumpMap: texture, bumpScale: 0.012 });
@@ -1052,7 +1043,6 @@
             renderer.setSize(innerWidth, innerHeight);
             if (composer) composer.setSize(innerWidth, innerHeight);
             if (fxaaPass) fxaaPass.material.uniforms.resolution.value.set(1 / (innerWidth * renderer.getPixelRatio()), 1 / (innerHeight * renderer.getPixelRatio()));
-            if (flarePass) flarePass.material.uniforms.uAspect.value = innerWidth / innerHeight;
         });
         canvas.addEventListener('webglcontextlost', event => { event.preventDefault(); fail('lost'); });
     }
@@ -1086,60 +1076,8 @@
                 composer = new THREE.EffectComposer(renderer);
                 composer.addPass(new THREE.RenderPass(scene, camera));
                 composer.addPass(new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.65, 0.55, 0.72));
-                flarePass = new THREE.ShaderPass({
-                    uniforms: {
-                        tDiffuse: { value: null },
-                        uSunPos: { value: new THREE.Vector2(0.5, 0.5) },
-                        uIntensity: { value: 0 },
-                        uAspect: { value: innerWidth / innerHeight }
-                    },
-                    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-                    fragmentShader: `uniform sampler2D tDiffuse;
-                        uniform vec2 uSunPos; uniform float uIntensity, uAspect; varying vec2 vUv;
-                        // luminance of the rendered frame — the flare derives
-                        // from the actual pixels, so occluding the sun dims it
-                        float sunLum(vec2 uv){
-                            vec3 c = texture2D(tDiffuse, uv).rgb;
-                            return smoothstep(0.5, 0.9, max(c.r, max(c.g, c.b)));
-                        }
-                        void main(){
-                            vec4 base = texture2D(tDiffuse, vUv);
-                            vec3 acc = vec3(0.0);
-                            if (uIntensity > 0.002) {
-                                vec2 center = vec2(0.5);
-                                vec2 sd = uSunPos - center;
-                                float sl = sunLum(uSunPos) * 0.6
-                                         + sunLum(uSunPos + vec2(0.006, 0.0)) * 0.2
-                                         + sunLum(uSunPos - vec2(0.006, 0.0)) * 0.2;
-                                sl *= uIntensity;
-                                // anamorphic beam: razor-thin vertically, long
-                                // horizontal taper — like an anamorphic lens
-                                float dx = (vUv.x - uSunPos.x) * uAspect;
-                                float dy = vUv.y - uSunPos.y;
-                                float beam = exp(-dy * dy / 1.4e-5) * (0.45 + 0.55 * exp(-abs(dx) * 2.4));
-                                float vbeam = exp(-dx * dx / 1.0e-5) * exp(-abs(dy) * 5.0) * 0.22;
-                                // halo ring hugging the sun
-                                float rd = length(vec2(dx, dy));
-                                float halo = exp(-pow(rd - 0.085, 2.0) / 0.0005) * 0.4;
-                                acc += vec3(1.0, 0.96, 0.88) * beam * sl * 0.55
-                                     + vec3(0.82, 0.88, 1.0) * vbeam * sl
-                                     + vec3(0.9, 0.92, 1.0) * halo * sl;
-                                // ghost chain: hollow rings at centre-mirrored
-                                // positions — the signature of multi-element glass
-                                for (int i = 0; i < 6; i++) {
-                                    float k = 0.55 + float(i) * 0.42;
-                                    float r = 0.016 + float(i) * 0.009;
-                                    vec2 g = center - sd * k;
-                                    float d = length(vec2((vUv.x - g.x) * uAspect, vUv.y - g.y));
-                                    float ring = exp(-pow((d - r) / (r * 0.30), 2.0));
-                                    vec3 tint = (i == 0 || i == 2 || i == 4) ? vec3(1.0, 0.9, 0.72) : vec3(0.68, 0.8, 1.0);
-                                    acc += tint * ring * sl * (0.22 - float(i) * 0.016);
-                                }
-                            }
-                            gl_FragColor = vec4(base.rgb + acc, base.a);
-                        }`
-                });
-                composer.addPass(flarePass);
+                flarePass = window.SolarFlare ? window.SolarFlare.create() : null;
+                if (flarePass) composer.addPass(flarePass);
                 composer.addPass(new THREE.ShaderPass(THREE.GammaCorrectionShader));
                 if (THREE.FXAAShader) {
                     fxaaPass = new THREE.ShaderPass(THREE.FXAAShader);
