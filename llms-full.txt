@@ -22,6 +22,7 @@ The scene is not a real-time model of the current Solar System. It does not calc
 - Saturn: https://www.3dsolarsystem.net/saturn.html
 - Saturn ring cruise: https://www.3dsolarsystem.net/saturn-expedition.html
 - Uranus: https://www.3dsolarsystem.net/uranus.html
+- Uranus sideways ring flight: https://www.3dsolarsystem.net/uranus-expedition.html
 - Neptune: https://www.3dsolarsystem.net/neptune.html
 
 ## Interaction
@@ -73,6 +74,12 @@ Discovery progress is stored locally in the visitor's browser when storage is av
 https://www.3dsolarsystem.net/saturn-expedition.html is a separate first-person experience on the same expedition engine, again with a different interaction model: there is no surface and no descent — the probe cruises forward on its own through Saturn's ring plane. WASD or arrow keys drift and change speed, Shift is faster, Space rises above the sheet, and C sinks below it into the ring shadow. Telemetry shows height above the ring plane and speed. Pressing G compares Earth's 9.8 m/s² with Saturn's 10.44 m/s² by easing the ring's gentle tidal pull toward the plane.
 
 The scene renders a translucent ring sheet with bright bands, the dark Cassini division, and dimmer inner haze; an instanced field of tumbling water-ice chunks recycles endlessly around the probe; a shepherd moonlet and a propeller swirl sit in the sheet; the banded Saturn globe hangs half-submerged on the plane with its real alpha-mapped ring disc; and NASA's actual Cassini spacecraft model holds formation off the port bow. Audio is a quiet cabin hum, radio hiss, and ice grains ticking off the hull in dense bands. Five discoveries (ring vista, ring ice specimen, the Cassini division, shepherd moonlet, propeller swirl) record via E or a touch-friendly button. All content is artistic reconstruction informed by Cassini mission findings, not survey data.
+
+## Uranus sideways ring flight
+
+https://www.3dsolarsystem.net/uranus-expedition.html reuses the ring-flight engine with a completely different character: Uranus's rings are thirteen narrow, charcoal-dark bands instead of a bright ice sheet, and the Sun hangs almost directly over the tipped giant's pole, pouring down nearly perpendicular to the ring plane. The probe cruises forward on its own; WASD or arrow keys drift and change speed, Shift is faster, Space rises, and C sinks below the sheet. Telemetry shows height above the ring plane and speed. Pressing G compares Earth's 9.8 m/s² with Uranus's 8.87 m/s² — nearly identical, which is the surprise.
+
+The scene renders a sparse sheet of thin dark bands, an instanced field of nearly black ring particles recycling endlessly around the probe, a shepherd moonlet riding a gap, and a small tilt-marker globe demonstrating the famous 98° axial tilt with a vertical ring of its own. The featureless turquoise Uranus globe hangs half-submerged on the plane with its narrow rings edge-on, and NASA's real Voyager 2 model — the only spacecraft ever to visit Uranus — holds formation off the port bow. Audio is a quiet cabin hum, radio hiss, and rare grains ticking off the hull inside the bands. Five discoveries (ring vista, dark ring fragment, the dark gap, shepherd moonlet, the 98° tilt marker) record via E or a touch-friendly button. All content is artistic reconstruction informed by Voyager 2 findings, not survey data.
 
 Discovery progress is stored locally in the visitor's browser when storage is available. No account or AI API access is required. The initial interface is English, with an optional Chinese interface.
 

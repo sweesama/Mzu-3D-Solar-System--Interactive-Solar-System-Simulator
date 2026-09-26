@@ -17,6 +17,7 @@
 - [Jupiter descent](https://www.3dsolarsystem.net/jupiter-expedition.html): Ride an imagined probe down through Jupiter's cloud decks — drift past ammonia cirrus, a giant storm vortex, and deep lightning, fire the ascent thruster with Space, record five altitude-based discoveries, and keep a journal in your browser.
 - [Saturn](https://www.3dsolarsystem.net/saturn.html)
 - [Saturn ring cruise](https://www.3dsolarsystem.net/saturn-expedition.html): Cruise Saturn's ring plane alongside the Cassini spacecraft — skim glittering ice bands, cross the Cassini division, meet a shepherd moonlet, record five discoveries, and keep a journal in your browser.
+- [Uranus sideways ring flight](https://www.3dsolarsystem.net/uranus-expedition.html): Thread Uranus's narrow charcoal-dark rings beside Voyager 2 — thin bands under a Sun that hangs over the tipped giant's pole, a shepherd moonlet, the famous 98° tilt marker, five discoveries, and a journal in your browser.
 - [Uranus](https://www.3dsolarsystem.net/uranus.html)
 - [Neptune](https://www.3dsolarsystem.net/neptune.html)
 

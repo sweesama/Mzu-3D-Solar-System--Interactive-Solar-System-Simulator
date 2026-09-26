@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const root = __dirname;
-const pages = ['index', 'mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'moon', 'mars-expedition', 'venus-expedition', 'mercury-expedition', 'jupiter-expedition', 'saturn-expedition'];
+const pages = ['index', 'mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'moon', 'mars-expedition', 'venus-expedition', 'mercury-expedition', 'jupiter-expedition', 'saturn-expedition', 'uranus-expedition'];
 const errors = [];
 const titles = new Set();
 const canonicals = new Set();
@@ -333,6 +333,36 @@ assert.match(saturnHtml, /index\.html\?focus=Saturn/);
 assert.match(fs.readFileSync(path.join(root, 'index.html'), 'utf8'), /href="saturn-expedition\.html"/);
 assert.match(fs.readFileSync(path.join(root, 'saturn.html'), 'utf8'), /href="saturn-expedition\.html"/);
 assert.ok(fs.existsSync(path.join(root, 'models', 'cassini.glb')), 'Cassini model must exist');
+const uranusRings = loadBrowserModule('uranus-rings.js', 'UranusRings');
+const uranusExpedition = loadBrowserModule('uranus-expedition.js', 'UranusExpedition');
+assert.equal(uranusExpedition.discoveries.length, 5);
+assert.equal(uranusExpedition.parseProgress('not-json').length, 0);
+assert.equal(uranusExpedition.parseProgress('["epsilon","invalid"]').length, 1);
+assert.equal(uranusExpedition.canDiscover({ x: 40, z: -410, y: 9 }, 1), true);
+assert.equal(uranusExpedition.canDiscover({ x: 40, z: -410, y: 120 }, 1), false);
+assert.equal(uranusRings.sampleSurface(null, 5, 5), 0);
+const uranusBody = uranusRings.createWalker({ x: 0, z: 0 });
+uranusBody.y = 50;
+uranusRings.updateWalker(uranusBody, { forward: 0, right: 0, yaw: 0 }, 1 / 60);
+assert.ok(Number.isFinite(uranusBody.x) && Number.isFinite(uranusBody.y));
+assert.ok(uranusBody.y <= 50 + uranusRings.VERTICAL_SPEED + 1, 'Cruise must respect the altitude cap');
+const uranusGuidance = uranusExpedition.guidance({ x: 0, z: 100 }, 0);
+assert.ok(uranusGuidance.distance >= 0 && Number.isFinite(uranusGuidance.x));
+const uranusHtml = fs.readFileSync(path.join(root, 'uranus-expedition.html'), 'utf8');
+assert.match(uranusHtml, /id="discover-button"/);
+assert.match(uranusHtml, /id="discovery-dialog"/);
+assert.match(uranusHtml, /uranus-expedition\.js/);
+assert.match(uranusHtml, /uranus-rings\.js/);
+assert.match(uranusHtml, /uranus-audio\.js/);
+assert.match(uranusHtml, /moon-discoveries\.js/);
+assert.match(uranusHtml, /uranus\.js/);
+assert.match(uranusHtml, /id="gravity-button"/);
+assert.match(uranusHtml, /id="touch-pad"/);
+assert.match(uranusHtml, /id="return-orbit"/);
+assert.match(uranusHtml, /index\.html\?focus=Uranus/);
+assert.match(fs.readFileSync(path.join(root, 'index.html'), 'utf8'), /href="uranus-expedition\.html"/);
+assert.match(fs.readFileSync(path.join(root, 'uranus.html'), 'utf8'), /href="uranus-expedition\.html"/);
+assert.ok(fs.existsSync(path.join(root, 'models', 'voyager.glb')), 'Voyager model must exist');
 const venusHtml = fs.readFileSync(path.join(root, 'venus-expedition.html'), 'utf8');
 assert.match(venusHtml, /id="discover-button"/);
 assert.match(venusHtml, /id="discovery-dialog"/);
@@ -436,16 +466,17 @@ for (const page of pages) {
   if (page === 'mercury-expedition' && !/Mercury/i.test(heading)) errors.push(`${file}: heading must identify the Mercury expedition`);
   if (page === 'jupiter-expedition' && !/Jupiter/i.test(heading)) errors.push(`${file}: heading must identify the Jupiter descent`);
   if (page === 'saturn-expedition' && !/Saturn/i.test(heading)) errors.push(`${file}: heading must identify the Saturn cruise`);
+  if (page === 'uranus-expedition' && !/Uranus/i.test(heading)) errors.push(`${file}: heading must identify the Uranus flight`);
   if (/id="seo-content"|SEO Content for Crawlers|style="display:\s*none/i.test(html)) errors.push(`${file}: hidden crawler-only content found`);
   if (/GA_MEASUREMENT_ID|ca-pub-XXXXXXXXXX/i.test(html)) errors.push(`${file}: analytics or advertising placeholder found`);
   if (/\b(ultimate|professional-grade|smooth 60fps|ultra-realistic|therapeutic solar system)\b/i.test(html)) errors.push(`${file}: unsupported marketing claim found`);
-  const isExpedition = page === 'moon' || page === 'mars-expedition' || page === 'venus-expedition' || page === 'mercury-expedition' || page === 'jupiter-expedition' || page === 'saturn-expedition';
+  const isExpedition = page === 'moon' || page === 'mars-expedition' || page === 'venus-expedition' || page === 'mercury-expedition' || page === 'jupiter-expedition' || page === 'saturn-expedition' || page === 'uranus-expedition';
   if (!isExpedition && !/data-focus="Mercury"[\s\S]*data-focus="Neptune"/i.test(html)) errors.push(`${file}: planet navigation is incomplete`);
   const qualityId = isExpedition ? 'moon-quality' : 'quality-select';
   if (!new RegExp(`<select id="${qualityId}"[\\s\\S]*value="auto"[\\s\\S]*value="high"[\\s\\S]*value="balanced"[\\s\\S]*value="low"`, 'i').test(html)) {
     errors.push(`${file}: accessible quality selector is incomplete`);
   }
-  const engine = page === 'moon' ? 'moon' : page === 'mars-expedition' ? 'mars' : page === 'venus-expedition' ? 'venus' : page === 'mercury-expedition' ? 'mercury' : page === 'jupiter-expedition' ? 'jupiter' : page === 'saturn-expedition' ? 'saturn' : 'main';
+  const engine = page === 'moon' ? 'moon' : page === 'mars-expedition' ? 'mars' : page === 'venus-expedition' ? 'venus' : page === 'mercury-expedition' ? 'mercury' : page === 'jupiter-expedition' ? 'jupiter' : page === 'saturn-expedition' ? 'saturn' : page === 'uranus-expedition' ? 'uranus' : 'main';
   if (!new RegExp(`<script src="quality-policy\\.js"></script>[\\s\\S]*<script src="${engine}\\.js"></script>`, 'i').test(html)) {
     errors.push(`${file}: quality policy must load before the scene engine`);
   }
@@ -454,6 +485,7 @@ for (const page of pages) {
   if (!isExpedition && !/href="venus-expedition\.html"/.test(html)) errors.push(`${file}: missing Venus expedition link`);
   if (!isExpedition && !/href="mercury-expedition\.html"/.test(html)) errors.push(`${file}: missing Mercury expedition link`);
   if (!isExpedition && !/href="saturn-expedition\.html"/.test(html)) errors.push(`${file}: missing Saturn expedition link`);
+  if (!isExpedition && !/href="uranus-expedition\.html"/.test(html)) errors.push(`${file}: missing Uranus expedition link`);
 
   const jsonLd = capture(html, /<script id="app-structured-data" type="application\/ld\+json">([\s\S]*?)<\/script>/i, 'structured data', file);
   if (jsonLd) {

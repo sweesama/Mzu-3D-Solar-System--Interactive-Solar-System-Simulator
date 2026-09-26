@@ -162,7 +162,19 @@ The public page is `https://www.3dsolarsystem.net/saturn-expedition.html` (the n
 - Five discoveries pair with the three stations (vista, ice specimen, the division, moonlet, propeller); progress saves under `mzu-saturn-rings-v1`.
 - Files mirror the other expeditions: `saturn-expedition.html`, `saturn.js`, `saturn-rings.js`, `saturn-expedition.js`, `saturn-audio.js`. `moon-discoveries.js` and `moon.css` remain shared.
 
-All six expedition field guides open with a "What you are seeing" feature list — a localized card list (`planet-facts` markup, `feature-list` element, per-page `features` dictionary entries rendered by `applyLanguage`) that names each visible landmark and ties it to the real observation it is based on, so visitors can read the planet's signature features without walking.
+## Uranus sideways ring flight
+
+The public page is `https://www.3dsolarsystem.net/uranus-expedition.html` (the name avoids colliding with the existing `uranus.html` orbital detail page). It is listed in `sitemap.xml`, linked from the homepage and generated planet pages, and carries the same indexable metadata as the other expeditions.
+
+- Uranus reuses the Saturn ring-flight engine with a different character: the probe cruises forward on its own (`CRUISE_SPEED`), WASD/arrows drift and change speed (Shift faster), **Space** rises and **C** sinks below the sheet. The ring plane exerts a gentle tidal pull toward y = 0, scaled by the G gravity toggle — Uranus's **8.87 m/s²** is nearly identical to Earth's 9.8 m/s², and that near-match is itself the point of the toggle.
+- `uranus-rings.js` exposes `UranusRings` — the same `sampleSurface`/`createWalker`/`updateWalker` contract. `ringDensity(x, z)` returns low densities for thirteen narrow charcoal-dark bands (ε/δ/γ/η/β and friends) instead of Saturn's broad bright sheet; it both drives the sparse band texture and gates how thinly the instanced particle field populates each band. Altitude is clamped between `MIN_ALTITUDE` (−140) and `MAX_ALTITUDE` (300).
+- The ring sheet is a translucent plane textured with thin dark band streaks; the instanced particle field uses nearly black rock material (`0x424c52`), so the lumps read as charcoal debris rather than Saturn's glittering ice. A shepherd moonlet (irregular body riding a ring edge) and a small **tilt marker** — a turquoise globe tipped 98° with a vertical ring of its own — sit in the sheet as discoveries.
+- The Sun hangs almost directly over the tipped giant's pole instead of low on the horizon, so light pours down nearly perpendicular to the ring plane. The featureless turquoise Uranus globe (real `2k_uranus.jpg` texture, deliberately near-featureless as Voyager 2 saw it) hangs half-submerged on the plane with its narrow rings edge-on. NASA's real **Voyager 2** model (`models/voyager.glb`, Draco-compressed) — the only spacecraft ever to visit Uranus — holds formation off the port bow.
+- Post chain mirrors Saturn (bloom → gamma → FXAA → vignette+grain, plus the radial sun-shaft pass). Audio (`uranus-audio.js`) is the same quiet cabin hum and radio hiss with rarer `icePing()` ticks, matching the sparser bands.
+- Five discoveries pair with the three stations (vista, ring-charcoal specimen, the dark gap, shepherd moonlet, the 98° tilt marker); progress saves under `mzu-uranus-rings-v1`.
+- Files mirror the other expeditions: `uranus-expedition.html`, `uranus.js`, `uranus-rings.js`, `uranus-expedition.js`, `uranus-audio.js`. `moon-discoveries.js` and `moon.css` remain shared.
+
+All seven expedition field guides open with a "What you are seeing" feature list — a localized card list (`planet-facts` markup, `feature-list` element, per-page `features` dictionary entries rendered by `applyLanguage`) that names each visible landmark and ties it to the real observation it is based on, so visitors can read the planet's signature features without walking.
 
 After changes, run:
 
@@ -194,6 +206,10 @@ node --check saturn.js
 node --check saturn-rings.js
 node --check saturn-expedition.js
 node --check saturn-audio.js
+node --check uranus.js
+node --check uranus-rings.js
+node --check uranus-expedition.js
+node --check uranus-audio.js
 ```
 
 Route verification includes both directions of every route segment at all three terrain detail levels, distant/airborne discovery rejection, duplicate prevention, and invalid saved-data handling. Browser checks should cover walking the complete route with scene obstacles, specimen rotation/zoom, quick-travel without automatic progress, refresh persistence, storage-disabled fallback, and touch discovery controls.
