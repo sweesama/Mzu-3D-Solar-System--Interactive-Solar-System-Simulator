@@ -5,21 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#080909">
     <meta name="robots" content="index, follow, max-image-preview:large">
-    <title>Mars Exploration in 3D | Mzu Solar System</title>
+    <title>Walk on Mars in 3D — First-Person Mars Surface Explorer | Mzu</title>
     <meta name="description" content="Explore an imagined Martian plain in your browser. Walk and jump in Mars gravity, discover five viewpoints, inspect a 3D specimen, and keep an exploration journal.">
     <link rel="canonical" href="https://www.3dsolarsystem.net/mars-expedition.html">
-    <meta property="og:title" content="Mars Exploration in 3D | Mzu Solar System">
+    <meta property="og:title" content="Walk on Mars in 3D — First-Person Mars Surface Explorer | Mzu">
     <meta property="og:description" content="Walk an imagined Martian landscape, discover five observation points, inspect a rock in 3D, and feel lighter gravity under a butterscotch sky.">
     <meta property="og:url" content="https://www.3dsolarsystem.net/mars-expedition.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Mzu 3D Solar System">
-    <meta property="og:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
-    <meta property="og:image:alt" content="Mzu 3D Solar System logo">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Mars Exploration in 3D | Mzu Solar System">
+    <meta property="og:image" content="https://www.3dsolarsystem.net/og/mars-expedition.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="First-person view of a dusty Martian plain under a butterscotch sky">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Walk on Mars in 3D — First-Person Mars Surface Explorer | Mzu">
     <meta name="twitter:description" content="Walk, jump, and make discoveries in a science-inspired Martian landscape. Free browser-based exploration, with no account required.">
-    <meta name="twitter:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
-    <meta name="twitter:image:alt" content="Mzu 3D Solar System logo">
+    <meta name="twitter:image" content="https://www.3dsolarsystem.net/og/mars-expedition.jpg">
+    <meta name="twitter:image:alt" content="First-person view of a dusty Martian plain under a butterscotch sky">
     <script id="app-structured-data" type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -30,14 +32,40 @@
       "applicationCategory": "EducationalApplication",
       "operatingSystem": "Any modern web browser with WebGL support",
       "isAccessibleForFree": true,
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "inLanguage": ["en", "zh-CN"],
-      "about": { "@type": "Thing", "name": "Mars" },
-      "isPartOf": { "@type": "WebSite", "name": "Mzu 3D Solar System", "url": "https://www.3dsolarsystem.net/" }
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "inLanguage": [
+        "en",
+        "zh-CN"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "Mars"
+      },
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Mzu 3D Solar System",
+        "url": "https://www.3dsolarsystem.net/"
+      },
+      "image": "https://www.3dsolarsystem.net/og/mars-expedition.jpg",
+      "screenshot": "https://www.3dsolarsystem.net/og/mars-expedition.jpg"
     }
     </script>
-    <link rel="icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="moon.css">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-783407FTTB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-783407FTTB');
+    </script>
 </head>
 <body>
     <main id="expedition" aria-label="Interactive Martian landscape">
@@ -62,6 +90,7 @@
             <p class="arrival-description" data-i18n="intro">Walk an imagined Martian plain, jump in gentler gravity, and read layered rock, wind-blown dunes, and a butterscotch sky.</p>
             <button id="begin-button" class="primary-button" type="button" disabled><span data-i18n="begin">Step onto Mars</span><span aria-hidden="true">→</span></button>
             <p class="arrival-hint" data-i18n="arrivalHint">No download. Just a little curiosity.</p>
+            <a class="about-cue" href="#about">About this expedition ↓</a>
         </section>
 
         <section id="field-card" class="field-card route-card" hidden>
@@ -150,6 +179,48 @@
         <p id="moonlet-text"></p>
         <div class="discovery-actions"><a id="moonlet-link" class="primary-button" href="index.html" style="text-decoration:none" data-i18n="viewOrbit">See it in the Solar System</a><form method="dialog"><button class="quiet-button" type="submit" data-i18n="keepExploring">Keep exploring</button></form></div>
     </dialog>
+    <article id="about" class="about-world" aria-labelledby="about-title">
+        <div class="about-inner">
+            <p class="eyebrow">About this expedition</p>
+            <h2 id="about-title">What is it like to stand on Mars?</h2>
+            <p>Walk an imagined Martian plain in first person, right in your browser. You move and jump in Mars gravity — 3.71 m/s², about 38% of Earth’s — past layered rock, wind-shaped dunes and dust-capped boulders under a butterscotch sky, with a real NASA rover model parked nearby.</p>
+            <p>Mars is a cold desert world. Its air is about 95% carbon dioxide and so thin that surface pressure is less than 1% of Earth’s, yet it still lifts fine dust that tints the daytime sky and turns sunsets blue. Its two small moons, Phobos and Deimos, cross the sky — click either one to learn more.</p>
+            <h3>Quick facts</h3>
+            <dl class="about-facts">
+                <div><dt>Surface gravity</dt><dd>3.71 m/s² — about 38% of Earth’s</dd></div>
+                <div><dt>Length of a day (sol)</dt><dd>About 24 hours 40 minutes</dd></div>
+                <div><dt>Average temperature</dt><dd>About −60 °C</dd></div>
+                <div><dt>Atmosphere</dt><dd>About 95% CO₂, under 1% of Earth’s surface pressure</dd></div>
+                <div><dt>Distance from the Sun</dt><dd>About 228 million km (1.52 AU)</dd></div>
+                <div><dt>Moons</dt><dd>Phobos and Deimos</dd></div>
+            </dl>
+            <h3>Five discoveries to find</h3>
+            <ol class="about-discoveries">
+                <li><strong>Layers of deep time</strong> — a banded mesa like the sedimentary rock that rovers study.</li>
+                <li><strong>Basalt under the dust</strong> — a volcanic rock you can rotate in the specimen viewer.</li>
+                <li><strong>The wind still works here</strong> — dunes shaped by thin but persistent Martian wind.</li>
+                <li><strong>A rover at rest</strong> — a real NASA rover model, a tribute to the five NASA rovers sent since 1997.</li>
+                <li><strong>A softened crater</strong> — how wind and dust wear down Martian craters, unlike the Moon’s.</li>
+            </ol>
+            <h3>How to explore</h3>
+            <p>Press <strong>Step onto Mars</strong>, then walk with W A S D or the arrow keys, hold Shift to move faster, press Space to jump and drag to look around. On phones and tablets a touch pad appears. Press G to compare the local gravity with Earth’s, P for photo mode, and E to record a discovery in your journal — progress is saved on your own device.</p>
+            <h3>Science and artistic reconstruction</h3>
+            <p>The dusty sky, blue sunset, layered rock and dunes are inspired by images from NASA rovers such as Curiosity and Perseverance. The terrain and observation points are procedurally generated art, not survey data from a real landing site.</p>
+            <h3>Keep exploring</h3>
+            <ul class="about-links">
+                    <li><a href="mars.html">Mars, Phobos and Deimos in the 3D Solar System</a></li>
+                    <li><a href="moon.html">Walk on the Moon</a></li>
+                    <li><a href="venus-expedition.html">Walk on Venus</a></li>
+                    <li><a href="mercury-expedition.html">Walk on Mercury</a></li>
+                    <li><a href="jupiter-expedition.html">Descend into Jupiter</a></li>
+                    <li><a href="saturn-expedition.html">Fly through Saturn’s rings</a></li>
+                    <li><a href="uranus-expedition.html">Fly through Uranus’s rings</a></li>
+                    <li><a href="neptune-expedition.html">Fly into Neptune’s storms</a></li>
+                    <li><a href="index.html">The full 3D Solar System</a></li>
+            </ul>
+            <p class="about-footer">Mzu 3D Solar System is a free educational project. No account, download or AI service is needed. <a class="about-top" href="#">Back to the expedition ↑</a></p>
+        </div>
+    </article>
     <noscript><div class="no-script">JavaScript and WebGL are needed for this expedition. <a href="index.html">Return to the Solar System</a>.</div></noscript>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -162,6 +233,7 @@
     <script src="https://unpkg.com/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
     <script src="https://unpkg.com/three@0.128.0/examples/js/shaders/GammaCorrectionShader.js"></script>
     <script src="https://unpkg.com/three@0.128.0/examples/js/shaders/FXAAShader.js"></script>
+    <script src="expedition-about.js"></script>
     <script src="quality-policy.js"></script>
     <script src="flare-pass.js"></script>
     <script src="mars-terrain.js"></script>

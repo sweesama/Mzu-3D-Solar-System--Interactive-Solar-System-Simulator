@@ -14,21 +14,21 @@
             guide: 'Field guide', photo: 'Photo mode', quality: 'Quality', auto: 'Auto', high: 'High', balanced: 'Balanced', low: 'Low', artNote: 'SCIENCE-INSPIRED ARTISTIC RECONSTRUCTION · NOT A SURVEYED STORM SECTION',
             capture: 'Save photograph', exitPhoto: 'Exit photo mode', loading: 'Setting course for the storm layer…', fieldGuide: 'THE EXPEDITION FIELD GUIDE', guideTitle: 'A deep-blue sky with a storm on the horizon.',
             guideIntro: 'This is a small, freely explorable stretch of Neptune’s upper storm layer, not a whole-atmosphere simulation. The five observation points are different views of the same flight; two of them face the Great Dark Spot.', controlsTitle: 'Moving around',
-            gravityCompare: 'Compare Earth gravity · G', gravityMercury: 'Back to Neptune gravity · G', gravityHint: 'Same probe, different pull. Neptune’s gravity is 11.15 m/s² — press G and the deck’s gentle tug firms up slightly under Earth’s pull.', soundOn: 'Probe sounds: On', soundOff: 'Probe sounds: Off', soundHint: 'A cabin hum under a restless wind howl, faint radio hiss, and grains ticking off the hull. M toggles.', gravityMercuryTag: 'Neptune gravity — 11.15 m/s².', gravityEarth: 'Earth gravity — 9.8 m/s². A touch softer than the deep blue giant.', mercuryTag: 'NEPTUNE', earthTag: 'EARTH',
+            gravityCompare: 'Compare Earth gravity · G', gravityMercury: 'Back to Neptune gravity · G', gravityHint: 'Same probe, different pull. Neptune’s gravity is 11.15 m/s² — press G and the deck’s tug eases slightly under Earth’s gentler pull.', soundOn: 'Probe sounds: On', soundOff: 'Probe sounds: Off', soundHint: 'A cabin hum under a restless wind howl, faint radio hiss, and grains ticking off the hull. M toggles.', gravityMercuryTag: 'Neptune gravity — 11.15 m/s².', gravityEarth: 'Earth gravity — 9.8 m/s². A touch softer than the deep blue giant.', mercuryTag: 'NEPTUNE', earthTag: 'EARTH',
             controlsText: 'You are a probe cruising Neptune’s storm layer — there is no ground and no falling. The probe cruises forward on its own; W A S D or the arrow keys drift you sideways and speed you up, Shift is faster still. Space rises, C sinks toward the cloud deck. Drag to look. Touchscreens have direction and Burn buttons. G compares Earth gravity; M toggles sound. H hides notes; P opens photo mode; Esc closes it.',
-            scienceTitle: 'Science meets imagination', scienceText: 'Neptune has the fastest winds in the Solar System — up to about 2,100 km/h, supersonic in this thin cold air. The Great Dark Spot was a storm wider than Earth when Voyager 2 flew past in 1989. The deck, winds and vortex here are artistic reconstructions.',
+            scienceTitle: 'Science meets imagination', scienceText: 'Neptune has the fastest winds in the Solar System — up to about 2,100 km/h, faster than any hurricane on Earth. The Great Dark Spot was a storm wider than Earth when Voyager 2 flew past in 1989. The deck, winds and vortex here are artistic reconstructions.',
             soundText: 'The flight is far gentler than real Neptunian weather — winds here can top 2,000 km/h. Press G to compare Earth gravity; Neptune pulls a little harder than home. Listen for the wind howl rising inside the cirrus lanes.',
             assetText: 'Voyager 2 is a real NASA 3D model — the only probe ever to visit Neptune, in August 1989. The storm deck, particle field, and starfield are generated locally.',
             skyEyebrow: 'IN NEPTUNE’S SKY', sunName: 'The Sun', earthName: 'Earth', tritonName: 'Triton', stormName: 'The Great Dark Spot',
             sunText: 'From Neptune the Sun is thirty times farther than from Earth — a needle-bright spark giving barely 0.1% of Earth’s daylight, yet still enough to drive the wildest winds known. Artistic rendering, not an accurate ephemeris.',
             earthText: 'From Neptune, Earth never strays more than a degree or so from the Sun — a pale point lost in the glare. Its placement here is artistic.',
             tritonText: 'Triton — Neptune’s captured moon, orbiting backwards, venting nitrogen geysers through pink ice. Voyager 2 skimmed it on the same flyby. Artistic placement and scale.',
-            stormText: 'The Great Dark Spot — an anticyclonic storm wider than Earth, circling Neptune at supersonic rim winds. Voyager 2 photographed it in 1989; it had vanished by 1994. Artistic scale.',
+            stormText: 'The Great Dark Spot — an anticyclonic storm wider than Earth, ringed by winds of up to about 2,400 km/h. Voyager 2 photographed it in 1989; it had vanished by 1994. Artistic scale.',
             viewOrbit: 'See it in the Solar System', keepExploring: 'Keep exploring', skyHint: 'Click the small Sun, Triton, or the distant storm to learn about it — you can then visit it in the Solar System view.',
             featuresTitle: 'What you are seeing', features: [
                 ['A needle-bright Sun', 'From thirty times Earth’s distance the Sun is a sharp spark — yet it still drives the fastest winds anywhere.'],
                 ['Methane cirrus', 'The pale streaks below are high-altitude methane-ice cirrus, stretched into lanes by screaming winds.'],
-                ['The Great Dark Spot', 'On the horizon: a storm wider than Earth, its rim winds circling at supersonic speed.'],
+                ['The Great Dark Spot', 'On the horizon: a storm wider than Earth, its rim winds racing at up to about 2,400 km/h.'],
                 ['A racing cloud', 'The white lump is a Scooter-style cloud — Voyager 2 watched such clouds outrun the dark storm.'],
                 ['The wind shear line', 'The boundary where winds flip direction — Neptune’s bands run opposite ways, stacked like gears.'],
                 ['Voyager on the wing', 'NASA’s real Voyager model flies alongside — the only spacecraft ever to see this view, on 25 August 1989.']
@@ -37,7 +37,7 @@
             notes: [
                 ['The storm vista', 'From altitude the storm layer resolves — blue-white cirrus lanes streaming below, the dark vortex waiting on the horizon.', 'ARRIVAL', 'Storm vista'],
                 ['A cirrus wisp', 'This drifting crystal is methane ice — Neptune’s thin cold air grows its clouds out of the same gas that tints the planet blue. Rotate it in the specimen viewer.', 'AEROSOL', 'Methane cirrus'],
-                ['The storm wall', 'Face the Great Dark Spot — the deck here bends toward a storm wider than Earth, rim winds supersonic.', 'VORTEX', 'Storm wall'],
+                ['The storm wall', 'Face the Great Dark Spot — the deck here bends toward a storm wider than Earth, rim winds near 2,400 km/h.', 'VORTEX', 'Storm wall'],
                 ['The wind shear line', 'A pale racing cloud marks the shear line — the boundary where Neptune’s winds reverse direction like meshing gears.', 'WIND', 'Shear line'],
                 ['The storm spinner', 'A marker disc demonstrates the dark vortex — an anticyclone spinning for years, then gone when the wind pattern shifted.', 'ORIENTATION', 'Vortex spin']
             ]
@@ -50,21 +50,21 @@
             station0: '风暴远眺', station1: '风暴之墙', station2: '卷云场', guide: '探索指南', photo: '摄影模式', quality: '画质', auto: '自动', high: '高', balanced: '均衡', low: '低',
             artNote: '科学启发的艺术重建 · 非真实风暴测绘', capture: '保存照片', exitPhoto: '退出摄影', loading: '正在设定风暴层航线…', fieldGuide: '海王星探索指南', guideTitle: '深蓝色的天空，天际有一场风暴。',
             guideIntro: '这是一段可以自由漫游的海王星高层风暴切片，而非完整的大气模拟。五个观察点位于同一段航程的不同位置；其中两处正对着大黑斑。', controlsTitle: '如何移动',
-            gravityCompare: '对比地球引力 · G', gravityMercury: '恢复海王星引力 · G', gravityHint: '同一台探测器，不同的引力。海王星引力 11.15 m/s²——按 G 对比地球，云层的牵引感会稍微变强。', soundOn: '探测器声音：开', soundOff: '探测器声音：关', soundHint: '舱内低鸣之上是不安的呼啸风声、微弱的射电嘶声，以及颗粒敲击舱体的轻响。M 切换。', gravityMercuryTag: '海王星引力 — 11.15 m/s²。', gravityEarth: '地球引力 — 9.8 m/s²。比这颗深蓝巨行星稍温柔一点。', mercuryTag: '海王星', earthTag: '地球',
+            gravityCompare: '对比地球引力 · G', gravityMercury: '恢复海王星引力 · G', gravityHint: '同一台探测器，不同的引力。海王星引力 11.15 m/s²——按 G 对比地球，云层的牵引感会稍微变弱。', soundOn: '探测器声音：开', soundOff: '探测器声音：关', soundHint: '舱内低鸣之上是不安的呼啸风声、微弱的射电嘶声，以及颗粒敲击舱体的轻响。M 切换。', gravityMercuryTag: '海王星引力 — 11.15 m/s²。', gravityEarth: '地球引力 — 9.8 m/s²。比这颗深蓝巨行星稍温柔一点。', mercuryTag: '海王星', earthTag: '地球',
             controlsText: '你是一台巡航在海王星风暴层中的探测器——没有地面，也不会坠落。探测器会自行向前巡航；W A S D 或方向键控制侧向漂移和加减速，Shift 更快。空格上升，C 下沉向云层。拖动画面观察。触屏有方向按钮和推进键。G 对比地球引力，M 开关声音。H 隐藏手记，P 进入摄影，Esc 退出摄影。',
-            scienceTitle: '科学与想象的交界', scienceText: '海王星拥有太阳系最快的风——最高约每小时 2100 公里，在这稀薄冰冷的空气里已经超音速。旅行者 2 号 1989 年飞掠时，大黑斑是一场比地球还宽的风暴。这里的云层、风和涡旋都是艺术重建。',
+            scienceTitle: '科学与想象的交界', scienceText: '海王星拥有太阳系最快的风——最高约每小时 2100 公里，远超地球上任何飓风。旅行者 2 号 1989 年飞掠时，大黑斑是一场比地球还宽的风暴。这里的云层、风和涡旋都是艺术重建。',
             soundText: '飞行比真实的海王星天气平缓得多——这里的风速可以超过每小时 2000 公里。按 G 对比地球引力；海王星的引力比地球稍大一点。进入卷云带时，留意风声渐强。',
             assetText: '旅行者 2 号是 NASA 的真实 3D 模型——1989 年 8 月唯一到访过海王星的探测器。风暴云层、粒子场和星空由浏览器本地生成。',
             skyEyebrow: '海王星天空中', sunName: '太阳', earthName: '地球', tritonName: '海卫一', stormName: '大黑斑',
             sunText: '从海王星看，太阳比地球上看远三十倍——一枚刺眼的细小光点，光照只有地球白天的约千分之一，却依然驱动着全太阳系最猛烈的风。艺术呈现，并非精确星历。',
             earthText: '从海王星看，地球永远不会离开太阳一两度之外——一个湮没在眩光中的淡色小点。位置经过艺术处理。',
             tritonText: '海卫一——海王星俘获的卫星，逆向公转，粉色冰面上喷发着氮气间歇泉。旅行者 2 号在同一次飞掠中擦过它。位置和比例经过艺术处理。',
-            stormText: '大黑斑——一个比地球还宽的反气旋风暴，边缘风速超音速。旅行者 2 号 1989 年拍到它；到 1994 年它已经消散。比例经过艺术处理。',
+            stormText: '大黑斑——一个比地球还宽的反气旋风暴，边缘风速可达每小时约 2400 公里。旅行者 2 号 1989 年拍到它；到 1994 年它已经消散。比例经过艺术处理。',
             viewOrbit: '在太阳系中查看它', keepExploring: '继续探索', skyHint: '点击天空中的小太阳、海卫一或远处的风暴可以了解它，然后还能跳到太阳系视角。',
             featuresTitle: '你眼前的景观', features: [
                 ['刺眼的小太阳', '隔着三十倍的距离，太阳只是一枚尖锐的光点——却依然驱动着全太阳系最快的风。'],
                 ['甲烷卷云', '脚下拖长的浅色条纹是高空甲烷冰卷云，被呼啸的风拉成一道道细带。'],
-                ['大黑斑', '天际那边：一场比地球还宽的风暴，边缘风速超音速。'],
+                ['大黑斑', '天际那边：一场比地球还宽的风暴，边缘风速可达每小时约 2400 公里。'],
                 ['飞毛腿云', '那团白云是"飞毛腿"式的快云——旅行者 2 号曾看到这类云跑得比暗斑还快。'],
                 ['风切变线', '风向翻转的边界——海王星的云带像齿轮一样，一层正转一层反转。'],
                 ['同行的旅行者号', 'NASA 真实的旅行者号模型与你编队——1989 年 8 月 25 日，唯一见过这番景象的探测器。']
@@ -73,7 +73,7 @@
             notes: [
                 ['风暴远眺', '从高处看，风暴层终于显形——蓝白色卷云在下方拉成条带，暗色涡旋等在天际。', '抵达方式', '风暴层远景'],
                 ['一缕卷云', '这粒漂移的晶体是甲烷冰——海王星稀薄冰冷的空气用让行星变蓝的同一种气体造出了云。在查看器中旋转它。', '气溶胶', '甲烷卷云'],
-                ['风暴之墙', '直面大黑斑——这里的云层向一场比地球还宽的风暴弯去，边缘风速超音速。', '涡旋', '风暴之墙'],
+                ['风暴之墙', '直面大黑斑——这里的云层向一场比地球还宽的风暴弯去，边缘风速可达每小时约 2400 公里。', '涡旋', '风暴之墙'],
                 ['风切变线', '一朵白色快云标记着切变线——海王星风向在此翻转的边界，像啮合的齿轮。', '风', '切变线'],
                 ['风暴转盘', '一个标记转盘演示暗色涡旋——反气旋一转数年，风型一变又悄然消散。', '姿态', '涡旋自转']
             ]
@@ -393,6 +393,17 @@
         scene.add(puffGroup);
     }
     function buildSky() {
+        // Gradient sky dome: the methane haze glows paler toward the horizon and matches the
+        // fog colour there, so the far cloud deck melts into the sky instead of ending in a hard line.
+        const skyDome = new THREE.Mesh(new THREE.SphereGeometry(6500, 32, 16), new THREE.ShaderMaterial({
+            side: THREE.BackSide, depthWrite: false, fog: false,
+            uniforms: { uHaze: { value: scene.fog.color.clone() }, uZenith: { value: new THREE.Color(0x030a18) } },
+            vertexShader: 'varying vec3 vDir; void main(){ vDir = position; vec4 p = projectionMatrix * modelViewMatrix * vec4(position, 1.0); gl_Position = p.xyww; }',
+            fragmentShader: 'uniform vec3 uHaze, uZenith; varying vec3 vDir; void main(){ float up = normalize(vDir).y; float dither = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5; gl_FragColor = vec4(mix(uHaze, uZenith, smoothstep(0.0, 0.42, up)) + dither * 0.006, 1.0);\n#include <tonemapping_fragment>\n#include <encodings_fragment>\n}'
+        }));
+        skyDome.renderOrder = -1;
+        skyDome.frustumCulled = false;
+        scene.add(skyDome);
         // Starfield dome
         const starCount = 2600;
         const positions = new Float32Array(starCount * 3);

@@ -489,6 +489,9 @@ for (const page of pages) {
     const asset = image.slice('https://www.3dsolarsystem.net/'.length);
     if (!fs.existsSync(path.join(root, asset))) errors.push(`${file}: sharing image does not exist`);
   }
+  if (/favicon|android-chrome/i.test(image)) errors.push(`${file}: sharing image must be a scene screenshot, not the logo`);
+  if (capture(html, /<meta name="twitter:card" content="([^"]+)">/i, 'Twitter card', file) !== 'summary_large_image') errors.push(`${file}: Twitter card must be summary_large_image`);
+  if (!html.includes("gtag('config', 'G-783407FTTB')")) errors.push(`${file}: missing site analytics tag`);
   if (page === 'moon' && !/Moon/i.test(heading)) errors.push(`${file}: heading must identify the Moon expedition`);
   if (page === 'mars-expedition' && !/Mars/i.test(heading)) errors.push(`${file}: heading must identify the Mars expedition`);
   if (page === 'venus-expedition' && !/Venus/i.test(heading)) errors.push(`${file}: heading must identify the Venus expedition`);
@@ -502,6 +505,18 @@ for (const page of pages) {
   if (/\b(ultimate|professional-grade|smooth 60fps|ultra-realistic|therapeutic solar system)\b/i.test(html)) errors.push(`${file}: unsupported marketing claim found`);
   const isExpedition = page === 'moon' || page === 'mars-expedition' || page === 'venus-expedition' || page === 'mercury-expedition' || page === 'jupiter-expedition' || page === 'saturn-expedition' || page === 'uranus-expedition' || page === 'neptune-expedition';
   if (!isExpedition && !/data-focus="Mercury"[\s\S]*data-focus="Neptune"/i.test(html)) errors.push(`${file}: planet navigation is incomplete`);
+  if (isExpedition) {
+    const article = (html.match(/<article id="about"[\s\S]*?<\/article>/) || [''])[0];
+    const planetPage = page === 'moon' ? 'earth' : page.replace('-expedition', '');
+    if (!article) errors.push(`${file}: missing crawlable "About this expedition" article`);
+    else {
+      const words = article.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
+      if (words < 300) errors.push(`${file}: About article is too thin (${words} words)`);
+      if (!article.includes(`href="${planetPage}.html"`)) errors.push(`${file}: About article must link to ${planetPage}.html`);
+      if (!/<dl class="about-facts">/.test(article)) errors.push(`${file}: About article needs a quick-facts list`);
+    }
+    if (!/<script src="expedition-about\.js"><\/script>/.test(html)) errors.push(`${file}: expedition-about.js must be loaded`);
+  }
   const qualityId = isExpedition ? 'moon-quality' : 'quality-select';
   if (!new RegExp(`<select id="${qualityId}"[\\s\\S]*value="auto"[\\s\\S]*value="high"[\\s\\S]*value="balanced"[\\s\\S]*value="low"`, 'i').test(html)) {
     errors.push(`${file}: accessible quality selector is incomplete`);
@@ -514,6 +529,7 @@ for (const page of pages) {
   if (!isExpedition && !/href="mars-expedition\.html"/.test(html)) errors.push(`${file}: missing Mars expedition link`);
   if (!isExpedition && !/href="venus-expedition\.html"/.test(html)) errors.push(`${file}: missing Venus expedition link`);
   if (!isExpedition && !/href="mercury-expedition\.html"/.test(html)) errors.push(`${file}: missing Mercury expedition link`);
+  if (!isExpedition && !/href="jupiter-expedition\.html"/.test(html)) errors.push(`${file}: missing Jupiter expedition link`);
   if (!isExpedition && !/href="saturn-expedition\.html"/.test(html)) errors.push(`${file}: missing Saturn expedition link`);
   if (!isExpedition && !/href="uranus-expedition\.html"/.test(html)) errors.push(`${file}: missing Uranus expedition link`);
   if (!isExpedition && !/href="neptune-expedition\.html"/.test(html)) errors.push(`${file}: missing Neptune expedition link`);
@@ -567,6 +583,13 @@ for (const scenario of qualityScenarios) {
 const sitemap = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
 for (const canonical of canonicals) {
   if (!sitemap.includes(`<loc>${canonical}</loc>`)) errors.push(`sitemap.xml: missing ${canonical}`);
+}
+const today = new Date().toISOString().slice(0, 10);
+for (const [, date] of sitemap.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)) {
+  if (date > today) errors.push(`sitemap.xml: lastmod ${date} is in the future`);
+}
+for (const [, img] of sitemap.matchAll(/<image:loc>https:\/\/www\.3dsolarsystem\.net\/([^<]+)<\/image:loc>/g)) {
+  if (!fs.existsSync(path.join(root, img))) errors.push(`sitemap.xml: image ${img} does not exist`);
 }
 
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'site.webmanifest'), 'utf8'));

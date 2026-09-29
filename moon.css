@@ -38,7 +38,7 @@ button:focus-visible, a:focus-visible, select:focus-visible, canvas:focus-visibl
 .compass { position: absolute; top: 99px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 22px; color: #a7a8a5; font: 10px ui-monospace, Consolas, monospace; letter-spacing: .15em; }
 .compass #heading { color: var(--ink); min-width: 40px; text-align: center; }
 .compass i { width: 0; height: 0; position: absolute; top: 24px; left: calc(50% - 3px); border-left: 3px solid transparent; border-right: 3px solid transparent; border-top: 4px solid var(--accent); }
-.arrival-card { position: absolute; left: 6.5%; bottom: 24%; width: min(405px, 38vw); text-shadow: 0 2px 24px #0008; }
+.arrival-card { position: absolute; left: 6.5%; bottom: 24%; width: min(560px, 46vw); text-shadow: 0 2px 24px #0008; }
 .eyebrow { font: 10px ui-monospace, Consolas, monospace; color: var(--accent); letter-spacing: .17em; line-height: 1.6; }
 h1 { font-family: Georgia, "Times New Roman", "Songti SC", SimSun, serif; font-size: clamp(44px, 5.6vw, 85px); font-weight: 400; letter-spacing: -.055em; line-height: 1.04; margin: 23px 0; }
 .arrival-description { font-size: 14px; line-height: 1.8; color: #deddd7; max-width: 325px; margin-bottom: 27px; }
@@ -144,9 +144,14 @@ dialog .asset-note { font-size: 11px; border-top: 1px solid var(--line); padding
     .touch-pad { bottom: 240px; right: 20px; grid-template-columns: repeat(3, 36px); grid-template-rows: repeat(2, 38px); }
     #photo-controls { flex-direction: column; gap: 10px; }
 }
+@media (max-height: 820px) and (min-width: 721px) {
+    .arrival-card { bottom: 150px; }
+    h1 { font-size: clamp(44px, 5vw, 64px); margin: 16px 0; }
+}
 @media (max-height: 650px) and (min-width: 721px) {
-    .arrival-card { bottom: 130px; }
-    h1 { font-size: 48px; margin: 12px 0; }
+    .arrival-card { bottom: 104px; }
+    .arrival-hint { display: none; }
+    h1 { font-size: 44px; margin: 12px 0; }
     .arrival-description { margin-bottom: 15px; }
     .telemetry { top: 32%; gap: 18px; }
     .field-card { bottom: 130px; }
@@ -187,4 +192,26 @@ dialog .asset-note { font-size: 11px; border-top: 1px solid var(--line); padding
 .discovery-actions { display: flex; gap: 18px; align-items: center; margin-top: 24px; flex-wrap: wrap; }
 @media (max-width: 720px) { .route-card { max-height: calc(100dvh - 390px); } .route-card #station-description { font-size: 10px; } .route-bearing { gap: 9px; padding: 9px 0; } .route-actions { flex-wrap: wrap; } .route-actions button { padding: 9px 7px; } #next-discovery { flex: 1; } #specimen-canvas { height: 220px; } }
 @media (max-width: 360px) { .route-card { width: 150px; } .route-card h2 { font-size: 19px; } .route-card #station-description { display: none; } }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+.about-cue { display: inline-block; margin-top: 18px; font: 10px ui-monospace, Consolas, monospace; letter-spacing: .14em; color: var(--muted); border-bottom: 1px solid #ffffff30; padding-bottom: 3px; }
+.about-cue:hover { color: var(--ink); border-color: var(--accent); }
+html.can-read, html.can-read body { height: auto; overflow-x: hidden; overflow-y: auto; scroll-behavior: smooth; }
+html.can-read #moon-canvas { touch-action: pan-y; }
+.about-world { position: relative; z-index: 30; margin-top: 100vh; margin-top: 100dvh; padding: 120px max(24px, 6.5%) 70px; background: linear-gradient(180deg, #08090900 0, #080909 90px); color: var(--ink); }
+.about-inner { max-width: 760px; }
+.about-world h2 { font: 400 clamp(30px, 4vw, 46px)/1.12 Georgia, "Times New Roman", serif; letter-spacing: -.03em; margin: 14px 0 22px; }
+.about-world h3 { color: #e7c7a2; font-size: 14px; font-weight: 500; letter-spacing: .02em; margin: 38px 0 12px; }
+.about-world p, .about-world li { font-size: 15px; line-height: 1.8; color: #c9cac2; }
+.about-world a { color: var(--ink); text-decoration: underline; text-decoration-color: #dfb88988; text-underline-offset: 3px; }
+.about-world a:hover { text-decoration-color: var(--accent); }
+.about-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1px; margin: 0; background: var(--line); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.about-facts div { background: #0d0f0e; padding: 14px 16px; }
+.about-facts dt { font: 9px ui-monospace, Consolas, monospace; letter-spacing: .15em; color: var(--accent); text-transform: uppercase; }
+.about-facts dd { margin: 6px 0 0; font-size: 14px; line-height: 1.5; color: var(--ink); }
+.about-discoveries { padding-left: 20px; }
+.about-discoveries strong { color: var(--ink); font-weight: 500; }
+.about-links { display: flex; flex-wrap: wrap; gap: 8px 20px; padding: 0; list-style: none; }
+.about-links li { font-size: 13px; }
+.about-footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 12px !important; color: #9d9e95 !important; }
+.about-top { font: 10px ui-monospace, Consolas, monospace; letter-spacing: .14em; }
+@media (max-width: 720px) { .about-world { padding: 90px 22px 60px; } .about-world p, .about-world li { font-size: 14px; } .about-cue { margin-top: 4px; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } html.can-read { scroll-behavior: auto; } }

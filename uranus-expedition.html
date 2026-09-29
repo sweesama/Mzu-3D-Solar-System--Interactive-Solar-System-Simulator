@@ -5,21 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#04060c">
     <meta name="robots" content="index, follow, max-image-preview:large">
-    <title>Uranus Sideways Ring Flight in 3D | Mzu Solar System</title>
+    <title>Fly Through Uranus’s Rings in 3D — Sideways Ice Giant | Mzu</title>
     <meta name="description" content="Drift through Uranus's narrow charcoal-dark rings beside Voyager 2 — thin dark bands in turquoise light, a tipped giant, a shepherd moonlet, and five discoveries along the plane.">
     <link rel="canonical" href="https://www.3dsolarsystem.net/uranus-expedition.html">
-    <meta property="og:title" content="Uranus Sideways Ring Flight in 3D | Mzu Solar System">
+    <meta property="og:title" content="Fly Through Uranus’s Rings in 3D — Sideways Ice Giant | Mzu">
     <meta property="og:description" content="Cruise Uranus's thin dark rings beside Voyager 2 — charcoal bands, a sideways giant, and five discoveries along the ring plane.">
     <meta property="og:url" content="https://www.3dsolarsystem.net/uranus-expedition.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Mzu 3D Solar System">
-    <meta property="og:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
-    <meta property="og:image:alt" content="Mzu 3D Solar System logo">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Uranus Sideways Ring Flight in 3D | Mzu Solar System">
+    <meta property="og:image" content="https://www.3dsolarsystem.net/og/uranus-expedition.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Probe view between Uranus’s narrow dark rings with the turquoise planet beside">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Fly Through Uranus’s Rings in 3D — Sideways Ice Giant | Mzu">
     <meta name="twitter:description" content="Thread Uranus's thin dark rings beside Voyager 2 — charcoal bands, a tipped giant, and a science-inspired ice giant. Free browser-based exploration.">
-    <meta name="twitter:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
-    <meta name="twitter:image:alt" content="Mzu 3D Solar System logo">
+    <meta name="twitter:image" content="https://www.3dsolarsystem.net/og/uranus-expedition.jpg">
+    <meta name="twitter:image:alt" content="Probe view between Uranus’s narrow dark rings with the turquoise planet beside">
     <script id="app-structured-data" type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -30,14 +32,40 @@
       "applicationCategory": "EducationalApplication",
       "operatingSystem": "Any modern web browser with WebGL support",
       "isAccessibleForFree": true,
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "inLanguage": ["en", "zh-CN"],
-      "about": { "@type": "Thing", "name": "Uranus" },
-      "isPartOf": { "@type": "WebSite", "name": "Mzu 3D Solar System", "url": "https://www.3dsolarsystem.net/" }
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "inLanguage": [
+        "en",
+        "zh-CN"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "Uranus"
+      },
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Mzu 3D Solar System",
+        "url": "https://www.3dsolarsystem.net/"
+      },
+      "image": "https://www.3dsolarsystem.net/og/uranus-expedition.jpg",
+      "screenshot": "https://www.3dsolarsystem.net/og/uranus-expedition.jpg"
     }
     </script>
-    <link rel="icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="moon.css">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-783407FTTB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-783407FTTB');
+    </script>
 </head>
 <body>
     <main id="expedition" aria-label="Interactive Uranus ring plane">
@@ -62,6 +90,7 @@
             <p class="arrival-description" data-i18n="intro">Drift through Uranus's narrow charcoal-dark rings — thin bands floating in turquoise light, the pale giant tipped on its side, Voyager 2 flying formation.</p>
             <button id="begin-button" class="primary-button" type="button" disabled><span data-i18n="begin">Begin the flight</span><span aria-hidden="true">→</span></button>
             <p class="arrival-hint" data-i18n="arrivalHint">No download. Just a little curiosity.</p>
+            <a class="about-cue" href="#about">About this expedition ↓</a>
         </section>
 
         <section id="field-card" class="field-card route-card" hidden>
@@ -151,6 +180,48 @@
         <p id="moonlet-text"></p>
         <div class="discovery-actions"><a id="moonlet-link" class="primary-button" href="index.html" style="text-decoration:none" data-i18n="viewOrbit">See it in the Solar System</a><form method="dialog"><button class="quiet-button" type="submit" data-i18n="keepExploring">Keep exploring</button></form></div>
     </dialog>
+    <article id="about" class="about-world" aria-labelledby="about-title">
+        <div class="about-inner">
+            <p class="eyebrow">About this expedition</p>
+            <h2 id="about-title">What is it like to fly through the rings of Uranus?</h2>
+            <p>Drift through the narrow, charcoal-dark rings of Uranus in an imagined probe, with a real NASA 3D model of Voyager 2 flying beside you. The turquoise planet fills half the sky, and the rings curve around it as thin concentric bands — nothing like Saturn’s broad, bright sheets.</p>
+            <p>Uranus is an ice giant that rolls around the Sun on its side: its axis is tilted about 98°, so each pole gets roughly 42 years of continuous daylight followed by 42 years of night. Its 13 known rings are narrow and darker than coal, reflecting only a few percent of the sunlight that hits them. Methane in its atmosphere absorbs red light and gives the planet its blue-green colour. Voyager 2 is the only spacecraft ever to visit, flying past in January 1986.</p>
+            <h3>Quick facts</h3>
+            <dl class="about-facts">
+                <div><dt>Gravity</dt><dd>8.87 m/s² — about 90% of Earth’s</dd></div>
+                <div><dt>Axial tilt</dt><dd>About 98° — it spins on its side</dd></div>
+                <div><dt>Rings</dt><dd>13 known, narrow and very dark</dd></div>
+                <div><dt>Length of a year</dt><dd>About 84 Earth years</dd></div>
+                <div><dt>Cloud-top temperature</dt><dd>About −195 °C</dd></div>
+                <div><dt>Visited by</dt><dd>Voyager 2, January 1986</dd></div>
+            </dl>
+            <h3>Five discoveries to find</h3>
+            <ol class="about-discoveries">
+                <li><strong>The ring vista</strong> — the thin rings, with the ε ring the brightest of them.</li>
+                <li><strong>A ring charcoal lump</strong> — a nearly black ring particle in the specimen viewer.</li>
+                <li><strong>The dark gap</strong> — the quiet space between narrow rings.</li>
+                <li><strong>The shepherd moonlet</strong> — a small moon that keeps a ring edge sharp.</li>
+                <li><strong>The 98° tilt</strong> — a marker globe that shows how far Uranus leans.</li>
+            </ol>
+            <h3>How to explore</h3>
+            <p>Press <strong>Begin the flight</strong>. The probe cruises forward on its own; W A S D drift sideways, Space rises and C sinks below the ring plane. Drag to look around; on phones and tablets a touch pad appears. Press G to compare the local gravity with Earth’s, P for photo mode, and E to record a discovery in your journal — progress is saved on your own device.</p>
+            <h3>Science and artistic reconstruction</h3>
+            <p>The ring count, darkness and the planet’s tilt come from Voyager 2 and telescope observations; Voyager 2 is a real NASA 3D model. The band layout, moonlet and tilt marker are artistic reconstructions, and the scene is compressed for viewing.</p>
+            <h3>Keep exploring</h3>
+            <ul class="about-links">
+                    <li><a href="uranus.html">Uranus in the 3D Solar System</a></li>
+                    <li><a href="moon.html">Walk on the Moon</a></li>
+                    <li><a href="mars-expedition.html">Walk on Mars</a></li>
+                    <li><a href="venus-expedition.html">Walk on Venus</a></li>
+                    <li><a href="mercury-expedition.html">Walk on Mercury</a></li>
+                    <li><a href="jupiter-expedition.html">Descend into Jupiter</a></li>
+                    <li><a href="saturn-expedition.html">Fly through Saturn’s rings</a></li>
+                    <li><a href="neptune-expedition.html">Fly into Neptune’s storms</a></li>
+                    <li><a href="index.html">The full 3D Solar System</a></li>
+            </ul>
+            <p class="about-footer">Mzu 3D Solar System is a free educational project. No account, download or AI service is needed. <a class="about-top" href="#">Back to the expedition ↑</a></p>
+        </div>
+    </article>
     <noscript><div class="no-script">JavaScript and WebGL are needed for this expedition. <a href="index.html">Return to the Solar System</a>.</div></noscript>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://unpkg.com/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
@@ -163,6 +234,7 @@
     <script src="https://unpkg.com/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
+    <script src="expedition-about.js"></script>
     <script src="quality-policy.js"></script>
     <script src="uranus-rings.js"></script>
     <script src="uranus-expedition.js"></script>

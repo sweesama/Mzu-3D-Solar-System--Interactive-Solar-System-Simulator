@@ -24,7 +24,7 @@
                 ['Micro-craters', 'The ground is peppered with centimetre-scale pits from endless micrometeorite rain.'],
                 ['Rock fillets', 'Dust ramped against the base of every big boulder — a signature lunar look.'],
                 ['Black-sky daylight', 'No air to scatter light: the sky stays black at noon and shadows are razor-sharp.'],
-                ['Earth overhead', 'It hangs almost still in the lunar sky — from here it never sets, and it shines about four times brighter than a full Moon does at home.'],
+                ['Earth overhead', 'It hangs almost still in the lunar sky — from here it never sets, and it shines roughly forty times brighter than a full Moon does at home.'],
                 ['Horizon glow', 'A faint bright band hugs the horizon toward the Sun — Apollo crews reported dust levitating and scattering light there.'],
                 ['Your footprints', 'Nothing erodes them — Apollo’s boot prints are still up there after fifty years.']
             ],
@@ -55,7 +55,7 @@
                 ['微小撞击坑', '地面布满厘米级小坑，来自永不停歇的微陨石雨。'],
                 ['岩根土堆', '每块巨石根部都堆起一圈月壤——月球上标志性的细节。'],
                 ['白昼黑天', '没有大气散射阳光：正午的天空依然漆黑，影子边缘锋利如刀。'],
-                ['头顶的地球', '它几乎一动不动地挂在月空——从这里看它永不落下，亮度约是满月的四倍。'],
+                ['头顶的地球', '它几乎一动不动地挂在月空——从这里看它永不落下，亮度约是满月的四十倍。'],
                 ['地平线辉光', '朝着太阳方向的地平线有一圈微弱亮带——阿波罗宇航员报告过悬浮尘埃散射出的这种光。'],
                 ['你的脚印', '没有风没有水，脚印永不磨灭——阿波罗的靴印至今仍留在月面。']
             ],

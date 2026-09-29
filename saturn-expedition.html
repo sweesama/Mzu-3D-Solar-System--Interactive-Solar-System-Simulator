@@ -5,21 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#04060c">
     <meta name="robots" content="index, follow, max-image-preview:large">
-    <title>Saturn Ring-Plane Cruise in 3D | Mzu Solar System</title>
+    <title>Fly Through Saturn’s Rings in 3D — Ring-Plane Cruise | Mzu</title>
     <meta name="description" content="Fly alongside Cassini through Saturn's rings in an imagined probe — glittering ice fields, a shepherd moonlet, the Cassini division, and five discoveries along the plane.">
     <link rel="canonical" href="https://www.3dsolarsystem.net/saturn-expedition.html">
-    <meta property="og:title" content="Saturn Ring-Plane Cruise in 3D | Mzu Solar System">
+    <meta property="og:title" content="Fly Through Saturn’s Rings in 3D — Ring-Plane Cruise | Mzu">
     <meta property="og:description" content="Cruise through Saturn's rings beside Cassini — ice fields below, the golden giant overhead, and five discoveries along the ring plane.">
     <meta property="og:url" content="https://www.3dsolarsystem.net/saturn-expedition.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Mzu 3D Solar System">
-    <meta property="og:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
-    <meta property="og:image:alt" content="Mzu 3D Solar System logo">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Saturn Ring-Plane Cruise in 3D | Mzu Solar System">
+    <meta property="og:image" content="https://www.3dsolarsystem.net/og/saturn-expedition.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Probe view cruising Saturn’s icy ring plane with Cassini alongside">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Fly Through Saturn’s Rings in 3D — Ring-Plane Cruise | Mzu">
     <meta name="twitter:description" content="Fly the ring plane beside Cassini — ice boulders, a shepherd moonlet, the great division, and a science-inspired Saturn. Free browser-based exploration.">
-    <meta name="twitter:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
-    <meta name="twitter:image:alt" content="Mzu 3D Solar System logo">
+    <meta name="twitter:image" content="https://www.3dsolarsystem.net/og/saturn-expedition.jpg">
+    <meta name="twitter:image:alt" content="Probe view cruising Saturn’s icy ring plane with Cassini alongside">
     <script id="app-structured-data" type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -30,14 +32,40 @@
       "applicationCategory": "EducationalApplication",
       "operatingSystem": "Any modern web browser with WebGL support",
       "isAccessibleForFree": true,
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "inLanguage": ["en", "zh-CN"],
-      "about": { "@type": "Thing", "name": "Saturn" },
-      "isPartOf": { "@type": "WebSite", "name": "Mzu 3D Solar System", "url": "https://www.3dsolarsystem.net/" }
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "inLanguage": [
+        "en",
+        "zh-CN"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "Saturn"
+      },
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Mzu 3D Solar System",
+        "url": "https://www.3dsolarsystem.net/"
+      },
+      "image": "https://www.3dsolarsystem.net/og/saturn-expedition.jpg",
+      "screenshot": "https://www.3dsolarsystem.net/og/saturn-expedition.jpg"
     }
     </script>
-    <link rel="icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="moon.css">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-783407FTTB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-783407FTTB');
+    </script>
 </head>
 <body>
     <main id="expedition" aria-label="Interactive Saturn ring plane">
@@ -62,6 +90,7 @@
             <p class="arrival-description" data-i18n="intro">Cruise alongside Cassini through the planet's famous rings — glittering ice fields below, a golden giant overhead, and a moonlet shepherding the edge.</p>
             <button id="begin-button" class="primary-button" type="button" disabled><span data-i18n="begin">Begin the cruise</span><span aria-hidden="true">→</span></button>
             <p class="arrival-hint" data-i18n="arrivalHint">No download. Just a little curiosity.</p>
+            <a class="about-cue" href="#about">About this expedition ↓</a>
         </section>
 
         <section id="field-card" class="field-card route-card" hidden>
@@ -126,7 +155,7 @@
         <h3 data-i18n="featuresTitle">What you are seeing</h3>
         <ul id="feature-list" class="feature-list"></ul>
         <h3 data-i18n="scienceTitle">Science meets imagination</h3>
-        <p data-i18n="scienceText">Saturn's rings are countless ice particles orbiting in a sheet tens of metres thick yet wider than the distance to our Moon. Cassini flew these gaps for thirteen years. The band layout, propeller swirl, and moonlet are artistic reconstructions, not survey data.</p>
+        <p data-i18n="scienceText">Saturn's rings are countless ice particles orbiting in a sheet often only tens of metres thick yet about 270,000 km across — roughly 70% of the way from Earth to the Moon. Cassini studied them from orbit for thirteen years, then dived through the gap between rings and planet in 2017. The band layout, propeller swirl, and moonlet are artistic reconstructions, not survey data.</p>
         <p data-i18n="soundText">The cruise is far gentler than real ring-plane flight. Press G to feel the ring's faint tidal tug ease under Earth's gravity. Listen for grains ticking off the hull in the dense bands.</p>
         <p data-i18n="skyHint">Click the small Sun or the giant itself in the sky to learn about it — you can then visit it in the Solar System view.</p>
         <p class="asset-note" data-i18n="assetText">Cassini is a real NASA 3D model. The Saturn globe uses a real planet texture; the ring sheet, ice field, and starfield are generated locally.</p>
@@ -151,6 +180,48 @@
         <p id="moonlet-text"></p>
         <div class="discovery-actions"><a id="moonlet-link" class="primary-button" href="index.html" style="text-decoration:none" data-i18n="viewOrbit">See it in the Solar System</a><form method="dialog"><button class="quiet-button" type="submit" data-i18n="keepExploring">Keep exploring</button></form></div>
     </dialog>
+    <article id="about" class="about-world" aria-labelledby="about-title">
+        <div class="about-inner">
+            <p class="eyebrow">About this expedition</p>
+            <h2 id="about-title">What is it like to fly through Saturn’s rings?</h2>
+            <p>Cruise the ring plane of Saturn in an imagined probe, with NASA’s Cassini spacecraft — a real NASA 3D model — flying alongside. Ice boulders tumble past, the bright B ring and the dark Cassini Division curve around the golden planet, and a small shepherd moon herds the ring edge.</p>
+            <p>Saturn’s main rings are made of countless pieces of water ice, from dust-sized grains to boulders several metres across. Together they span about 270,000 km — roughly 70% of the distance from Earth to the Moon — yet they are often only tens of metres thick. The widest gap, the Cassini Division, is about 4,800 km across. Cassini orbited Saturn from 2004 to 2017 and ended its mission with 22 dives between the rings and the planet.</p>
+            <h3>Quick facts</h3>
+            <dl class="about-facts">
+                <div><dt>Gravity</dt><dd>10.44 m/s² — slightly more than Earth’s</dd></div>
+                <div><dt>Main-ring span</dt><dd>About 270,000 km across</dd></div>
+                <div><dt>Ring thickness</dt><dd>Often only tens of metres</dd></div>
+                <div><dt>Ring material</dt><dd>Mostly water ice</dd></div>
+                <div><dt>Length of a day</dt><dd>About 10.7 hours</dd></div>
+                <div><dt>Cassini mission</dt><dd>In orbit 2004–2017</dd></div>
+            </dl>
+            <h3>Five discoveries to find</h3>
+            <ol class="about-discoveries">
+                <li><strong>The ring approach</strong> — the B ring, C ring and Cassini Division from above.</li>
+                <li><strong>A chunk of ring ice</strong> — a tumbling ice boulder in the specimen viewer.</li>
+                <li><strong>The great division</strong> — inside the Cassini Division, a gap that is not quite empty.</li>
+                <li><strong>The shepherd moonlet</strong> — a small moon that keeps ring edges sharp.</li>
+                <li><strong>The propeller</strong> — the S-shaped wake of a moonlet too small to clear a gap.</li>
+            </ol>
+            <h3>How to explore</h3>
+            <p>Press <strong>Begin the cruise</strong>. The probe cruises forward on its own; W A S D drift sideways, Space rises and C sinks below the ring sheet. Drag to look around; on phones and tablets a touch pad appears. Press G to compare the local gravity with Earth’s, P for photo mode, and E to record a discovery in your journal — progress is saved on your own device.</p>
+            <h3>Science and artistic reconstruction</h3>
+            <p>Ring composition, structure and the Cassini model are based on NASA science and 3D Resources, and the Saturn globe uses a real planet texture. The band layout, the propeller and the moonlet are artistic reconstructions, not survey data.</p>
+            <h3>Keep exploring</h3>
+            <ul class="about-links">
+                    <li><a href="saturn.html">Saturn and its rings in the 3D Solar System</a></li>
+                    <li><a href="moon.html">Walk on the Moon</a></li>
+                    <li><a href="mars-expedition.html">Walk on Mars</a></li>
+                    <li><a href="venus-expedition.html">Walk on Venus</a></li>
+                    <li><a href="mercury-expedition.html">Walk on Mercury</a></li>
+                    <li><a href="jupiter-expedition.html">Descend into Jupiter</a></li>
+                    <li><a href="uranus-expedition.html">Fly through Uranus’s rings</a></li>
+                    <li><a href="neptune-expedition.html">Fly into Neptune’s storms</a></li>
+                    <li><a href="index.html">The full 3D Solar System</a></li>
+            </ul>
+            <p class="about-footer">Mzu 3D Solar System is a free educational project. No account, download or AI service is needed. <a class="about-top" href="#">Back to the expedition ↑</a></p>
+        </div>
+    </article>
     <noscript><div class="no-script">JavaScript and WebGL are needed for this expedition. <a href="index.html">Return to the Solar System</a>.</div></noscript>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://unpkg.com/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
@@ -163,6 +234,7 @@
     <script src="https://unpkg.com/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
+    <script src="expedition-about.js"></script>
     <script src="quality-policy.js"></script>
     <script src="saturn-rings.js"></script>
     <script src="saturn-expedition.js"></script>

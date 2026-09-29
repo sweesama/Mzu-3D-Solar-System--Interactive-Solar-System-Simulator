@@ -5,21 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#080909">
     <meta name="robots" content="index, follow, max-image-preview:large">
-    <title>Moon Exploration in 3D | Mzu Solar System</title>
+    <title>Walk on the Moon in 3D — First-Person Moon Explorer | Mzu</title>
     <meta name="description" content="Explore an imagined Moon landscape in your browser. Walk and jump in lunar gravity, discover five viewpoints, inspect a 3D rock, and keep an exploration journal.">
     <link rel="canonical" href="https://www.3dsolarsystem.net/moon.html">
-    <meta property="og:title" content="Moon Exploration in 3D | Mzu Solar System">
+    <meta property="og:title" content="Walk on the Moon in 3D — First-Person Moon Explorer | Mzu">
     <meta property="og:description" content="Walk an imagined lunar landscape, discover five observation points, inspect a rock in 3D, and photograph Earth above the horizon.">
     <meta property="og:url" content="https://www.3dsolarsystem.net/moon.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Mzu 3D Solar System">
-    <meta property="og:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
-    <meta property="og:image:alt" content="Mzu 3D Solar System logo">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Moon Exploration in 3D | Mzu Solar System">
+    <meta property="og:image" content="https://www.3dsolarsystem.net/og/moon-expedition.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="First-person view across a cratered lunar plain with Earth above the horizon">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Walk on the Moon in 3D — First-Person Moon Explorer | Mzu">
     <meta name="twitter:description" content="Walk, jump, and make discoveries in a science-inspired lunar landscape. Free browser-based exploration, with no account required.">
-    <meta name="twitter:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
-    <meta name="twitter:image:alt" content="Mzu 3D Solar System logo">
+    <meta name="twitter:image" content="https://www.3dsolarsystem.net/og/moon-expedition.jpg">
+    <meta name="twitter:image:alt" content="First-person view across a cratered lunar plain with Earth above the horizon">
     <script id="app-structured-data" type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -30,14 +32,40 @@
       "applicationCategory": "EducationalApplication",
       "operatingSystem": "Any modern web browser with WebGL support",
       "isAccessibleForFree": true,
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "inLanguage": ["en", "zh-CN"],
-      "about": { "@type": "Thing", "name": "Moon" },
-      "isPartOf": { "@type": "WebSite", "name": "Mzu 3D Solar System", "url": "https://www.3dsolarsystem.net/" }
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "inLanguage": [
+        "en",
+        "zh-CN"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "Moon"
+      },
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Mzu 3D Solar System",
+        "url": "https://www.3dsolarsystem.net/"
+      },
+      "image": "https://www.3dsolarsystem.net/og/moon-expedition.jpg",
+      "screenshot": "https://www.3dsolarsystem.net/og/moon-expedition.jpg"
     }
     </script>
-    <link rel="icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="moon.css">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-783407FTTB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-783407FTTB');
+    </script>
 </head>
 <body>
     <main id="expedition" aria-label="Interactive lunar landscape">
@@ -62,6 +90,7 @@
             <p class="arrival-description" data-i18n="intro">Walk an imagined lunar landscape, jump in low gravity, and discover craters, rocks, and Earth above the horizon.</p>
             <button id="begin-button" class="primary-button" type="button" disabled><span data-i18n="begin">Step onto the Moon</span><span aria-hidden="true">→</span></button>
             <p class="arrival-hint" data-i18n="arrivalHint">No download. Just a little curiosity.</p>
+            <a class="about-cue" href="#about">About this expedition ↓</a>
         </section>
 
         <section id="field-card" class="field-card route-card" hidden>
@@ -142,6 +171,48 @@
         <p class="asset-note" data-i18n="discoveryDisclaimer">This is an imagined site, not a surveyed landing site or an identified lunar sample.</p>
         <div class="discovery-actions"><button id="continue-route" class="primary-button" type="button" data-i18n="continueRoute">Continue exploring</button><button id="discovery-photo" class="quiet-button" type="button" data-i18n="takePhoto">Frame a photograph</button></div>
     </dialog>
+    <article id="about" class="about-world" aria-labelledby="about-title">
+        <div class="about-inner">
+            <p class="eyebrow">About this expedition</p>
+            <h2 id="about-title">What is it like to walk on the Moon?</h2>
+            <p>This free, browser-based expedition puts you on the lunar surface in first person. You walk and jump in real lunar gravity — 1.62 m/s², about one-sixth of Earth’s — across a cratered plain under a black sky, with Earth hanging above the horizon. There is nothing to download and no account to create: it runs in any modern browser with WebGL, on a computer or a phone.</p>
+            <p>The Moon has almost no atmosphere, so sunlight is harsh, shadows are razor-sharp and the sky stays black even at noon. With no wind or rain, craters, boulders and footprints can survive for millions of years — the bootprints Apollo astronauts left between 1969 and 1972 are still there today.</p>
+            <h3>Quick facts</h3>
+            <dl class="about-facts">
+                <div><dt>Surface gravity</dt><dd>1.62 m/s² — about 16.5% of Earth’s</dd></div>
+                <div><dt>Distance from Earth</dt><dd>About 384,400 km on average</dd></div>
+                <div><dt>Length of a day</dt><dd>About 29.5 Earth days, sunrise to sunrise</dd></div>
+                <div><dt>Surface temperature</dt><dd>About 120 °C in sunlight to −130 °C at night</dd></div>
+                <div><dt>Atmosphere</dt><dd>Essentially none — a very thin exosphere</dd></div>
+                <div><dt>Crewed landings</dt><dd>Six Apollo missions, 12 astronauts (1969–1972)</dd></div>
+            </dl>
+            <h3>Five discoveries to find</h3>
+            <ol class="about-discoveries">
+                <li><strong>A history of impacts</strong> — read a crater’s raised rim and sunken bowl.</li>
+                <li><strong>Written in stone</strong> — angular boulders and the fine regolith blanket beneath them.</li>
+                <li><strong>Everything we call home</strong> — why Earth barely moves in the lunar sky (tidal locking).</li>
+                <li><strong>Eagle has landed</strong> — a real NASA 3D model of an Apollo lunar module.</li>
+                <li><strong>Where sunlight never rests</strong> — a shadowed hollow, like the polar craters that may hold water ice.</li>
+            </ol>
+            <h3>How to explore</h3>
+            <p>Press <strong>Step onto the Moon</strong>, then walk with W A S D or the arrow keys, hold Shift to move faster, press Space to jump and drag to look around. On phones and tablets a touch pad appears. Press G to compare the local gravity with Earth’s, P for photo mode, and E to record a discovery in your journal — progress is saved on your own device.</p>
+            <h3>Science and artistic reconstruction</h3>
+            <p>Lunar gravity, the black daytime sky, crater shapes and the lunar module model come from real science and NASA 3D Resources. The terrain, rock placement and observation points are procedurally generated art, not a map of a real landing site, and Earth’s position in the sky is composed for the view.</p>
+            <h3>Keep exploring</h3>
+            <ul class="about-links">
+                    <li><a href="earth.html">Earth and the Moon in the 3D Solar System</a></li>
+                    <li><a href="mars-expedition.html">Walk on Mars</a></li>
+                    <li><a href="venus-expedition.html">Walk on Venus</a></li>
+                    <li><a href="mercury-expedition.html">Walk on Mercury</a></li>
+                    <li><a href="jupiter-expedition.html">Descend into Jupiter</a></li>
+                    <li><a href="saturn-expedition.html">Fly through Saturn’s rings</a></li>
+                    <li><a href="uranus-expedition.html">Fly through Uranus’s rings</a></li>
+                    <li><a href="neptune-expedition.html">Fly into Neptune’s storms</a></li>
+                    <li><a href="index.html">The full 3D Solar System</a></li>
+            </ul>
+            <p class="about-footer">Mzu 3D Solar System is a free educational project. No account, download or AI service is needed. <a class="about-top" href="#">Back to the expedition ↑</a></p>
+        </div>
+    </article>
     <noscript><div class="no-script">JavaScript and WebGL are needed for this expedition. <a href="index.html">Return to the Solar System</a>.</div></noscript>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -154,6 +225,7 @@
     <script src="https://unpkg.com/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
     <script src="https://unpkg.com/three@0.128.0/examples/js/shaders/GammaCorrectionShader.js"></script>
     <script src="https://unpkg.com/three@0.128.0/examples/js/shaders/FXAAShader.js"></script>
+    <script src="expedition-about.js"></script>
     <script src="quality-policy.js"></script>
     <script src="flare-pass.js"></script>
     <script src="lunar-terrain.js"></script>

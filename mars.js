@@ -169,7 +169,7 @@
         $('loading-label').textContent = t(key);
         document.querySelector('.loading-orbit').style.animation = 'none';
         document.querySelectorAll('.station-button, #begin-button, #photo-button').forEach(button => { button.disabled = true; });
-        if (error) console.error('Moon expedition:', error);
+        if (error) console.error('Mars expedition:', error);
     }
     function makeTexture() {
         const size = profile.texture;

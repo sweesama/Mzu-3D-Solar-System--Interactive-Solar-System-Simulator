@@ -5,21 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#080909">
     <meta name="robots" content="index, follow, max-image-preview:large">
-    <title>Mercury Exploration in 3D | Mzu Solar System</title>
+    <title>Walk on Mercury in 3D — First-Person Mercury Explorer | Mzu</title>
     <meta name="description" content="Explore an imagined cratered plain on Mercury in your browser. Walk under a huge Sun in a black sky, discover five viewpoints, inspect a 3D specimen, and keep a journal.">
     <link rel="canonical" href="https://www.3dsolarsystem.net/mercury-expedition.html">
-    <meta property="og:title" content="Mercury Exploration in 3D | Mzu Solar System">
+    <meta property="og:title" content="Walk on Mercury in 3D — First-Person Mercury Explorer | Mzu">
     <meta property="og:description" content="Walk an imagined Mercurian landscape, discover five observation points, inspect a rock in 3D, and feel Mars-like gravity under a glaring Sun.">
     <meta property="og:url" content="https://www.3dsolarsystem.net/mercury-expedition.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Mzu 3D Solar System">
-    <meta property="og:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
-    <meta property="og:image:alt" content="Mzu 3D Solar System logo">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Mercury Exploration in 3D | Mzu Solar System">
+    <meta property="og:image" content="https://www.3dsolarsystem.net/og/mercury-expedition.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="First-person view of a cratered plain on Mercury under a black sky">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Walk on Mercury in 3D — First-Person Mercury Explorer | Mzu">
     <meta name="twitter:description" content="Walk, jump, and make discoveries in a science-inspired Mercurian landscape. Free browser-based exploration, with no account required.">
-    <meta name="twitter:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
-    <meta name="twitter:image:alt" content="Mzu 3D Solar System logo">
+    <meta name="twitter:image" content="https://www.3dsolarsystem.net/og/mercury-expedition.jpg">
+    <meta name="twitter:image:alt" content="First-person view of a cratered plain on Mercury under a black sky">
     <script id="app-structured-data" type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -30,14 +32,40 @@
       "applicationCategory": "EducationalApplication",
       "operatingSystem": "Any modern web browser with WebGL support",
       "isAccessibleForFree": true,
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "inLanguage": ["en", "zh-CN"],
-      "about": { "@type": "Thing", "name": "Mercury" },
-      "isPartOf": { "@type": "WebSite", "name": "Mzu 3D Solar System", "url": "https://www.3dsolarsystem.net/" }
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "inLanguage": [
+        "en",
+        "zh-CN"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "Mercury"
+      },
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Mzu 3D Solar System",
+        "url": "https://www.3dsolarsystem.net/"
+      },
+      "image": "https://www.3dsolarsystem.net/og/mercury-expedition.jpg",
+      "screenshot": "https://www.3dsolarsystem.net/og/mercury-expedition.jpg"
     }
     </script>
-    <link rel="icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="moon.css">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-783407FTTB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-783407FTTB');
+    </script>
 </head>
 <body>
     <main id="expedition" aria-label="Interactive Mercurian landscape">
@@ -62,6 +90,7 @@
             <p class="arrival-description" data-i18n="intro">Walk an imagined cratered plain beneath a black sky — a giant Sun, hard shadows, and the silence of a world with no air.</p>
             <button id="begin-button" class="primary-button" type="button" disabled><span data-i18n="begin">Step onto Mercury</span><span aria-hidden="true">→</span></button>
             <p class="arrival-hint" data-i18n="arrivalHint">No download. Just a little curiosity.</p>
+            <a class="about-cue" href="#about">About this expedition ↓</a>
         </section>
 
         <section id="field-card" class="field-card route-card" hidden>
@@ -151,6 +180,48 @@
         <p id="moonlet-text"></p>
         <div class="discovery-actions"><a id="moonlet-link" class="primary-button" href="index.html" style="text-decoration:none" data-i18n="viewOrbit">See it in the Solar System</a><form method="dialog"><button class="quiet-button" type="submit" data-i18n="keepExploring">Keep exploring</button></form></div>
     </dialog>
+    <article id="about" class="about-world" aria-labelledby="about-title">
+        <div class="about-inner">
+            <p class="eyebrow">About this expedition</p>
+            <h2 id="about-title">What is it like to stand on Mercury?</h2>
+            <p>Walk an imagined cratered plain on Mercury — the smallest planet and the closest to the Sun — in first person. You move and jump in Mercury gravity, 3.7 m/s² and almost exactly the same as Mars, under a black sky where the Sun looks two to three times wider than it does from Earth. Look straight at it and your camera catches a lens flare.</p>
+            <p>Mercury has no real atmosphere to trap heat or scatter light, so the sky is black at noon and temperatures swing from about 430 °C in daylight to −180 °C at night. As its iron core cooled, the whole planet shrank and its crust wrinkled into long cliffs called lobate scarps. It also has bright, shallow “hollows” found nowhere else in the Solar System.</p>
+            <h3>Quick facts</h3>
+            <dl class="about-facts">
+                <div><dt>Surface gravity</dt><dd>3.7 m/s² — about 38% of Earth’s</dd></div>
+                <div><dt>Distance from the Sun</dt><dd>About 58 million km (0.39 AU)</dd></div>
+                <div><dt>Length of a year</dt><dd>88 Earth days</dd></div>
+                <div><dt>Length of a day</dt><dd>About 176 Earth days, sunrise to sunrise</dd></div>
+                <div><dt>Temperature</dt><dd>About 430 °C by day, −180 °C at night</dd></div>
+                <div><dt>Spacecraft</dt><dd>Mariner 10 (1974–75), MESSENGER (orbit 2011–2015)</dd></div>
+            </dl>
+            <h3>Five discoveries to find</h3>
+            <ol class="about-discoveries">
+                <li><strong>A mountain born of impact</strong> — the central peak of a large crater.</li>
+                <li><strong>A block thrown by impact</strong> — a sharp-edged ejecta block in the specimen viewer.</li>
+                <li><strong>A listener in the glare</strong> — a real NASA 3D model of MESSENGER (its placement here is imagined).</li>
+                <li><strong>Mercury’s hollows</strong> — bright pits that may form as rock loses volatile material.</li>
+                <li><strong>A wrinkle from a shrinking world</strong> — a lobate scarp raised as the planet contracted.</li>
+            </ol>
+            <h3>How to explore</h3>
+            <p>Press <strong>Step onto Mercury</strong>, then walk with W A S D or the arrow keys, hold Shift to move faster, press Space to jump and drag to look around. On phones and tablets a touch pad appears. Press G to compare the local gravity with Earth’s, P for photo mode, and E to record a discovery in your journal — progress is saved on your own device.</p>
+            <h3>Science and artistic reconstruction</h3>
+            <p>The black sky, dark cratered ground, scarps and hollows are informed by Mariner 10 and MESSENGER imagery. The terrain, props and observation points are procedurally generated art, not survey data.</p>
+            <h3>Keep exploring</h3>
+            <ul class="about-links">
+                    <li><a href="mercury.html">Mercury in the 3D Solar System</a></li>
+                    <li><a href="moon.html">Walk on the Moon</a></li>
+                    <li><a href="mars-expedition.html">Walk on Mars</a></li>
+                    <li><a href="venus-expedition.html">Walk on Venus</a></li>
+                    <li><a href="jupiter-expedition.html">Descend into Jupiter</a></li>
+                    <li><a href="saturn-expedition.html">Fly through Saturn’s rings</a></li>
+                    <li><a href="uranus-expedition.html">Fly through Uranus’s rings</a></li>
+                    <li><a href="neptune-expedition.html">Fly into Neptune’s storms</a></li>
+                    <li><a href="index.html">The full 3D Solar System</a></li>
+            </ul>
+            <p class="about-footer">Mzu 3D Solar System is a free educational project. No account, download or AI service is needed. <a class="about-top" href="#">Back to the expedition ↑</a></p>
+        </div>
+    </article>
     <noscript><div class="no-script">JavaScript and WebGL are needed for this expedition. <a href="index.html">Return to the Solar System</a>.</div></noscript>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -163,6 +234,7 @@
     <script src="https://unpkg.com/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
     <script src="https://unpkg.com/three@0.128.0/examples/js/shaders/GammaCorrectionShader.js"></script>
     <script src="https://unpkg.com/three@0.128.0/examples/js/shaders/FXAAShader.js"></script>
+    <script src="expedition-about.js"></script>
     <script src="quality-policy.js"></script>
     <script src="flare-pass.js"></script>
     <script src="mercury-terrain.js"></script>

@@ -5,21 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#080909">
     <meta name="robots" content="index, follow, max-image-preview:large">
-    <title>Venus Exploration in 3D | Mzu Solar System</title>
+    <title>Walk on Venus in 3D — First-Person Venus Surface Explorer | Mzu</title>
     <meta name="description" content="Explore an imagined volcanic plain on Venus in your browser. Walk under a crushing orange sky, discover five viewpoints, inspect a 3D specimen, and keep a journal.">
     <link rel="canonical" href="https://www.3dsolarsystem.net/venus-expedition.html">
-    <meta property="og:title" content="Venus Exploration in 3D | Mzu Solar System">
+    <meta property="og:title" content="Walk on Venus in 3D — First-Person Venus Surface Explorer | Mzu">
     <meta property="og:description" content="Walk an imagined Venusian landscape, discover five observation points, inspect a rock in 3D, and feel near-Earth gravity under a crushing orange sky.">
     <meta property="og:url" content="https://www.3dsolarsystem.net/venus-expedition.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Mzu 3D Solar System">
-    <meta property="og:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
-    <meta property="og:image:alt" content="Mzu 3D Solar System logo">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Venus Exploration in 3D | Mzu Solar System">
+    <meta property="og:image" content="https://www.3dsolarsystem.net/og/venus-expedition.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="First-person view of a volcanic plain on Venus under a thick orange sky">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Walk on Venus in 3D — First-Person Venus Surface Explorer | Mzu">
     <meta name="twitter:description" content="Walk, jump, and make discoveries in a science-inspired Venusian landscape. Free browser-based exploration, with no account required.">
-    <meta name="twitter:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
-    <meta name="twitter:image:alt" content="Mzu 3D Solar System logo">
+    <meta name="twitter:image" content="https://www.3dsolarsystem.net/og/venus-expedition.jpg">
+    <meta name="twitter:image:alt" content="First-person view of a volcanic plain on Venus under a thick orange sky">
     <script id="app-structured-data" type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -30,14 +32,40 @@
       "applicationCategory": "EducationalApplication",
       "operatingSystem": "Any modern web browser with WebGL support",
       "isAccessibleForFree": true,
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "inLanguage": ["en", "zh-CN"],
-      "about": { "@type": "Thing", "name": "Venus" },
-      "isPartOf": { "@type": "WebSite", "name": "Mzu 3D Solar System", "url": "https://www.3dsolarsystem.net/" }
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "inLanguage": [
+        "en",
+        "zh-CN"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "Venus"
+      },
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Mzu 3D Solar System",
+        "url": "https://www.3dsolarsystem.net/"
+      },
+      "image": "https://www.3dsolarsystem.net/og/venus-expedition.jpg",
+      "screenshot": "https://www.3dsolarsystem.net/og/venus-expedition.jpg"
     }
     </script>
-    <link rel="icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="moon.css">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-783407FTTB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-783407FTTB');
+    </script>
 </head>
 <body>
     <main id="expedition" aria-label="Interactive Venusian landscape">
@@ -62,6 +90,7 @@
             <p class="arrival-description" data-i18n="intro">Walk an imagined volcanic plain beneath a crushing orange sky — dim light, heavy air, and the quiet rumble of a world at 465°C.</p>
             <button id="begin-button" class="primary-button" type="button" disabled><span data-i18n="begin">Step onto Venus</span><span aria-hidden="true">→</span></button>
             <p class="arrival-hint" data-i18n="arrivalHint">No download. Just a little curiosity.</p>
+            <a class="about-cue" href="#about">About this expedition ↓</a>
         </section>
 
         <section id="field-card" class="field-card route-card" hidden>
@@ -150,6 +179,48 @@
         <p id="moonlet-text"></p>
         <div class="discovery-actions"><a id="moonlet-link" class="primary-button" href="index.html" style="text-decoration:none" data-i18n="viewOrbit">See it in the Solar System</a><form method="dialog"><button class="quiet-button" type="submit" data-i18n="keepExploring">Keep exploring</button></form></div>
     </dialog>
+    <article id="about" class="about-world" aria-labelledby="about-title">
+        <div class="about-inner">
+            <p class="eyebrow">About this expedition</p>
+            <h2 id="about-title">What is it like on the surface of Venus?</h2>
+            <p>Stand on an imagined volcanic plain on Venus — the hottest planet in the Solar System — in first person. You walk in Venus gravity, 8.87 m/s² or about 90% of Earth’s, beneath a heavy orange sky, past a lava channel, a pancake dome and fractured basalt slabs like those photographed by the Soviet Venera landers.</p>
+            <p>Venus is almost Earth’s twin in size but nothing like it at the surface. Its carbon-dioxide atmosphere is so dense that surface pressure is about 92 times Earth’s — similar to being nearly a kilometre under the ocean — and a runaway greenhouse effect keeps the ground near 465 °C, hot enough to melt lead. Sulfuric-acid clouds hide the Sun completely, so daylight is a dim, directionless glow.</p>
+            <h3>Quick facts</h3>
+            <dl class="about-facts">
+                <div><dt>Surface gravity</dt><dd>8.87 m/s² — about 90% of Earth’s</dd></div>
+                <div><dt>Surface temperature</dt><dd>About 465 °C, day and night</dd></div>
+                <div><dt>Surface pressure</dt><dd>About 92 times Earth’s</dd></div>
+                <div><dt>Atmosphere</dt><dd>About 96.5% CO₂, with sulfuric-acid clouds</dd></div>
+                <div><dt>Rotation</dt><dd>243 Earth days per turn — and it spins backwards</dd></div>
+                <div><dt>Longest surface mission</dt><dd>Venera 13, 127 minutes (1982)</dd></div>
+            </dl>
+            <h3>Five discoveries to find</h3>
+            <ol class="about-discoveries">
+                <li><strong>A floor of broken slabs</strong> — fractured volcanic plates like those in Venera photographs.</li>
+                <li><strong>Basalt in orange light</strong> — a rotatable rock specimen, grey under an amber sky.</li>
+                <li><strong>A river that was lava</strong> — a winding channel carved by lava, not water.</li>
+                <li><strong>A visitor that lasted 127 minutes</strong> — an artistic tribute to the Venera 13 lander.</li>
+                <li><strong>A dome of thick lava</strong> — a “pancake dome” formed by sticky, slow-moving lava.</li>
+            </ol>
+            <h3>How to explore</h3>
+            <p>Press <strong>Step onto Venus</strong>, then walk with W A S D or the arrow keys, hold Shift to move faster, press Space to jump and drag to look around. On phones and tablets a touch pad appears. Press G to compare the local gravity with Earth’s, P for photo mode, and E to record a discovery in your journal — progress is saved on your own device.</p>
+            <h3>Science and artistic reconstruction</h3>
+            <p>The orange light, slab-like basalt and landforms are inspired by Venera surface photographs and by NASA’s Magellan radar maps (1990–1994); a real NASA 3D model of Magellan circles overhead. The lander is an artistic replica, and the terrain is procedurally generated art, not survey data.</p>
+            <h3>Keep exploring</h3>
+            <ul class="about-links">
+                    <li><a href="venus.html">Venus in the 3D Solar System</a></li>
+                    <li><a href="moon.html">Walk on the Moon</a></li>
+                    <li><a href="mars-expedition.html">Walk on Mars</a></li>
+                    <li><a href="mercury-expedition.html">Walk on Mercury</a></li>
+                    <li><a href="jupiter-expedition.html">Descend into Jupiter</a></li>
+                    <li><a href="saturn-expedition.html">Fly through Saturn’s rings</a></li>
+                    <li><a href="uranus-expedition.html">Fly through Uranus’s rings</a></li>
+                    <li><a href="neptune-expedition.html">Fly into Neptune’s storms</a></li>
+                    <li><a href="index.html">The full 3D Solar System</a></li>
+            </ul>
+            <p class="about-footer">Mzu 3D Solar System is a free educational project. No account, download or AI service is needed. <a class="about-top" href="#">Back to the expedition ↑</a></p>
+        </div>
+    </article>
     <noscript><div class="no-script">JavaScript and WebGL are needed for this expedition. <a href="index.html">Return to the Solar System</a>.</div></noscript>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://unpkg.com/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
@@ -162,6 +233,7 @@
     <script src="https://unpkg.com/three@0.128.0/examples/js/shaders/FXAAShader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
+    <script src="expedition-about.js"></script>
     <script src="quality-policy.js"></script>
     <script src="venus-terrain.js"></script>
     <script src="venus-expedition.js"></script>

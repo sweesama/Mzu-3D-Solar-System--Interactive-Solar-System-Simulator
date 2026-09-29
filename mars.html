@@ -12,15 +12,19 @@
 
     <meta property="og:title" content="Mars in 3D | Interactive Solar System Explorer">
     <meta property="og:description" content="Explore Mars, Phobos, and Deimos in an interactive 3D Solar System visualization and learn about the cold, dusty Red Planet.">
-    <meta property="og:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
+    <meta property="og:image" content="https://www.3dsolarsystem.net/og/mars.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Mars in the Mzu 3D Solar System">
     <meta property="og:url" content="https://www.3dsolarsystem.net/mars.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Mzu 3D Solar System">
 
-    <meta name="twitter:card" content="summary">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Mars in 3D | Interactive Solar System Explorer">
     <meta name="twitter:description" content="Explore Mars, Phobos, and Deimos in an interactive 3D Solar System visualization and learn about the cold, dusty Red Planet.">
-    <meta name="twitter:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
+    <meta name="twitter:image" content="https://www.3dsolarsystem.net/og/mars.jpg">
+    <meta name="twitter:image:alt" content="Mars in the Mzu 3D Solar System">
 
     <script id="app-structured-data" type="application/ld+json">
 {
@@ -29,6 +33,7 @@
   "name": "Mars — Interactive 3D Planet View",
   "description": "Explore Mars, Phobos, and Deimos in an interactive 3D Solar System visualization and learn about the cold, dusty Red Planet.",
   "url": "https://www.3dsolarsystem.net/mars.html",
+  "image": "https://www.3dsolarsystem.net/og/mars.jpg",
   "isPartOf": {
     "@type": "WebApplication",
     "name": "Mzu 3D Solar System",
@@ -37,7 +42,8 @@
   "about": {
     "@type": "Thing",
     "name": "Mars"
-  }
+  },
+  "relatedLink": "https://www.3dsolarsystem.net/mars-expedition.html"
 }
     </script>
 
@@ -73,6 +79,11 @@
             <p class="eyebrow">Interactive planet view</p>
             <h1>Explore Mars in 3D</h1>
             <p>Mars is a cold, rocky world with a thin atmosphere dominated by carbon dioxide. Iron minerals in its soil give the planet its familiar red appearance.</p>
+            <ul class="planet-facts">
+                <li>Day (sol): about 24 h 40 min</li>
+                <li>Surface gravity: 3.71 m/s², 38% of Earth’s</li>
+                <li>Moons: Phobos and Deimos</li>
+            </ul>
             <p>Focus on Mars, then select its small moons Phobos and Deimos to compare the objects represented in the scene.</p>
             <p class="model-note"><strong>Model note:</strong> This is an artistic educational visualization. Sizes, distances, and time are compressed for visibility; it is not a live ephemeris or a professional astronomy tool.</p>
         </section>
@@ -85,14 +96,22 @@
             <button id="embed-button" class="action-button" type="button">Copy embed</button>
         </div>
 
-        <a class="expedition-entry" href="moon.html"><span class="eyebrow">New · Surface expedition</span><strong>Step onto the Moon <span aria-hidden="true">↗</span></strong><span>Leave orbit. Explore a world in silence.</span></a>
-        <a class="expedition-entry" href="mars-expedition.html"><span class="eyebrow">New · Surface expedition</span><strong>Step onto Mars <span aria-hidden="true">↗</span></strong><span>Leave orbit. Explore the red plain.</span></a>
-        <a class="expedition-entry" href="venus-expedition.html"><span class="eyebrow">New · Surface expedition</span><strong>Step onto Venus <span aria-hidden="true">↗</span></strong><span>Leave orbit. Explore the burning plain.</span></a>
-        <a class="expedition-entry" href="mercury-expedition.html"><span class="eyebrow">New · Surface expedition</span><strong>Step onto Mercury <span aria-hidden="true">↗</span></strong><span>Leave orbit. Explore the sunlit plain.</span></a>
-        <a class="expedition-entry" href="jupiter-expedition.html"><span class="eyebrow">New · Atmospheric descent</span><strong>Descend into Jupiter <span aria-hidden="true">↗</span></strong><span>Leave orbit. Sink through the giant’s clouds.</span></a>
-        <a class="expedition-entry" href="saturn-expedition.html"><span class="eyebrow">New · Ring-plane cruise</span><strong>Fly Saturn’s rings <span aria-hidden="true">↗</span></strong><span>Leave orbit. Cruise the ice beside Cassini.</span></a>
-        <a class="expedition-entry" href="uranus-expedition.html"><span class="eyebrow">New · Sideways ring flight</span><strong>Fly Uranus’s rings <span aria-hidden="true">↗</span></strong><span>Leave orbit. Thread dark threads beside Voyager 2.</span></a>
-        <a class="expedition-entry" href="neptune-expedition.html"><span class="eyebrow">New · Storm-layer flight</span><strong>Fly Neptune’s storms <span aria-hidden="true">↗</span></strong><span>Leave orbit. Brave the fastest winds beside Voyager 2.</span></a>
+        <a class="expedition-entry" href="mars-expedition.html"><span class="eyebrow">Mars expedition</span><strong>Walk on Mars <span aria-hidden="true">↗</span></strong><span>Walk a dusty plain in 38% gravity under a butterscotch sky.</span></a>
+        <!-- EXPEDITIONS:START -->
+        <section class="expeditions" aria-labelledby="expeditions-title">
+            <h2 id="expeditions-title" class="nav-label">More first-person expeditions</h2>
+            <p class="expeditions-intro">Leave orbit and explore eight worlds up close — walk on rocky surfaces, sink into Jupiter, or fly through rings and storms.</p>
+            <div class="expedition-tiles">
+                <a class="expedition-tile" href="moon.html"><strong>Walk on the Moon</strong><span>Surface walk</span></a>
+                <a class="expedition-tile" href="venus-expedition.html"><strong>Walk on Venus</strong><span>Surface walk</span></a>
+                <a class="expedition-tile" href="mercury-expedition.html"><strong>Walk on Mercury</strong><span>Surface walk</span></a>
+                <a class="expedition-tile" href="jupiter-expedition.html"><strong>Descend into Jupiter</strong><span>Cloud descent</span></a>
+                <a class="expedition-tile" href="saturn-expedition.html"><strong>Fly Saturn’s rings</strong><span>Ring cruise</span></a>
+                <a class="expedition-tile" href="uranus-expedition.html"><strong>Fly Uranus’s rings</strong><span>Dark-ring flight</span></a>
+                <a class="expedition-tile" href="neptune-expedition.html"><strong>Fly Neptune’s storms</strong><span>Storm flight</span></a>
+            </div>
+        </section>
+        <!-- EXPEDITIONS:END -->
 
         <div id="tour-card" class="tour-card" hidden aria-live="polite">
             <p id="tour-progress" class="eyebrow"></p>

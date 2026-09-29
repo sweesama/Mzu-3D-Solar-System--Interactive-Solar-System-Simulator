@@ -14,7 +14,7 @@
             guide: 'Field guide', photo: 'Photo mode', quality: 'Quality', auto: 'Auto', high: 'High', balanced: 'Balanced', low: 'Low', artNote: 'SCIENCE-INSPIRED ARTISTIC RECONSTRUCTION · NOT A SCANNED ATMOSPHERE',
             capture: 'Save photograph', exitPhoto: 'Exit photo mode', loading: 'Preparing the Jovian atmosphere…', fieldGuide: 'THE EXPEDITION FIELD GUIDE', guideTitle: 'There is no ground here.',
             guideIntro: 'This is a small, freely explorable column of atmosphere, not a whole-planet simulation. The five observation points are different views of the same descent; two of them lie deeper and can only be reached by sinking on your own.', controlsTitle: 'Moving around',
-            gravityCompare: 'Compare Earth gravity · G', gravityMercury: 'Back to Jupiter gravity · G', gravityHint: 'Same probe, different pull. Jupiter’s gravity is 24.79 m/s² — with G the descent quickens, just as the same parachute would fail harder on Jupiter.', soundOn: 'Probe sounds: On', soundOff: 'Probe sounds: Off', soundHint: 'Wind rushing past the hull, a deep rumble, radio static, and muffled thunder from storms below. M toggles.', gravityMercuryTag: 'Jupiter gravity — 24.79 m/s².', gravityEarth: 'Earth gravity — 9.8 m/s². The same probe sinks gentler.', mercuryTag: 'JUPITER', earthTag: 'EARTH',
+            gravityCompare: 'Compare Earth gravity · G', gravityMercury: 'Back to Jupiter gravity · G', gravityHint: 'Same probe, different pull. Jupiter’s gravity is 24.79 m/s² — about 2.5 times Earth’s. Press G for Earth gravity and the same probe sinks noticeably slower.', soundOn: 'Probe sounds: On', soundOff: 'Probe sounds: Off', soundHint: 'Wind rushing past the hull, a deep rumble, radio static, and muffled thunder from storms below. M toggles.', gravityMercuryTag: 'Jupiter gravity — 24.79 m/s².', gravityEarth: 'Earth gravity — 9.8 m/s². The same probe sinks gentler.', mercuryTag: 'JUPITER', earthTag: 'EARTH',
             controlsText: 'You are a descending probe, not a walker — there is no surface to stand on. The probe sinks on its own; hold Space to fire the ascent thruster and climb. W A S D or the arrow keys drift sideways; Shift drifts faster. Drag to look. Touchscreens have direction and Burn buttons. G compares Earth gravity; M toggles sound. H hides notes; P opens photo mode; Esc closes it.',
             scienceTitle: 'Science meets imagination', scienceText: 'Jupiter has no surface — its hydrogen atmosphere simply thickens downward until it behaves like a hot metallic ocean. The Galileo probe descended into these clouds in 1995 and transmitted for about an hour. The ammonia cirrus, the great storm vortex, the deeper ammonium-sulfide haze, and the lightning flashes are artistic reconstructions, not survey data.',
             soundText: 'The probe sinks at a comfortable terminal-velocity drift — real descent profiles are far harsher. Press G to feel how much faster the same probe would sink under Earth’s gentler gravity... inverted: under Jupiter’s 24.79 m/s² the sink rate more than doubles. Wind rush follows your descent rate; the crackles honour Jupiter’s powerful radio emissions.',
@@ -50,7 +50,7 @@
             station0: '进入点', station1: '冰晶区', station2: '风暴边缘', guide: '探索指南', photo: '摄影模式', quality: '画质', auto: '自动', high: '高', balanced: '均衡', low: '低',
             artNote: '科学启发的艺术重建 · 非真实大气测绘', capture: '保存照片', exitPhoto: '退出摄影', loading: '正在准备木星大气…', fieldGuide: '木星探索指南', guideTitle: '这里没有地面。',
             guideIntro: '这是一段可以自由漫游的大气柱，而非完整木星。五个观察点位于同一次下降的不同高度；其中两处更深，只能靠你自己沉下去。', controlsTitle: '如何移动',
-            gravityCompare: '对比地球引力 · G', gravityMercury: '恢复木星引力 · G', gravityHint: '同一台探测器，不同的引力。木星引力 24.79 m/s²——按 G 感受同样降落伞在木星上失效得更快。', soundOn: '探测器声音：开', soundOff: '探测器声音：关', soundHint: '掠过舱体的呼啸风、低沉轰鸣、射电杂音，以及深处风暴的闷雷。M 切换。', gravityMercuryTag: '木星引力 — 24.79 m/s²。', gravityEarth: '地球引力 — 9.8 m/s²。同一台探测器下沉得更缓。', mercuryTag: '木星', earthTag: '地球',
+            gravityCompare: '对比地球引力 · G', gravityMercury: '恢复木星引力 · G', gravityHint: '同一台探测器，不同的引力。木星引力 24.79 m/s²——约为地球的 2.5 倍。按 G 切换到地球引力，同一台探测器会下沉得明显更慢。', soundOn: '探测器声音：开', soundOff: '探测器声音：关', soundHint: '掠过舱体的呼啸风、低沉轰鸣、射电杂音，以及深处风暴的闷雷。M 切换。', gravityMercuryTag: '木星引力 — 24.79 m/s²。', gravityEarth: '地球引力 — 9.8 m/s²。同一台探测器下沉得更缓。', mercuryTag: '木星', earthTag: '地球',
             controlsText: '你是一台正在下降的探测器，不是步行者——这里没有可以站立的表面。探测器会自行下沉；按住空格点火上升。W A S D 或方向键侧向漂移，Shift 漂得更快。拖动画面观察。触屏有方向按钮和推进键。G 对比地球引力，M 开关声音。H 隐藏手记，P 进入摄影，Esc 退出摄影。',
             scienceTitle: '科学与想象的交界', scienceText: '木星没有表面——氢大气越往下越稠，最终变成炽热的金属海洋。1995 年伽利略探测器曾坠入这样的云层，传回了约一小时的信号。氨冰卷云、巨型风暴涡旋、更深处的硫化铵霾、以及闪电闪光都是艺术重建，并非实测数据。',
             soundText: '探测器以舒适的终端速度下沉——真实的下降剖面要严酷得多。按 G 感受：在木星 24.79 m/s² 的引力下，同一台探测器的下沉速率会翻倍还多。呼啸声跟随下沉速率变化；断断续续的杂音致敬木星强大的射电辐射。',
@@ -661,9 +661,9 @@
     function buildSky() {
         skyMaterial = new THREE.ShaderMaterial({
             side: THREE.BackSide, depthWrite: false, depthTest: false,
-            uniforms: { darkening: { value: 0 }, flash: { value: 0 }, tJupiter: { value: null }, hasMap: { value: 0 } },
+            uniforms: { darkening: { value: 0 }, flash: { value: 0 }, tJupiter: { value: null }, hasMap: { value: 0 }, uHaze: { value: new THREE.Color(0xa08b6b) } },
             vertexShader: 'varying vec3 vP; void main(){vP=position; vec4 mv=modelViewMatrix*vec4(position,1.0); gl_Position=projectionMatrix*mv; gl_Position.z=gl_Position.w;}',
-            fragmentShader: `uniform float darkening; uniform float flash; uniform sampler2D tJupiter; uniform float hasMap; varying vec3 vP;
+            fragmentShader: `uniform float darkening; uniform float flash; uniform sampler2D tJupiter; uniform float hasMap; uniform vec3 uHaze; varying vec3 vP;
                 float h21(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
                 float n2(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(h21(i),h21(i+vec2(1,0)),f.x),mix(h21(i+vec2(0,1)),h21(i+vec2(1,1)),f.x),f.y);}
                 float fbm(vec2 p){return n2(p)*0.55+n2(p*2.3)*0.28+n2(p*5.1)*0.17;}
@@ -688,6 +688,8 @@
                     sky = mix(sky, vec3(0.16, 0.11, 0.08), smoothstep(-0.15, -0.8, up));
                     sky += flash * vec3(0.5, 0.55, 0.7);
                     sky *= 1.0 - darkening * 0.82;
+                    // Aerial perspective: the low sky dissolves into the same haze colour the fog gives the far cloud deck, so there is no hard horizon seam
+                    sky = mix(sky, uHaze, (1.0 - smoothstep(0.0, 0.22, up)) * 0.92);
                     gl_FragColor = vec4(sky, 1.0);
                 }`
         });
@@ -1012,6 +1014,7 @@
                 sunlight.intensity = 2.6 * (1 - depth * 0.8);
                 scene.fog.density = 0.0022 + depth * 0.012;
                 scene.fog.color.setHex(0xa08b6b).lerp(new THREE.Color(0x241812), depth);
+                skyMaterial.uniforms.uHaze.value.copy(scene.fog.color);
                 if (volCloud) {
                     volCloud.material.uniforms.uTime.value = now * 0.001;
                     volCloud.material.uniforms.uDarkness.value = depth;

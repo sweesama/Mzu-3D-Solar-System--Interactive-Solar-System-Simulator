@@ -5,21 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#080909">
     <meta name="robots" content="index, follow, max-image-preview:large">
-    <title>Jupiter Atmospheric Descent in 3D | Mzu Solar System</title>
+    <title>Descend Into Jupiter’s Clouds in 3D — Probe Descent | Mzu</title>
     <meta name="description" content="Ride an imagined probe down through Jupiter's clouds. Drift past ammonia cirrus and a giant storm to the lightning layer — five discoveries at five depths.">
     <link rel="canonical" href="https://www.3dsolarsystem.net/jupiter-expedition.html">
-    <meta property="og:title" content="Jupiter Atmospheric Descent in 3D | Mzu Solar System">
+    <meta property="og:title" content="Descend Into Jupiter’s Clouds in 3D — Probe Descent | Mzu">
     <meta property="og:description" content="Descend through Jupiter's banded clouds in an imagined probe — ammonia cirrus, a giant storm, deep lightning, and five discoveries along the way down.">
     <meta property="og:url" content="https://www.3dsolarsystem.net/jupiter-expedition.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Mzu 3D Solar System">
-    <meta property="og:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
-    <meta property="og:image:alt" content="Mzu 3D Solar System logo">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Jupiter Atmospheric Descent in 3D | Mzu Solar System">
+    <meta property="og:image" content="https://www.3dsolarsystem.net/og/jupiter-expedition.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Probe view sinking through Jupiter’s banded clouds and storm haze">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Descend Into Jupiter’s Clouds in 3D — Probe Descent | Mzu">
     <meta name="twitter:description" content="Sink through a giant planet's clouds, fire the thruster to climb, and record discoveries in a science-inspired Jovian atmosphere. Free browser-based exploration.">
-    <meta name="twitter:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
-    <meta name="twitter:image:alt" content="Mzu 3D Solar System logo">
+    <meta name="twitter:image" content="https://www.3dsolarsystem.net/og/jupiter-expedition.jpg">
+    <meta name="twitter:image:alt" content="Probe view sinking through Jupiter’s banded clouds and storm haze">
     <script id="app-structured-data" type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -30,14 +32,40 @@
       "applicationCategory": "EducationalApplication",
       "operatingSystem": "Any modern web browser with WebGL support",
       "isAccessibleForFree": true,
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-      "inLanguage": ["en", "zh-CN"],
-      "about": { "@type": "Thing", "name": "Jupiter" },
-      "isPartOf": { "@type": "WebSite", "name": "Mzu 3D Solar System", "url": "https://www.3dsolarsystem.net/" }
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "inLanguage": [
+        "en",
+        "zh-CN"
+      ],
+      "about": {
+        "@type": "Thing",
+        "name": "Jupiter"
+      },
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Mzu 3D Solar System",
+        "url": "https://www.3dsolarsystem.net/"
+      },
+      "image": "https://www.3dsolarsystem.net/og/jupiter-expedition.jpg",
+      "screenshot": "https://www.3dsolarsystem.net/og/jupiter-expedition.jpg"
     }
     </script>
-    <link rel="icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="moon.css">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-783407FTTB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-783407FTTB');
+    </script>
 </head>
 <body>
     <main id="expedition" aria-label="Interactive Jovian atmosphere">
@@ -62,6 +90,7 @@
             <p class="arrival-description" data-i18n="intro">Ride an imagined probe down through Jupiter's cloud decks — banded haze above, a giant storm to the west, and lightning far below.</p>
             <button id="begin-button" class="primary-button" type="button" disabled><span data-i18n="begin">Begin descent</span><span aria-hidden="true">→</span></button>
             <p class="arrival-hint" data-i18n="arrivalHint">No download. Just a little curiosity.</p>
+            <a class="about-cue" href="#about">About this expedition ↓</a>
         </section>
 
         <section id="field-card" class="field-card route-card" hidden>
@@ -151,6 +180,48 @@
         <p id="moonlet-text"></p>
         <div class="discovery-actions"><a id="moonlet-link" class="primary-button" href="index.html" style="text-decoration:none" data-i18n="viewOrbit">See it in the Solar System</a><form method="dialog"><button class="quiet-button" type="submit" data-i18n="keepExploring">Keep exploring</button></form></div>
     </dialog>
+    <article id="about" class="about-world" aria-labelledby="about-title">
+        <div class="about-inner">
+            <p class="eyebrow">About this expedition</p>
+            <h2 id="about-title">What would it be like to fall into Jupiter?</h2>
+            <p>Jupiter has no surface to stand on, so this expedition is an atmospheric descent. You ride an imagined probe down through the clouds of the largest planet — past white ammonia cirrus and the rim of a giant storm, into a dark layer lit by lightning — with five discoveries at five different depths, all in your browser.</p>
+            <p>Jupiter is made mostly of hydrogen and helium. Its familiar stripes are three cloud decks — ammonia ice on top, ammonium hydrosulfide below and water clouds deeper still — stretched into bands by powerful winds and a day that lasts under ten hours. In 1995 NASA’s Galileo probe parachuted into these clouds and sent data for about an hour before heat and pressure silenced it.</p>
+            <h3>Quick facts</h3>
+            <dl class="about-facts">
+                <div><dt>Gravity at the cloud tops</dt><dd>24.79 m/s² — about 2.5 times Earth’s</dd></div>
+                <div><dt>Solid surface</dt><dd>None — the atmosphere just gets denser</dd></div>
+                <div><dt>Atmosphere</dt><dd>About 90% hydrogen and 10% helium (by molecules)</dd></div>
+                <div><dt>Length of a day</dt><dd>About 9 hours 56 minutes</dd></div>
+                <div><dt>Great Red Spot</dt><dd>A storm wider than Earth, watched since at least the 1830s</dd></div>
+                <div><dt>Probes</dt><dd>Galileo entry probe (1995); Juno in orbit since 2016</dd></div>
+            </dl>
+            <h3>Five discoveries to find</h3>
+            <ol class="about-discoveries">
+                <li><strong>The veil of ammonia</strong> — the highest of Jupiter’s three cloud layers.</li>
+                <li><strong>A frozen crystal</strong> — an ammonia ice grain in the specimen viewer.</li>
+                <li><strong>The storm that outlives nations</strong> — the rim of a hurricane wider than Earth.</li>
+                <li><strong>Flash in the deep</strong> — lightning inside the water-driven storm layer.</li>
+                <li><strong>Where signals fade</strong> — the depth where heat and pressure end a probe’s mission.</li>
+            </ol>
+            <h3>How to explore</h3>
+            <p>Press <strong>Begin descent</strong>. The probe sinks on its own; hold Space to fire the ascent thruster and use W A S D or the arrow keys to drift sideways. Drag to look around; on phones and tablets a touch pad appears. Press G to compare the local gravity with Earth’s, P for photo mode, and E to record a discovery in your journal — progress is saved on your own device.</p>
+            <h3>Science and artistic reconstruction</h3>
+            <p>The cloud layers, storm and lightning are based on what Galileo, Juno and telescopes have revealed; a real NASA 3D model of the Galileo orbiter hangs overhead at the start. The cloud shapes, depths and storm placement are artistic reconstructions, not survey data.</p>
+            <h3>Keep exploring</h3>
+            <ul class="about-links">
+                    <li><a href="jupiter.html">Jupiter and its moons in the 3D Solar System</a></li>
+                    <li><a href="moon.html">Walk on the Moon</a></li>
+                    <li><a href="mars-expedition.html">Walk on Mars</a></li>
+                    <li><a href="venus-expedition.html">Walk on Venus</a></li>
+                    <li><a href="mercury-expedition.html">Walk on Mercury</a></li>
+                    <li><a href="saturn-expedition.html">Fly through Saturn’s rings</a></li>
+                    <li><a href="uranus-expedition.html">Fly through Uranus’s rings</a></li>
+                    <li><a href="neptune-expedition.html">Fly into Neptune’s storms</a></li>
+                    <li><a href="index.html">The full 3D Solar System</a></li>
+            </ul>
+            <p class="about-footer">Mzu 3D Solar System is a free educational project. No account, download or AI service is needed. <a class="about-top" href="#">Back to the expedition ↑</a></p>
+        </div>
+    </article>
     <noscript><div class="no-script">JavaScript and WebGL are needed for this expedition. <a href="index.html">Return to the Solar System</a>.</div></noscript>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://unpkg.com/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
@@ -163,6 +234,7 @@
     <script src="https://unpkg.com/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
+    <script src="expedition-about.js"></script>
     <script src="quality-policy.js"></script>
     <script src="jupiter-atmosphere.js"></script>
     <script src="jupiter-expedition.js"></script>

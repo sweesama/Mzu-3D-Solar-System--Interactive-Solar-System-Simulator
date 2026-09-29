@@ -39,20 +39,24 @@
     // Ring optical depth by radius — drives both the sheet texture and how dense
     // the ice-chunk field feels at a given x/z. Bands are concentric annuli
     // around Saturn's centre (RING_CX, RING_CZ), matching the globe position.
+    // The probe cruises inside the Cassini division, which really sits at about
+    // 2 Saturn radii, so the globe radius is half the distance to the origin and
+    // every band below uses Saturn's true ring radii (in planet radii).
     const RING_CX = -3200, RING_CZ = -4300;
     const RING_R0 = Math.hypot(RING_CX, RING_CZ); // radius of the ring passing the origin
+    const SATURN_RADIUS = RING_R0 / 1.99;
+    const RING_INNER = SATURN_RADIUS * 1.24, RING_OUTER = SATURN_RADIUS * 2.27;
+    const bandAt = rr => SATURN_RADIUS * rr - RING_R0;
+    const bands = [
+        { r0: bandAt(1.24), r1: bandAt(1.53), d: 0.3 },   // C ring, faint (inward = toward Saturn)
+        { r0: bandAt(1.53), r1: bandAt(1.95), d: 0.9 },   // B ring — the bright, dense one
+        { r0: bandAt(1.95), r1: bandAt(2.03), d: 0.08 },  // Cassini division
+        { r0: bandAt(2.03), r1: bandAt(2.2), d: 0.8 },    // A ring, inner
+        { r0: bandAt(2.2), r1: bandAt(2.215), d: 0.05 },  // Encke gap
+        { r0: bandAt(2.215), r1: bandAt(2.27), d: 0.6 }   // A ring, outer edge
+    ];
     function ringDensity(x, z) {
-        // Annuli around Saturn, inner → outer: C ring, B ring, Cassini division,
-        // A/B bright run, Encke-like gap, A ring outer.
         const r = Math.hypot(x - RING_CX, z - RING_CZ) - RING_R0; // + = outward from Saturn
-        const bands = [
-            { r0: -560, r1: -340, d: 0.35 },   // C ring, dimmer (inward = toward Saturn)
-            { r0: -340, r1: -60,  d: 0.9 },    // B ring — the bright one
-            { r0: -60,  r1: 40,   d: 0.08 },   // Cassini division
-            { r0: 40,   r1: 300,  d: 0.85 },   // A/B bright run
-            { r0: 300,  r1: 340,  d: 0.05 },   // Encke-like gap
-            { r0: 340,  r1: 560,  d: 0.55 },   // A ring outer
-        ];
         for (const b of bands) {
             if (r >= b.r0 && r < b.r1) {
                 const t = (r - b.r0) / (b.r1 - b.r0);
@@ -107,5 +111,5 @@
         }
         return body;
     }
-    root.SaturnRings = Object.freeze({ DRIFT_RADIUS, GRAVITY, EARTH_GRAVITY, CRUISE_SPEED, DRIFT_SPEED, FAST_SPEED, VERTICAL_SPEED, MIN_ALTITUDE, MAX_ALTITUDE, RING_PLANE_Y, RING_CX, RING_CZ, RING_R0, random, noise, ringDensity, sampleSurface, createWalker, updateWalker });
+    root.SaturnRings = Object.freeze({ DRIFT_RADIUS, GRAVITY, EARTH_GRAVITY, CRUISE_SPEED, DRIFT_SPEED, FAST_SPEED, VERTICAL_SPEED, MIN_ALTITUDE, MAX_ALTITUDE, RING_PLANE_Y, RING_CX, RING_CZ, RING_R0, SATURN_RADIUS, RING_INNER, RING_OUTER, random, noise, ringDensity, sampleSurface, createWalker, updateWalker });
 }(typeof globalThis !== 'undefined' ? globalThis : this));

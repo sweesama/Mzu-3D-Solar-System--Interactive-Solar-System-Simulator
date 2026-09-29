@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>3D Solar System Explorer | Interactive Planet Visualization</title>
-    <meta name="description" content="Explore a free interactive 3D visualization of the Solar System. Focus on planets, read key facts, share a view, or embed the explorer for learning.">
+    <meta name="description" content="Explore a free interactive 3D Solar System, then walk on the Moon and Mars or fly through Saturn's rings in first person. No download or account needed.">
     <meta name="author" content="Mzu">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="theme-color" content="#05070d">
@@ -12,15 +12,19 @@
 
     <meta property="og:title" content="3D Solar System Explorer">
     <meta property="og:description" content="Explore planets in a free, interactive 3D Solar System visualization built for learning and curiosity.">
-    <meta property="og:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
+    <meta property="og:image" content="https://www.3dsolarsystem.net/og/home.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="The Sun and eight planets on their orbits in the Mzu 3D Solar System">
     <meta property="og:url" content="https://www.3dsolarsystem.net/">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Mzu 3D Solar System">
 
-    <meta name="twitter:card" content="summary">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="3D Solar System Explorer">
     <meta name="twitter:description" content="Focus on planets, follow a guided tour, and share or embed an interactive Solar System view.">
-    <meta name="twitter:image" content="https://www.3dsolarsystem.net/favicon_io/android-chrome-512x512.png">
+    <meta name="twitter:image" content="https://www.3dsolarsystem.net/og/home.jpg">
+    <meta name="twitter:image:alt" content="The Sun and eight planets on their orbits in the Mzu 3D Solar System">
 
     <script id="app-structured-data" type="application/ld+json">
     {
@@ -29,6 +33,8 @@
       "name": "Mzu 3D Solar System",
       "description": "A free interactive 3D visualization for exploring planets and selected Solar System objects.",
       "url": "https://www.3dsolarsystem.net/",
+      "image": "https://www.3dsolarsystem.net/og/home.jpg",
+      "screenshot": "https://www.3dsolarsystem.net/og/home.jpg",
       "applicationCategory": "EducationalApplication",
       "operatingSystem": "Any modern web browser with WebGL support",
       "isAccessibleForFree": true,
@@ -86,14 +92,22 @@
             <button id="embed-button" class="action-button" type="button">Copy embed</button>
         </div>
 
-        <a class="expedition-entry" href="moon.html"><span class="eyebrow">New · Surface expedition</span><strong>Step onto the Moon <span aria-hidden="true">↗</span></strong><span>Leave orbit. Explore a world in silence.</span></a>
-        <a class="expedition-entry" href="mars-expedition.html"><span class="eyebrow">New · Surface expedition</span><strong>Step onto Mars <span aria-hidden="true">↗</span></strong><span>Leave orbit. Explore the red plain.</span></a>
-        <a class="expedition-entry" href="venus-expedition.html"><span class="eyebrow">New · Surface expedition</span><strong>Step onto Venus <span aria-hidden="true">↗</span></strong><span>Leave orbit. Explore the burning plain.</span></a>
-        <a class="expedition-entry" href="mercury-expedition.html"><span class="eyebrow">New · Surface expedition</span><strong>Step onto Mercury <span aria-hidden="true">↗</span></strong><span>Leave orbit. Explore the sunlit plain.</span></a>
-        <a class="expedition-entry" href="jupiter-expedition.html"><span class="eyebrow">New · Atmospheric descent</span><strong>Descend into Jupiter <span aria-hidden="true">↗</span></strong><span>Leave orbit. Sink through the giant’s clouds.</span></a>
-        <a class="expedition-entry" href="saturn-expedition.html"><span class="eyebrow">New · Ring-plane cruise</span><strong>Fly Saturn’s rings <span aria-hidden="true">↗</span></strong><span>Leave orbit. Cruise the ice beside Cassini.</span></a>
-        <a class="expedition-entry" href="uranus-expedition.html"><span class="eyebrow">New · Sideways ring flight</span><strong>Fly Uranus’s rings <span aria-hidden="true">↗</span></strong><span>Leave orbit. Thread dark threads beside Voyager 2.</span></a>
-        <a class="expedition-entry" href="neptune-expedition.html"><span class="eyebrow">New · Storm-layer flight</span><strong>Fly Neptune’s storms <span aria-hidden="true">↗</span></strong><span>Leave orbit. Brave the fastest winds beside Voyager 2.</span></a>
+        <!-- EXPEDITIONS:START -->
+        <section class="expeditions" aria-labelledby="expeditions-title">
+            <h2 id="expeditions-title" class="nav-label">First-person expeditions</h2>
+            <p class="expeditions-intro">Leave orbit and explore eight worlds up close — walk on rocky surfaces, sink into Jupiter, or fly through rings and storms.</p>
+            <div class="expedition-tiles">
+                <a class="expedition-tile" href="moon.html"><strong>Walk on the Moon</strong><span>Surface walk</span></a>
+                <a class="expedition-tile" href="mars-expedition.html"><strong>Walk on Mars</strong><span>Surface walk</span></a>
+                <a class="expedition-tile" href="venus-expedition.html"><strong>Walk on Venus</strong><span>Surface walk</span></a>
+                <a class="expedition-tile" href="mercury-expedition.html"><strong>Walk on Mercury</strong><span>Surface walk</span></a>
+                <a class="expedition-tile" href="jupiter-expedition.html"><strong>Descend into Jupiter</strong><span>Cloud descent</span></a>
+                <a class="expedition-tile" href="saturn-expedition.html"><strong>Fly Saturn’s rings</strong><span>Ring cruise</span></a>
+                <a class="expedition-tile" href="uranus-expedition.html"><strong>Fly Uranus’s rings</strong><span>Dark-ring flight</span></a>
+                <a class="expedition-tile" href="neptune-expedition.html"><strong>Fly Neptune’s storms</strong><span>Storm flight</span></a>
+            </div>
+        </section>
+        <!-- EXPEDITIONS:END -->
 
         <div id="tour-card" class="tour-card" hidden aria-live="polite">
             <p id="tour-progress" class="eyebrow"></p>

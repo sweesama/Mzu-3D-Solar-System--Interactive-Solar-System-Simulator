@@ -15,6 +15,16 @@
 .expedition-entry strong { display: flex; justify-content: space-between; font-size: 15px; font-weight: 550; }
 .expedition-entry > span:last-child { color: #c0b9ae; font-size: 12px; }
 .expedition-entry:hover { border-color: #d5af7f; background: #302b21; }
+.planet-facts { margin: 0 0 12px; padding-left: 18px; color: #e4e8f1; font-size: 14px; line-height: 1.55; }
+.planet-facts li::marker { color: var(--accent); }
+.expeditions { margin: 16px 0; padding-top: 13px; border-top: 1px solid var(--line); }
+#experience-panel .expeditions h2 { margin: 0 0 4px; font-size: 13px; }
+#experience-panel .expeditions-intro { margin: 0 0 10px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+.expedition-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.expedition-tile { display: flex; flex-direction: column; gap: 2px; padding: 9px 11px; border: 1px solid #d5af7f40; border-radius: 8px; background: linear-gradient(125deg, #2a261e, #111617); color: #f0e4d5; text-decoration: none; }
+.expedition-tile strong { font-size: 13px; font-weight: 600; line-height: 1.25; }
+.expedition-tile span { color: #bfae94; font-size: 11px; }
+.expedition-tile:hover { border-color: #d5af7f; background: #302b21; }
 
 * { box-sizing: border-box; }
 html, body { width: 100%; height: 100%; overflow: hidden; }

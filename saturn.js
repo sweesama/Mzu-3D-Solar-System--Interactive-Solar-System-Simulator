@@ -16,7 +16,7 @@
             guideIntro: 'This is a small, freely explorable stretch of the ring plane, not a whole-system simulation. The five observation points are different views of the same cruise; three lie close to the glittering sheet itself.', controlsTitle: 'Moving around',
             gravityCompare: 'Compare Earth gravity · G', gravityMercury: 'Back to Saturn gravity · G', gravityHint: 'Same probe, different pull. Saturn’s gravity is 10.44 m/s² — press G and the ring’s gentle tug toward the plane eases under Earth’s gentler pull.', soundOn: 'Probe sounds: On', soundOff: 'Probe sounds: Off', soundHint: 'A quiet cabin hum, faint radio hiss, and the tick of ring grains off the hull. M toggles.', gravityMercuryTag: 'Saturn gravity — 10.44 m/s².', gravityEarth: 'Earth gravity — 9.8 m/s². The ring plane’s tug softens.', mercuryTag: 'SATURN', earthTag: 'EARTH',
             controlsText: 'You are a probe cruising the ring plane — there is no ground and no falling. The probe cruises forward on its own; W A S D or the arrow keys drift you sideways and speed you up, Shift is faster still. Space rises, C sinks below the sheet. Drag to look. Touchscreens have direction and Burn buttons. G compares Earth gravity; M toggles sound. H hides notes; P opens photo mode; Esc closes it.',
-            scienceTitle: 'Science meets imagination', scienceText: 'Saturn’s rings are countless ice particles — from grains to house-sized boulders — orbiting in a sheet only tens of metres thick yet wider than the distance to our Moon. Cassini flew these gaps for thirteen years. The band layout, the propeller swirl, and the moonlet are artistic reconstructions, not survey data.',
+            scienceTitle: 'Science meets imagination', scienceText: 'Saturn’s rings are countless ice particles — from grains to house-sized boulders — orbiting in a sheet often only tens of metres thick yet about 270,000 km across — roughly 70% of the way from Earth to the Moon. Cassini studied them from orbit for thirteen years, then dived through the gap between rings and planet in 2017. The band layout, the propeller swirl, and the moonlet are artistic reconstructions, not survey data.',
             soundText: 'The cruise is far gentler than real ring-plane flight — Cassini threaded the gap at tens of kilometres per second. Press G to feel the ring’s faint tidal tug ease under Earth’s gravity. Listen for grains ticking off the hull when you skim the dense bands.',
             assetText: 'Cassini itself is a real NASA 3D model. The Saturn globe uses a real planet texture; the ring sheet, ice field, and starfield are generated locally.',
             skyEyebrow: 'IN SATURN’S SKY', sunName: 'The Sun', earthName: 'Earth', venusName: 'Saturn',
@@ -52,7 +52,7 @@
             guideIntro: '这是一段可以自由漫游的环平面切片，而非完整的环系统模拟。五个观察点位于同一段航程的不同位置；其中三处紧贴波光粼粼的环面本身。', controlsTitle: '如何移动',
             gravityCompare: '对比地球引力 · G', gravityMercury: '恢复土星引力 · G', gravityHint: '同一台探测器，不同的引力。土星引力 10.44 m/s²——按 G 体验环平面的轻微牵引在地球引力下变得更缓。', soundOn: '探测器声音：开', soundOff: '探测器声音：关', soundHint: '安静的舱内低鸣、微弱的射电嘶声，以及冰粒敲击舱体的滴答声。M 切换。', gravityMercuryTag: '土星引力 — 10.44 m/s²。', gravityEarth: '地球引力 — 9.8 m/s²。环平面的牵引变缓了。', mercuryTag: '土星', earthTag: '地球',
             controlsText: '你是一台巡航在环平面上的探测器——没有地面，也不会坠落。探测器会自行向前巡航；W A S D 或方向键控制侧向漂移和加减速，Shift 更快。空格上升，C 下沉到环面之下。拖动画面观察。触屏有方向按钮和推进键。G 对比地球引力，M 开关声音。H 隐藏手记，P 进入摄影，Esc 退出摄影。',
-            scienceTitle: '科学与想象的交界', scienceText: '土星环由无数冰粒组成——从雪粒到房屋大小的巨砾——在一张只有几十米厚、却比地月距离还宽的薄板上绕土星运行。卡西尼号在这些缝隙间飞行了十三年。环带布局、螺旋桨扰动和小卫星都是艺术重建，并非实测数据。',
+            scienceTitle: '科学与想象的交界', scienceText: '土星环由无数冰粒组成——从雪粒到房屋大小的巨砾——在一张往往只有几十米厚、直径却约 27 万公里（约为地月距离的七成）的薄板上绕土星运行。卡西尼号环绕土星研究了十三年，并在 2017 年穿越了环与土星之间的缝隙。环带布局、螺旋桨扰动和小卫星都是艺术重建，并非实测数据。',
             soundText: '巡航比真实环平面飞行平缓得多——卡西尼号以每秒数十公里的速度穿越缝隙。按 G 感受地球引力下环面潮汐牵引的减弱。掠过致密环带时，留意冰粒敲击舱体的滴答声。',
             assetText: '卡西尼号是 NASA 的真实 3D 模型。土星本体使用真实行星贴图；环面、冰粒场和星空由浏览器本地生成。',
             skyEyebrow: '土星天空中', sunName: '太阳', earthName: '地球', venusName: '土星',
@@ -170,6 +170,8 @@
         document.querySelectorAll('.station-button, #begin-button, #photo-button').forEach(button => { button.disabled = true; });
         if (error) console.error('Saturn expedition:', error);
     }
+    // Radial band where the local sheet hands over to the far ring disc around the globe.
+    const SHEET_FADE = [2300, 2900];
     // Ring sheet texture: concentric annuli matching SaturnRings.ringDensity,
     // streaked tangentially so the sheet reads as countless fine ringlets.
     function makeRingTexture() {
@@ -191,7 +193,9 @@
                 const rad = Math.hypot(wx - cx, wz - cz);
                 const ripple = SaturnRings.noise(ang * 60 + rad * 0.002, rad * 0.12) * 0.5 + SaturnRings.noise(ang * 24, rad * 0.6) * 0.5;
                 const flecks = SaturnRings.noise(ang * 160, rad * 0.25) > 0.82 ? 0.3 : 0;
-                let a = dens * (0.55 + ripple * 0.75 + flecks) + 0.04;
+                let a = dens * (0.88 + ripple * 0.3 + flecks) + 0.04;
+                // Fade out toward the sheet's edge, where the far ring disc (same bands) takes over
+                a *= 1 - THREE.MathUtils.smoothstep(Math.hypot(wx, wz), SHEET_FADE[0], SHEET_FADE[1]);
                 a = Math.max(0, Math.min(1, a));
                 const i = (y * size + x) * 4;
                 const warm = SaturnRings.noise(wx * 0.02, wz * 0.02);
@@ -213,7 +217,7 @@
             geo.rotateX(-Math.PI / 2);
             const mat = new THREE.MeshBasicMaterial({
                 map: texture, transparent: true, opacity, side: THREE.DoubleSide,
-                depthWrite: false, fog: true
+                depthWrite: false, fog: false
             });
             const sheet = new THREE.Mesh(geo, mat);
             sheet.position.y = dy;
@@ -446,14 +450,16 @@
         earthProxy.userData.body = 'earth';
         skyPivot.add(earthProxy);
         skyBodies.push(earthProxy);
-        // Saturn itself — a banded giant half-submerged in the ring plane,
-        // its equator on y = 0 so our sheet reads as the same ring system.
+        // Saturn itself — a banded giant with its equator on y = 0. The probe sits in
+        // the Cassini division (~2 radii out), so the globe fills about 60° of sky and
+        // the dense B ring between us and the planet hides its lower half, as it would for real.
         const saturnPos = new THREE.Vector3(SaturnRings.RING_CX, 0, SaturnRings.RING_CZ);
-        const saturnRadius = 1050;
-        // Basic material: at this distance the globe just needs its true texture brightness.
+        const saturnRadius = SaturnRings.SATURN_RADIUS;
+        // Lit like the homepage planets: the Sun behind the probe gives a real terminator-free
+        // full phase with natural limb darkening instead of a flat painted disc.
         saturnMesh = new THREE.Mesh(
-            new THREE.SphereGeometry(saturnRadius, 64, 48),
-            new THREE.MeshBasicMaterial({ color: 0xb5a888, fog: false })
+            new THREE.SphereGeometry(saturnRadius, 96, 64),
+            new THREE.MeshLambertMaterial({ color: 0x3e392d, fog: false })
         );
         saturnMesh.position.copy(saturnPos);
         saturnMesh.rotation.z = 0.05;
@@ -463,20 +469,64 @@
         saturnProxy.userData.body = 'venus';
         scene.add(saturnProxy);
         skyBodies.push(saturnProxy);
-        // Saturn's far ring disc — real alpha texture, lying in the same plane as our sheet.
-        const innerR = saturnRadius * 1.24, outerR = saturnRadius * 2.4;
-        const ringGeo = new THREE.RingGeometry(innerR, outerR, 180, 8);
+        // Saturn's far ring disc — the same C/B/Cassini/A bands as the local sheet (sampled
+        // from SaturnRings.ringDensity), in the same plane, so near and far rings are one system.
+        const innerR = SaturnRings.RING_INNER, outerR = SaturnRings.RING_OUTER;
+        const ringGeo = new THREE.RingGeometry(innerR, outerR, 360, 1);
         {
             const pos = ringGeo.attributes.position, uv = ringGeo.attributes.uv;
             const v3 = new THREE.Vector3();
             for (let i = 0; i < pos.count; i++) {
                 v3.fromBufferAttribute(pos, i);
-                uv.setXY(i, (v3.length() - innerR) / (outerR - innerR), 1);
+                uv.setXY(i, (v3.length() - innerR) / (outerR - innerR), 0.5);
             }
             uv.needsUpdate = true;
         }
-        const ringTex = new THREE.TextureLoader().load('textures/2k_saturn_ring_alpha.png', tex => { tex.encoding = THREE.sRGBEncoding; }, undefined, () => notify('textureFailed'));
-        const ringMat = new THREE.MeshBasicMaterial({ map: ringTex, alphaMap: ringTex, transparent: true, side: THREE.DoubleSide, depthWrite: false, fog: false });
+        const profileCanvas = document.createElement('canvas');
+        profileCanvas.width = 1024; profileCanvas.height = 1;
+        const profileCtx = profileCanvas.getContext('2d');
+        const profileData = profileCtx.createImageData(1024, 1);
+        const outward = new THREE.Vector2(-SaturnRings.RING_CX, -SaturnRings.RING_CZ).normalize();
+        for (let i = 0; i < 1024; i++) {
+            const radius = innerR + (outerR - innerR) * (i + 0.5) / 1024;
+            let dens = 0;
+            for (let k = 0; k < 8; k++) {
+                const angle = k * 0.785;
+                const dx = outward.x * Math.cos(angle) - outward.y * Math.sin(angle), dz = outward.x * Math.sin(angle) + outward.y * Math.cos(angle);
+                dens += SaturnRings.ringDensity(SaturnRings.RING_CX + dx * radius, SaturnRings.RING_CZ + dz * radius);
+            }
+            const a = Math.min(1, (dens / 8) * 1.15 + 0.03);
+            profileData.data.set([240, 234, 218, Math.round(a * 250)], i * 4);
+        }
+        profileCtx.putImageData(profileData, 0, 0);
+        const ringTex = new THREE.CanvasTexture(profileCanvas);
+        // Ring shadow on the globe: any point below the ring plane looks toward the Sun
+        // through the rings, so the same band profile darkens the southern hemisphere.
+        const ringSunDir = new THREE.Vector3(260, 84, 320).normalize();
+        saturnMesh.material.onBeforeCompile = shader => {
+            Object.assign(shader.uniforms, {
+                uRingTex: { value: ringTex }, uSunDir: { value: ringSunDir }, uCenter: { value: saturnPos },
+                uRing: { value: new THREE.Vector2(innerR, outerR) }
+            });
+            shader.vertexShader = shader.vertexShader
+                .replace('#include <common>', '#include <common>\nvarying vec3 vRingWorld;')
+                .replace('#include <begin_vertex>', '#include <begin_vertex>\nvRingWorld = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+            shader.fragmentShader = shader.fragmentShader
+                .replace('#include <common>', '#include <common>\nuniform sampler2D uRingTex; uniform vec3 uSunDir; uniform vec3 uCenter; uniform vec2 uRing; varying vec3 vRingWorld;')
+                .replace('#include <dithering_fragment>', `#include <dithering_fragment>
+                    vec3 rp = vRingWorld - uCenter;
+                    if (rp.y < 0.0 && uSunDir.y > 0.0) {
+                        vec3 hit = rp + uSunDir * (-rp.y / uSunDir.y);
+                        float u = (length(hit.xz) - uRing.x) / (uRing.y - uRing.x);
+                        if (u > 0.0 && u < 1.0) gl_FragColor.rgb *= 1.0 - texture2D(uRingTex, vec2(u, 0.5)).a * 0.85;
+                    }`);
+        };
+        const ringMat = new THREE.ShaderMaterial({
+            uniforms: { map: { value: ringTex }, uFade: { value: new THREE.Vector2(SHEET_FADE[0], SHEET_FADE[1]) } },
+            vertexShader: 'varying vec2 vUv; varying vec3 vW; void main(){ vUv = uv; vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }',
+            fragmentShader: 'uniform sampler2D map; uniform vec2 uFade; varying vec2 vUv; varying vec3 vW; void main(){ vec4 t = texture2D(map, vUv); float far = smoothstep(uFade.x, uFade.y, length(vW.xz)); gl_FragColor = vec4(pow(t.rgb, vec3(2.2)) * 0.85, t.a * far); }',
+            transparent: true, side: THREE.DoubleSide, depthWrite: false
+        });
         const saturnRing = new THREE.Mesh(ringGeo, ringMat);
         saturnRing.rotation.x = Math.PI / 2;
         saturnRing.position.copy(saturnPos);
@@ -487,7 +537,7 @@
                 tex.encoding = THREE.sRGBEncoding;
                 tex.wrapS = THREE.MirroredRepeatWrapping;
                 saturnMesh.material.map = tex;
-                saturnMesh.material.color.set(0xcfc2a2);
+                saturnMesh.material.color.set(0x4a4538);
                 saturnMesh.material.needsUpdate = true;
                 resolve();
             }, undefined, () => resolve());
