@@ -728,32 +728,47 @@ self.onmessage = function(e) {
                     varying vec3 vSunNormal;
                     varying vec3 vSunView;
                     ${const_shader_noise_functions}
+                    float noise2(vec3 p) { return snoise(p) * 0.62 + snoise(p * 2.1) * 0.38; }
+                    float noise4(vec3 p) { return snoise(p) * 0.5 + snoise(p * 2.0) * 0.27 + snoise(p * 4.1) * 0.15 + snoise(p * 8.3) * 0.08; }
 
                     void main() {
+                        // 风格参照 NASA SDO 卫星 304Å 波段影像：橙红色、纤维状翻滚的色球层，
+                        // 明亮的活动区斑块，暗色细丝，边缘一圈更亮的辉光。
                         vec3 p = vSunPos;
-                        // 大尺度对流斑块，缓慢翻滚
-                        float convection = fbm(p * 2.2 + vec3(0.0, time * 0.035, time * 0.02)) * 0.5 + 0.5;
-                        // 米粒组织：高频噪声取"山脊"形状，得到一颗颗亮颗粒+暗色边界
-                        float granule = 1.0 - abs(snoise(p * 13.0 + vec3(time * 0.08)));
-                        granule = pow(granule, 2.0);
-                        // 黑子：只出现在南北纬约 5°–35° 的"黑子带"里，而且只有极少数，像真实太阳
-                        float belt = smoothstep(0.06, 0.14, abs(p.y)) * smoothstep(0.6, 0.45, abs(p.y));
-                        float spotField = snoise(p * 4.0 + vec3(17.0, 3.0, time * 0.006)) * belt;
-                        float umbra = smoothstep(0.8, 0.88, spotField);
-                        float penumbra = smoothstep(0.7, 0.82, spotField);
+                        float t = time;
+                        // 扭曲噪声（domain warping）：先用一层噪声把坐标"拧"一下，再采样，得到被拉扯、翻卷的流体纹理
+                        // （这里用 2–4 层的轻量噪声叠加，完整 6 层 fbm 叠太多次会让部分显卡编译失败）
+                        vec3 warp = vec3(
+                            noise2(p * 1.7 + vec3(0.0, 0.0, t * 0.020)),
+                            noise2(p * 1.7 + vec3(5.2, 1.3, 2.8 + t * 0.020)),
+                            noise2(p * 1.7 + vec3(2.1, 7.7, 4.4 - t * 0.015))
+                        );
+                        float turbulence = noise4(p * 3.2 + warp * 1.8 + vec3(t * 0.03)) * 0.5 + 0.5;
+                        // 细密纤维（类似针状体的毛绒质感）：沿扭曲方向拉长的山脊噪声
+                        float fibre = 1.0 - abs(snoise(p * 19.0 + warp * 3.5 + vec3(t * 0.05)));
+                        fibre = pow(fibre, 4.0);
+                        // 活动区：大块明亮区域，内部再叠一层更亮的核心
+                        float activeField = noise2(p * 1.25 + vec3(9.0, 2.0, t * 0.004)) * 0.5 + 0.5;
+                        float plage = smoothstep(0.58, 0.78, activeField); // 注意：active 是 GLSL 保留字，不能当变量名
+                        float plageCore = smoothstep(0.72, 0.86, activeField);
+                        // 暗色细丝：低频噪声里很细的一条条"零线"
+                        float filament = pow(1.0 - abs(snoise(p * 2.6 + warp * 0.6 + vec3(3.0, 8.0, 1.0))), 34.0) * (1.0 - plage);
 
-                        float heat = clamp(convection * 0.75 + granule * 0.3, 0.0, 1.0);
-                        vec3 color = mix(uColor3, uColor1, smoothstep(0.15, 0.55, heat));
-                        color = mix(color, uColor2, smoothstep(0.5, 0.95, heat));
-                        color = mix(color, vec3(1.0, 0.95, 0.8), smoothstep(0.6, 1.0, heat) * 0.55);
-                        color *= 1.0 - penumbra * 0.3 - umbra * 0.5;
+                        float intensity = 0.28 + turbulence * 0.42 + fibre * 0.22 + plage * 0.32 + plageCore * 0.35;
+                        intensity *= 1.0 - filament * 0.55;
 
-                        // 临边昏暗：mu = 视线与法线夹角余弦，经典线性近似 I = 1 - u(1 - mu)
+                        vec3 deep = vec3(0.32, 0.04, 0.0);
+                        vec3 ember = vec3(0.86, 0.24, 0.02);
+                        vec3 flame = vec3(1.0, 0.56, 0.08);
+                        vec3 white = vec3(1.0, 0.93, 0.66);
+                        vec3 color = mix(deep, ember, smoothstep(0.05, 0.45, intensity));
+                        color = mix(color, flame, smoothstep(0.42, 0.78, intensity));
+                        color = mix(color, white, smoothstep(0.78, 1.15, intensity));
+
+                        // 304Å 下的太阳边缘反而更亮（色球层在边缘处叠得更厚）
                         float mu = clamp(dot(vSunNormal, vSunView), 0.0, 1.0);
-                        float limb = 1.0 - 0.62 * (1.0 - mu);
-                        color *= limb;
-                        color = mix(color * vec3(1.0, 0.72, 0.45), color, smoothstep(0.0, 0.45, mu));
-                        color *= 1.25;
+                        color += vec3(1.0, 0.42, 0.06) * pow(1.0 - mu, 3.0) * 0.55;
+                        color *= 1.15;
 
                         gl_FragColor = vec4(color, 1.0);
                     }
@@ -840,8 +855,22 @@ self.onmessage = function(e) {
                         float outer = exp(-h * 0.95) * 0.45 * streamer;
                         float fade = 1.0 - smoothstep(uExtent * 0.75, uExtent, r);
                         float glow = (inner + outer) * fade;
-                        vec3 color = mix(vec3(1.0, 0.55, 0.18), vec3(1.0, 0.9, 0.7), clamp(inner * 1.2, 0.0, 1.0));
-                        gl_FragColor = vec4(color * glow, glow);
+                        vec3 color = mix(vec3(1.0, 0.45, 0.12), vec3(1.0, 0.8, 0.5), clamp(inner * 1.2, 0.0, 1.0)) * glow;
+
+                        // 色球层边缘：一圈参差不齐、不停跳动的橙红"毛边"（针状体）
+                        float fringeHeight = 0.02 + 0.025 * (snoise(vec3(dir * 34.0, time * 0.35)) * 0.5 + 0.5);
+                        float fringe = 1.0 - smoothstep(fringeHeight * 0.4, fringeHeight, h);
+                        color += vec3(1.0, 0.38, 0.06) * fringe * 1.1;
+
+                        // 日珥：只在少数几个方位冒出的火焰状弧/羽，内部是向外飘动的丝缕
+                        float promSite = smoothstep(0.62, 0.82, snoise(vec3(dir * 1.6, 4.0 + time * 0.008)) * 0.5 + 0.5);
+                        float promHeight = 0.1 + 0.22 * (fbm(vec3(dir * 5.0, time * 0.03)) * 0.5 + 0.5);
+                        float wisps = smoothstep(0.38, 0.72, fbm(vec3(dir * 16.0, h * 7.0 - time * 0.1)) * 0.5 + 0.5);
+                        float prominence = promSite * (1.0 - smoothstep(promHeight * 0.55, promHeight, h)) * wisps;
+                        color += vec3(1.0, 0.32, 0.05) * prominence * 1.2;
+
+                        float alpha = clamp(glow + fringe + prominence, 0.0, 1.0);
+                        gl_FragColor = vec4(color, alpha);
                     }
                 `,
                 blending: THREE.AdditiveBlending,
