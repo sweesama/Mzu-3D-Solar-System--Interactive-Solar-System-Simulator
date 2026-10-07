@@ -169,6 +169,18 @@
             </select>
             <small id="quality-status" aria-live="polite"></small>
         </label>
+        <label class="quality-control time-control" for="time-select" title="Real speed uses true orbital and rotation periods. Spins faster than 2 turns per second are capped to avoid flicker.">
+            <span>Speed</span>
+            <select id="time-select" aria-describedby="time-status">
+                <option value="artistic">Artistic</option>
+                <option value="0.0416667">Real · 1 hour/s</option>
+                <option value="1">Real · 1 day/s</option>
+                <option value="7">Real · 1 week/s</option>
+                <option value="30.4375">Real · 1 month/s</option>
+                <option value="365.25">Real · 1 year/s</option>
+            </select>
+            <small id="time-status" aria-live="polite"></small>
+        </label>
         <button id="music-button" class="control-btn" type="button">Music: Off</button>
         <button id="orbit-glow-button" class="control-btn" type="button">Orbit glow: Off</button>
     </div>

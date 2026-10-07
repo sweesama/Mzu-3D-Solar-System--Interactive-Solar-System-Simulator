@@ -75,6 +75,70 @@
         let trackedObject = null;
         let isTransitioningCamera = false;
         const ORBIT_SPEED_MULTIPLIER = 2.5; // 与 animate() 中的轨道速度倍率保持一致
+        const ARTISTIC_SPIN_MULTIPLIER = 2;
+
+        // ✨ 真实速度模式：公转周期（地球日）与自转周期（小时），来源 NASA 行星/卫星数据表（恒星周期）。
+        // 卫星没写自转周期的 = 潮汐锁定（自转周期 = 公转周期）。
+        const REAL_PERIODS = {
+            Mercury: { orbitDays: 87.969, spinHours: 1407.6 }, Venus: { orbitDays: 224.701, spinHours: 5832.5 },
+            Earth: { orbitDays: 365.256, spinHours: 23.934 }, Mars: { orbitDays: 686.98, spinHours: 24.623 },
+            Jupiter: { orbitDays: 4332.59, spinHours: 9.925 }, Saturn: { orbitDays: 10759.22, spinHours: 10.656 },
+            Uranus: { orbitDays: 30688.5, spinHours: 17.24 }, Neptune: { orbitDays: 60182, spinHours: 16.11 },
+            Pluto: { orbitDays: 90560, spinHours: 153.29 }, Ceres: { orbitDays: 1680, spinHours: 9.074 },
+            Eris: { orbitDays: 203830, spinHours: 378.9 }, Makemake: { orbitDays: 111845, spinHours: 22.83 },
+            Haumea: { orbitDays: 103410, spinHours: 3.915 },
+            Moon: { orbitDays: 27.322 }, Phobos: { orbitDays: 0.31891 }, Deimos: { orbitDays: 1.26244 },
+            Io: { orbitDays: 1.769 }, Europa: { orbitDays: 3.551 }, Ganymede: { orbitDays: 7.155 }, Callisto: { orbitDays: 16.689 },
+            Mimas: { orbitDays: 0.942 }, Titan: { orbitDays: 15.945 }, Rhea: { orbitDays: 4.518 },
+            Miranda: { orbitDays: 1.413 }, Ariel: { orbitDays: 2.52 }, Umbriel: { orbitDays: 4.144 }, Titania: { orbitDays: 8.706 }, Oberon: { orbitDays: 13.463 },
+            Triton: { orbitDays: 5.877 }, Nereid: { orbitDays: 360.13, spinHours: 11.594 },
+            Charon: { orbitDays: 6.387 }, Styx: { orbitDays: 20.16 }, Nix: { orbitDays: 24.85 }, Kerberos: { orbitDays: 32.17 }, Hydra: { orbitDays: 38.2 },
+            Hiaka: { orbitDays: 49.12 }, Namaka: { orbitDays: 18.28 }
+        };
+        const TIME_SCALE_STORAGE_KEY = 'mzu-time-scale';
+        // 超过每秒 2 圈的转动会出现"倒转/乱闪"的错觉（帧率跟不上），这时只做显示上的限速
+        const MAX_VISUAL_RATE = Math.PI * 4;
+        let realDaysPerSecond = 0; // 0 = 艺术化速度；> 0 = 真实速度，每秒经过多少地球日
+
+        // 场景轨道半径 → 天文单位：用八大行星的数据做分段线性插值（给小行星、彗星这类没有表格数据的天体用）
+        function sceneRadiusToAU(radius) {
+            const pts = [[0, 0]].concat(planetData.filter(p => p.orbitSemiMajorAxisAU && p.orbitRadius && p.type !== 'Moon').map(p => [p.orbitRadius, p.orbitSemiMajorAxisAU]).sort((a, b) => a[0] - b[0]));
+            for (let i = 1; i < pts.length; i++) {
+                if (radius <= pts[i][0]) return pts[i - 1][1] + (pts[i][1] - pts[i - 1][1]) * (radius - pts[i - 1][0]) / (pts[i][0] - pts[i - 1][0]);
+            }
+            const [lr, la] = pts[pts.length - 1];
+            return la * radius / lr;
+        }
+        const clampVisualRate = rate => Math.max(-MAX_VISUAL_RATE, Math.min(MAX_VISUAL_RATE, rate));
+        // 每个天体的真实公转/自转角速度（弧度/地球日），第一次用到时算好缓存
+        function realRates(obj) {
+            if (obj.realRates) return obj.realRates;
+            const name = obj.mesh && obj.mesh.name;
+            const data = REAL_PERIODS[name];
+            const orbitSign = (obj.speed || 0) < 0 ? -1 : 1;
+            let orbitDays = data && data.orbitDays;
+            if (!orbitDays && !obj.isMoon && obj.orbitRadius) {
+                const au = (obj.mesh && obj.mesh.userData && obj.mesh.userData.orbitSemiMajorAxisAU) || sceneRadiusToAU(obj.orbitRadius);
+                orbitDays = 365.256 * Math.pow(au, 1.5); // 开普勒第三定律
+            }
+            // 没有数据的小卫星：按"艺术速度相对月球"的比例折算
+            const orbit = orbitDays ? orbitSign * 2 * Math.PI / orbitDays : (obj.speed || 0) / 0.1022 * (2 * Math.PI / 27.322);
+            let spin = null;
+            if (data && data.spinHours) spin = 2 * Math.PI / (data.spinHours / 24);
+            else if (data && obj.isMoon) spin = orbit;
+            obj.realRates = { orbit, spin };
+            return obj.realRates;
+        }
+        // 当前模式下的公转、自转角速度（弧度/秒）
+        function orbitRateFor(obj) {
+            return realDaysPerSecond > 0 ? clampVisualRate(realRates(obj).orbit * realDaysPerSecond) : (obj.speed || 0) * ORBIT_SPEED_MULTIPLIER;
+        }
+        function spinRateFor(obj) {
+            const artistic = (obj.rotationSpeed || 0) * ARTISTIC_SPIN_MULTIPLIER;
+            if (realDaysPerSecond <= 0) return artistic;
+            const spin = realRates(obj).spin;
+            return spin === null ? artistic : clampVisualRate(spin * realDaysPerSecond);
+        }
         let animationFrameId = null;
         let starTwinkleUniforms = null;
         let softDotTexture = null;
@@ -3727,7 +3791,7 @@ self.onmessage = function(e) {
         function predictWorldPosition(entry, secondsAhead) {
             const savedRotations = celestialObjects.map(o => o.pivot.rotation.y);
             celestialObjects.forEach(o => {
-                o.pivot.rotation.y += o.speed * secondsAhead * ORBIT_SPEED_MULTIPLIER;
+                o.pivot.rotation.y += orbitRateFor(o) * secondsAhead;
                 updateOrbitalPosition(o);
             });
             const pos = new THREE.Vector3();
@@ -3783,18 +3847,18 @@ self.onmessage = function(e) {
                 shaderUniforms.time.value = elapsedTime;
             }
 
-            const baseRotationSpeedMultiplier = 2;
 
             celestialObjects.forEach(obj => {
-                obj.pivot.rotation.y += obj.speed * delta * ORBIT_SPEED_MULTIPLIER;
+                obj.pivot.rotation.y += orbitRateFor(obj) * delta;
                 updateOrbitalPosition(obj);
 
 
                 if (obj.mesh) { // Self-rotation
-                    obj.mesh.rotation.y += (obj.rotationSpeed || 0) * delta * baseRotationSpeedMultiplier;
-                    // ✨ Phase 3.2：地球云层独立加速旋转（比地球本体快 25%，制造云在飘的视觉）
+                    const spinRate = spinRateFor(obj);
+                    obj.mesh.rotation.y += spinRate * delta;
+                    // ✨ Phase 3.2：地球云层相对地表缓慢飘移（真实速度模式下飘得更慢，免得跟着高速自转乱转）
                     if (obj.mesh.userData && obj.mesh.userData.earthCloudsMesh) {
-                        obj.mesh.userData.earthCloudsMesh.rotation.y += (obj.rotationSpeed || 0) * delta * baseRotationSpeedMultiplier * 0.25;
+                        obj.mesh.userData.earthCloudsMesh.rotation.y += spinRate * delta * (realDaysPerSecond > 0 ? 0.03 : 0.25);
                     }
                 }
 
@@ -3967,6 +4031,31 @@ self.onmessage = function(e) {
         }
         
         // Initialize music button state (removed auto-start due to browser limitations)
+        // 速度下拉框：艺术化速度 / 真实速度（多种时间倍率），并把选择记在本机
+        function initializeTimeScaleControl() {
+            const select = document.getElementById('time-select');
+            const status = document.getElementById('time-status');
+            if (!select) return;
+            const describe = () => {
+                if (realDaysPerSecond <= 0) { status.textContent = 'Compressed for viewing'; return; }
+                const yearSeconds = 365.256 / realDaysPerSecond;
+                const fmt = s => s < 90 ? `${Math.round(s)} s` : s < 5400 ? `${Math.round(s / 60)} min` : `${(s / 3600).toFixed(1)} h`;
+                status.textContent = `Real ratios · Earth year ≈ ${fmt(yearSeconds)}`;
+            };
+            const apply = value => {
+                realDaysPerSecond = value === 'artistic' ? 0 : Math.max(0, parseFloat(value) || 0);
+                describe();
+            };
+            let saved = null;
+            try { saved = localStorage.getItem(TIME_SCALE_STORAGE_KEY); } catch (error) { saved = null; }
+            if (saved && Array.from(select.options).some(option => option.value === saved)) select.value = saved;
+            apply(select.value);
+            select.addEventListener('change', () => {
+                apply(select.value);
+                try { localStorage.setItem(TIME_SCALE_STORAGE_KEY, select.value); } catch (error) { /* 无痕模式下不保存 */ }
+            });
+        }
+
         function initializeMusicButton() {
             const button = document.getElementById('music-button');
             // Keep initial state as Music Off
@@ -3990,6 +4079,7 @@ self.onmessage = function(e) {
                 setupExperienceUi();
                 animate();
                 initializeMusicButton();
+                initializeTimeScaleControl();
             }).catch(error => {
                 console.error("The 3D scene could not be initialized:", error);
                 const errorDiv = document.createElement('div');

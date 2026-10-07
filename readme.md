@@ -56,6 +56,12 @@ node --check main.js
 
 Never hand-edit `mercury.html` … `neptune.html`: change `index.html` or the data in `generate_seo_pages.cjs` (intro, quick facts, featured expedition card) and regenerate.
 
+## Speed control (main explorer)
+
+- The **Speed** menu switches between *Artistic* (compressed, for easy viewing) and *Real* speeds at 1 hour / 1 day / 1 week / 1 month / 1 year per second. The choice is saved in `localStorage` (`mzu-time-scale`).
+- Real mode uses true sidereal orbital and rotation periods from `REAL_PERIODS` in `main.js` (NASA fact sheets; tidally locked moons spin once per orbit). Bodies without table data (asteroids, comets, Kuiper objects) use Kepler's third law from their semi-major axis. Retrograde motion keeps its sign (Triton); Venus and Uranus get their backward/sideways spin from their axial tilt.
+- Any motion faster than 2 turns per second is capped for display only, to avoid stroboscopic "backwards" spinning. Distances and sizes are still compressed in every mode.
+
 ## Rendering notes (main explorer)
 
 - **Shadows are analytic, not shadow maps.** `addEclipseShadows(material, occluders)` in `main.js` injects a shader test: from each pixel, a ray toward the Sun (world origin) is checked against up to four occluding spheres, with a soft penumbra sized by the Sun's apparent radius. Planets receive their moons' shadows, moons receive their planet's, and ring systems receive their planet's shadow. `updateEclipseShadows()` refreshes occluder positions every frame. The old point-light cube shadow map (jagged edges, six extra scene renders per frame) is disabled.
