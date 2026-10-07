@@ -490,7 +490,7 @@
         const starGeometry = new THREE.BufferGeometry();
         starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
         starGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
-        const stars = new THREE.Points(starGeometry, new THREE.PointsMaterial({ size: 5.5, vertexColors: true, sizeAttenuation: true, depthWrite: false, transparent: true, opacity: 0.9 }));
+        const stars = new THREE.Points(starGeometry, new THREE.PointsMaterial({ size: 5.5, map: dustTexture(), vertexColors: true, sizeAttenuation: true, depthWrite: false, transparent: true, opacity: 0.9 }));
         stars.frustumCulled = false;
         scene.add(stars);
         skyPivot = new THREE.Group();

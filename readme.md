@@ -56,6 +56,12 @@ node --check main.js
 
 Never hand-edit `mercury.html` … `neptune.html`: change `index.html` or the data in `generate_seo_pages.cjs` (intro, quick facts, featured expedition card) and regenerate.
 
+## Rendering notes (main explorer)
+
+- **Shadows are analytic, not shadow maps.** `addEclipseShadows(material, occluders)` in `main.js` injects a shader test: from each pixel, a ray toward the Sun (world origin) is checked against up to four occluding spheres, with a soft penumbra sized by the Sun's apparent radius. Planets receive their moons' shadows, moons receive their planet's, and ring systems receive their planet's shadow. `updateEclipseShadows()` refreshes occluder positions every frame. The old point-light cube shadow map (jagged edges, six extra scene renders per frame) is disabled.
+- **Stars are round.** The starfield uses a small custom `ShaderMaterial` that honours the per-star `size` attribute, clamps on-screen size (no giant squares up close), draws a soft disc via `gl_PointCoord`, and adds a gentle per-star twinkle. Kuiper-belt and comet-tail points use a shared soft-dot texture (`getSoftDotTexture()`); any new `PointsMaterial` should be given a `map`, or it will render squares.
+- Planet spheres use 96×64 segments (48×48 on low quality) and moons 40×28, so silhouettes stay round when zoomed in; textures get up to 8× anisotropic filtering outside low-detail mode.
+
 ## SEO and sharing
 
 - **Share images** live in `og/` (1200×630 JPEG): `home.jpg`, one per planet page (`og/<planet>.jpg`) and one per expedition (`og/<planet>-expedition.jpg`). Every page uses `summary_large_image` Twitter cards, `og:image:width/height/alt`, and the same URL as `image`/`screenshot` in its JSON-LD. To refresh an image, open the page at a 1200×630 viewport, enter photo mode (expeditions) or close the guide panel (planet pages), and screenshot.

@@ -76,6 +76,8 @@
         let isTransitioningCamera = false;
         const ORBIT_SPEED_MULTIPLIER = 2.5; // 与 animate() 中的轨道速度倍率保持一致
         let animationFrameId = null;
+        let starTwinkleUniforms = null;
+        let softDotTexture = null;
         // ✨ Phase 3.x：保存当前活跃的相机 tween 引用，新点击时主动清除，避免新旧 tween 争夺 camera.position
         let activeCameraTweens = [];
 
@@ -320,9 +322,9 @@ self.onmessage = function(e) {
             applyRendererPixelRatio();
             renderer.outputEncoding = THREE.sRGBEncoding; // 让画面颜色真实不偏暗（修复程序化纹理偏灰问题）
 
- 
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            // 阴影改为着色器里的解析式日食阴影（addEclipseShadows），不再使用锯齿明显、
+            // 且每帧要额外渲染 6 次场景的点光源立方体阴影贴图
+            renderer.shadowMap.enabled = false;
 
             document.body.appendChild(renderer.domElement);
 
@@ -431,6 +433,17 @@ self.onmessage = function(e) {
                 }
             }
 
+            // 各向异性过滤：斜着看行星边缘和土星环时贴图不再糊成一片（低画质时不开）
+            if (!lowDetailMode) {
+                const maxAnisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+                scene.traverse(object => {
+                    const material = object.material;
+                    if (material && material.map && material.map.anisotropy < maxAnisotropy) {
+                        material.map.anisotropy = maxAnisotropy;
+                        material.map.needsUpdate = !!material.map.image;
+                    }
+                });
+            }
             console.log("太阳系模拟初始化完成 (动态小行星带, 增强柯伊伯带, 精确数据字段, 矮行星系统)。");
             updateProgress("Initialization Complete!", 100);
             
@@ -525,6 +538,100 @@ self.onmessage = function(e) {
             }
         `;
 
+        // ✨ 解析式日食阴影（替代锯齿严重的点光源阴影贴图）
+        // 太阳在世界原点。对每个像素，沿"指向太阳"的射线检查是否被某个球体（行星/卫星）挡住：
+        // 射线到球心的最近距离 < 球半径 → 在阴影里；边缘按太阳视大小做平滑半影，所以永远没有锯齿。
+        const eclipseReceivers = [];
+        const ECLIPSE_MAX_OCCLUDERS = 4;
+        const ECLIPSE_GLSL = `
+            uniform vec4 uOccluders[${ECLIPSE_MAX_OCCLUDERS}];
+            uniform float uSunRadius;
+            varying vec3 vEclipseWorld;
+            float eclipseShadow(vec3 p) {
+                vec3 toSun = -p;
+                float dSun = length(toSun);
+                vec3 dir = toSun / max(dSun, 1e-4);
+                float lit = 1.0;
+                for (int i = 0; i < ${ECLIPSE_MAX_OCCLUDERS}; i++) {
+                    float r = uOccluders[i].w;
+                    if (r <= 0.0) continue;
+                    vec3 oc = uOccluders[i].xyz - p;
+                    float t = dot(oc, dir);
+                    if (t <= 0.0 || t >= dSun) continue;
+                    float miss = length(oc - dir * t);
+                    float pen = min(uSunRadius * t / dSun, r * 0.6);
+                    lit *= mix(0.06, 1.0, smoothstep(r - pen, r + pen, miss));
+                }
+                return lit;
+            }`;
+        // 给材质注入日食阴影；occluders 是一个可以后续继续 push 的 Mesh 数组（例如行星的卫星）
+        function addEclipseShadows(material, occluders) {
+            const uniforms = {
+                uOccluders: { value: Array.from({ length: ECLIPSE_MAX_OCCLUDERS }, () => new THREE.Vector4()) },
+                uSunRadius: { value: 1 }
+            };
+            const previous = material.onBeforeCompile;
+            material.onBeforeCompile = (shader, rendererRef) => {
+                if (previous) previous(shader, rendererRef);
+                Object.assign(shader.uniforms, uniforms);
+                shader.vertexShader = 'varying vec3 vEclipseWorld;\n' + shader.vertexShader.replace(
+                    '#include <project_vertex>',
+                    '#include <project_vertex>\nvEclipseWorld = (modelMatrix * vec4(transformed, 1.0)).xyz;'
+                );
+                shader.fragmentShader = ECLIPSE_GLSL + '\n' + shader.fragmentShader;
+                if (shader.fragmentShader.includes('#include <lights_fragment_end>')) {
+                    // 受光材质：只压暗太阳直射光，环境光和地球夜灯不受影响
+                    shader.fragmentShader = shader.fragmentShader.replace(
+                        '#include <lights_fragment_end>',
+                        '#include <lights_fragment_end>\nfloat eclLit = eclipseShadow(vEclipseWorld);\nreflectedLight.directDiffuse *= eclLit;\nreflectedLight.directSpecular *= eclLit;'
+                    );
+                } else {
+                    // 不受光材质（土星环贴图）：直接压暗颜色
+                    shader.fragmentShader = shader.fragmentShader.replace(
+                        '#include <fog_fragment>',
+                        'gl_FragColor.rgb *= mix(0.2, 1.0, eclipseShadow(vEclipseWorld));\n#include <fog_fragment>'
+                    );
+                }
+            };
+            // 地球材质还有昼夜着色器，缓存键必须区分，否则不同材质会错用同一个编译结果
+            const cacheKey = 'eclipse|' + (previous ? previous.toString() : '');
+            material.customProgramCacheKey = () => cacheKey;
+            material.needsUpdate = true;
+            eclipseReceivers.push({ uniforms, occluders });
+        }
+        const _eclipseWorldPos = new THREE.Vector3();
+        const _eclipseWorldScale = new THREE.Vector3();
+        function updateEclipseShadows() {
+            const sunRadius = sun && sun.geometry && sun.geometry.parameters ? sun.geometry.parameters.radius : 1;
+            for (const receiver of eclipseReceivers) {
+                receiver.uniforms.uSunRadius.value = sunRadius;
+                const slots = receiver.uniforms.uOccluders.value;
+                for (let i = 0; i < ECLIPSE_MAX_OCCLUDERS; i++) {
+                    const mesh = receiver.occluders[i];
+                    if (!mesh || !mesh.geometry || !mesh.geometry.parameters) { slots[i].set(0, 0, 0, 0); continue; }
+                    mesh.getWorldPosition(_eclipseWorldPos);
+                    mesh.getWorldScale(_eclipseWorldScale);
+                    slots[i].set(_eclipseWorldPos.x, _eclipseWorldPos.y, _eclipseWorldPos.z, mesh.geometry.parameters.radius * _eclipseWorldScale.x);
+                }
+            }
+        }
+
+        // 柔和圆点贴图：给 PointsMaterial 用，让粒子（柯伊伯带、彗尾）显示为圆点而不是正方形
+        function getSoftDotTexture() {
+            if (softDotTexture) return softDotTexture;
+            const canvas = document.createElement('canvas');
+            canvas.width = canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+            gradient.addColorStop(0, 'rgba(255,255,255,1)');
+            gradient.addColorStop(0.35, 'rgba(255,255,255,0.75)');
+            gradient.addColorStop(1, 'rgba(255,255,255,0)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 64, 64);
+            softDotTexture = new THREE.CanvasTexture(canvas);
+            return softDotTexture;
+        }
+
         function createSun() { // Added metric data to userData
             const sunGeometry = new THREE.SphereGeometry(sunRadiusVisual, 64, 64); // Use visual radius for geometry
             const sunMaterial = new THREE.ShaderMaterial({ /* ... NO CHANGE ... */
@@ -584,10 +691,6 @@ self.onmessage = function(e) {
             };
 
             const pointLight = new THREE.PointLight(0xffffff, 2.0, 3000); /* ... NO CHANGE ... */
-            pointLight.castShadow = true;
-            pointLight.shadow.mapSize.width = 2048;
-            pointLight.shadow.mapSize.height = 2048;
-            pointLight.shadow.bias = -0.0001;
             sunMesh.add(pointLight);
 
             const flareColor = new THREE.Color(0xffffff); /* ... NO CHANGE ... */
@@ -690,7 +793,7 @@ self.onmessage = function(e) {
                             '#include <worldpos_vertex>',
                             `#include <worldpos_vertex>
                             vWorldNormalDN = normalize(mat3(modelMatrix) * normal);
-                            vWorldPosDN = worldPosition.xyz;
+                            vWorldPosDN = (modelMatrix * vec4(transformed, 1.0)).xyz;
                             vUvDN = uv;`
                         );
 
@@ -2043,12 +2146,15 @@ self.onmessage = function(e) {
                 planetMaterial = new THREE.MeshStandardMaterial({ color: planetData.color, ...planetData.materialProps });
             }
 
-            const planetGeometry = new THREE.SphereGeometry(visualRadius, 48, 48);
+            // 放大观察时球体轮廓要圆润：高画质 96×64 段，低画质保持 48 段
+            const planetGeometry = lowDetailMode ? new THREE.SphereGeometry(visualRadius, 48, 48) : new THREE.SphereGeometry(visualRadius, 96, 64);
             const planetMesh = new THREE.Mesh(planetGeometry, planetMaterial);
             planetMesh.name = planetData.name;
             planetMesh.userData = planetData; // This now contains metric data if available in planetData
-            planetMesh.castShadow = true;
-            planetMesh.receiveShadow = true;
+            // 行星表面接收自己卫星的影子（如木卫一投在木星上的黑点）；卫星创建时会加入这个数组
+            const planetOccluders = [];
+            planetMesh.userData.eclipseOccluders = planetOccluders;
+            addEclipseShadows(planetMaterial, planetOccluders);
             
  
             
@@ -2343,12 +2449,13 @@ self.onmessage = function(e) {
                     const moonMaterial = new THREE.MeshStandardMaterial({ map: moonTexture, ...moonData.materialProps });
                     // ✨ 把材质引用回填到 onError 闭包用的变量，让加载失败时能把 map 清掉、避免黑球
                     __pendingMoonMat = moonMaterial;
-                    const moonGeometry = new THREE.SphereGeometry(moonVisualRadius, 16, 16);
+                    const moonGeometry = new THREE.SphereGeometry(moonVisualRadius, lowDetailMode ? 16 : 40, lowDetailMode ? 16 : 28);
                     const moonMesh = new THREE.Mesh(moonGeometry, moonMaterial);
                     moonMesh.name = moonData.name;
                     moonMesh.userData = moonData; // Contains metric data if available
-                    moonMesh.castShadow = true;
-                    moonMesh.receiveShadow = true;
+                    // 卫星进入母星影子时会变暗（月食），同时它也会把影子投到母星上
+                    addEclipseShadows(moonMaterial, [planetMesh]);
+                    if (planetMesh.userData.eclipseOccluders && planetMesh.userData.eclipseOccluders.length < ECLIPSE_MAX_OCCLUDERS) planetMesh.userData.eclipseOccluders.push(moonMesh);
                     
  
 
@@ -2520,7 +2627,8 @@ self.onmessage = function(e) {
                 }
                 
                 const ringMesh = new THREE.Mesh(ringGeometry, ringMaterial);
-                ringMesh.receiveShadow = true;
+                // 行星投在自己环上的影子（土星照片里最经典的那块暗区）
+                addEclipseShadows(ringMaterial, [planetMesh]);
                 ringMesh.rotation.x = Math.PI / 2;
                 
                 // 天王星的环系统几乎是垂直的
@@ -3088,11 +3196,40 @@ self.onmessage = function(e) {
             starGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
             starGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
-            const starMaterial = new THREE.PointsMaterial({
+            // 自定义星点着色器：PointsMaterial 没有贴图时每颗星都画成正方形，而且会忽略上面算好的 size。
+            // 这里按 size 属性决定大小（有上下限，靠近时不会变成大方块），用 gl_PointCoord 画成柔和圆点，
+            // 并给每颗星一个随机相位做轻微闪烁。
+            starTwinkleUniforms = { uTime: { value: 0 }, uPixelRatio: { value: renderer.getPixelRatio() } };
+            const starMaterial = new THREE.ShaderMaterial({
+                uniforms: starTwinkleUniforms,
+                vertexShader: `
+                    attribute float size;
+                    uniform float uTime;
+                    uniform float uPixelRatio;
+                    varying vec3 vStarColor;
+                    varying float vTwinkle;
+                    void main() {
+                        vStarColor = color;
+                        float phase = fract(sin(dot(position.xz, vec2(12.9898, 78.233))) * 43758.5453) * 6.2831;
+                        vTwinkle = 0.8 + 0.2 * sin(uTime * (0.5 + phase * 0.25) + phase);
+                        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                        gl_PointSize = clamp(size * 1200.0 / -mvPosition.z, 1.3, 6.0) * uPixelRatio;
+                        gl_Position = projectionMatrix * mvPosition;
+                    }`,
+                fragmentShader: `
+                    varying vec3 vStarColor;
+                    varying float vTwinkle;
+                    void main() {
+                        float d = length(gl_PointCoord - 0.5) * 2.0;
+                        if (d > 1.0) discard;
+                        float glow = 1.0 - d;
+                        glow = glow * glow * (0.6 + 0.4 * glow);
+                        gl_FragColor = vec4(vStarColor * vTwinkle, glow);
+                        #include <encodings_fragment>
+                    }`,
                 transparent: true,
                 blending: THREE.AdditiveBlending,
                 vertexColors: true,
-                sizeAttenuation: true,
                 depthWrite: false
             });
             const stars = new THREE.Points(starGeometry, starMaterial);
@@ -3175,7 +3312,8 @@ self.onmessage = function(e) {
 
             const kboMaterial = new THREE.PointsMaterial({
                 color: 0x788898,
-                size: 0.22,
+                map: getSoftDotTexture(),
+                size: 0.32,
                 transparent: true,
                 opacity: 0.7,
                 blending: THREE.AdditiveBlending,
@@ -3287,8 +3425,9 @@ self.onmessage = function(e) {
             
  
 
-            const tailMaterial = new THREE.PointsMaterial({ /* ... NO CHANGE ... */
+            const tailMaterial = new THREE.PointsMaterial({
                 color: data.tailColor,
+                map: getSoftDotTexture(),
                 size: data.tailSize,
                 transparent: true,
                 opacity: data.tailBaseOpacity,
@@ -3746,6 +3885,11 @@ self.onmessage = function(e) {
 
 
             controls.update();
+            updateEclipseShadows();
+            if (starTwinkleUniforms) {
+                starTwinkleUniforms.uTime.value = elapsedTime;
+                starTwinkleUniforms.uPixelRatio.value = renderer.getPixelRatio();
+            }
             renderer.render(scene, camera);
  
         }
