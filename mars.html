@@ -47,6 +47,59 @@
 }
     </script>
 
+    <script id="faq-structured-data" type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why is Mars red?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Its surface dust and rocks are rich in iron oxide — essentially rust — which gives the planet its reddish colour."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Could humans breathe on Mars?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The air is about 95% carbon dioxide and less than 1% as dense as Earth’s, so astronauts would need pressurised suits and their own oxygen."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long is a year on Mars?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "About 687 Earth days — nearly two Earth years."
+      }
+    }
+  ]
+}
+    </script>
+    <script id="breadcrumb-structured-data" type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "3D Solar System",
+      "item": "https://www.3dsolarsystem.net/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Mars",
+      "item": "https://www.3dsolarsystem.net/mars.html"
+    }
+  ]
+}
+    </script>
+
     <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
@@ -132,6 +185,22 @@
                 <a href="neptune.html" data-focus="Neptune">Neptune</a>
             </div>
         </nav>
+
+        <!-- PLANET-ARTICLE:START -->
+        <section class="planet-article" aria-labelledby="about-title">
+            <h2 id="about-title">About Mars</h2>
+            <p>Mars is the fourth planet from the Sun, about half Earth’s diameter, orbiting at roughly 228 million km (1.52 AU). Iron oxide in its dust gives it its red colour. Its thin atmosphere is mostly carbon dioxide, with surface pressure under 1% of Earth’s, so liquid water cannot last long on the surface today — yet dry river valleys, lake deposits and water-formed minerals show that water once flowed there.</p>
+            <p>Mars hosts Olympus Mons, the largest volcano in the Solar System at about 22 km high, and Valles Marineris, a canyon system about 4,000 km long. A Martian day, called a sol, lasts about 24 hours 40 minutes, and a year about 687 Earth days. NASA’s Curiosity and Perseverance rovers continue to explore its surface.</p>
+            <h2>Mars: frequently asked questions</h2>
+            <h3>Why is Mars red?</h3>
+            <p>Its surface dust and rocks are rich in iron oxide — essentially rust — which gives the planet its reddish colour.</p>
+            <h3>Could humans breathe on Mars?</h3>
+            <p>No. The air is about 95% carbon dioxide and less than 1% as dense as Earth’s, so astronauts would need pressurised suits and their own oxygen.</p>
+            <h3>How long is a year on Mars?</h3>
+            <p>About 687 Earth days — nearly two Earth years.</p>
+            <p class="planet-sources">Sources: <a href="https://science.nasa.gov/mars/" rel="noopener" target="_blank">NASA Science — Mars</a> · <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/" rel="noopener" target="_blank">NASA Planetary Fact Sheet</a>.</p>
+        </section>
+        <!-- PLANET-ARTICLE:END -->
 
         <p class="gesture-hint">Tip: click any visible object for its radius and orbital data. Press <kbd>G</kbd> to show or hide this guide.</p>
     </aside>

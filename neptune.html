@@ -47,6 +47,59 @@
 }
     </script>
 
+    <script id="faq-structured-data" type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How was Neptune discovered?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Astronomers noticed that Uranus was being tugged off its predicted path. Urbain Le Verrier calculated where an unseen planet should be, and Johann Galle found Neptune close to that position in 1846."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why is Neptune so windy?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It is not fully understood. Neptune radiates more heat than it receives from the Sun, and with no solid surface to create friction, its winds can reach about 2,000 km/h."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long is a year on Neptune?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "About 165 Earth years."
+      }
+    }
+  ]
+}
+    </script>
+    <script id="breadcrumb-structured-data" type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "3D Solar System",
+      "item": "https://www.3dsolarsystem.net/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Neptune",
+      "item": "https://www.3dsolarsystem.net/neptune.html"
+    }
+  ]
+}
+    </script>
+
     <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
@@ -132,6 +185,22 @@
                 <a href="neptune.html" data-focus="Neptune" aria-current="page">Neptune</a>
             </div>
         </nav>
+
+        <!-- PLANET-ARTICLE:START -->
+        <section class="planet-article" aria-labelledby="about-title">
+            <h2 id="about-title">About Neptune</h2>
+            <p>Neptune is the eighth and farthest planet from the Sun, about 4.5 billion km away (30 AU), where sunlight is roughly 900 times fainter than on Earth. It is an ice giant slightly smaller than Uranus but more massive, and it has the fastest winds measured on any planet — up to about 2,000 km/h.</p>
+            <p>Neptune takes about 165 Earth years to orbit the Sun, so it completed its first full orbit since discovery only in 2011. It was the first planet found by mathematical prediction rather than by searching the sky. Its largest moon, Triton, orbits backwards and has nitrogen geysers; it was probably captured from the Kuiper Belt. Voyager 2 flew past in August 1989 and photographed the Great Dark Spot, a storm about as wide as Earth.</p>
+            <h2>Neptune: frequently asked questions</h2>
+            <h3>How was Neptune discovered?</h3>
+            <p>Astronomers noticed that Uranus was being tugged off its predicted path. Urbain Le Verrier calculated where an unseen planet should be, and Johann Galle found Neptune close to that position in 1846.</p>
+            <h3>Why is Neptune so windy?</h3>
+            <p>It is not fully understood. Neptune radiates more heat than it receives from the Sun, and with no solid surface to create friction, its winds can reach about 2,000 km/h.</p>
+            <h3>How long is a year on Neptune?</h3>
+            <p>About 165 Earth years.</p>
+            <p class="planet-sources">Sources: <a href="https://science.nasa.gov/neptune/" rel="noopener" target="_blank">NASA Science — Neptune</a> · <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/" rel="noopener" target="_blank">NASA Planetary Fact Sheet</a>.</p>
+        </section>
+        <!-- PLANET-ARTICLE:END -->
 
         <p class="gesture-hint">Tip: click any visible object for its radius and orbital data. Press <kbd>G</kbd> to show or hide this guide.</p>
     </aside>

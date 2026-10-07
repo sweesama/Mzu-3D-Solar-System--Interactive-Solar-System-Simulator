@@ -50,6 +50,18 @@
     }
     </script>
 
+    <script id="faq-structured-data" type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Is this 3D Solar System to scale?", "acceptedAnswer": { "@type": "Answer", "text": "Not by default. Real distances are so large that the planets would be invisible dots, so sizes and distances are compressed for viewing. The Speed menu switches motion to real orbital and rotation periods." } },
+        { "@type": "Question", "name": "Is it free, and do I need to install anything?", "acceptedAnswer": { "@type": "Answer", "text": "It is free and runs in any modern browser with WebGL, on desktop or mobile. There is no download, account or plug-in." } },
+        { "@type": "Question", "name": "Can I explore the surface of other planets?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. First-person expeditions let you walk on the Moon, Mars, Venus and Mercury, sink into Jupiter's clouds, and fly through the rings of Saturn and Uranus and the storms of Neptune." } }
+      ]
+    }
+    </script>
+
     <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
@@ -128,6 +140,19 @@
                 <a href="neptune.html" data-focus="Neptune">Neptune</a>
             </div>
         </nav>
+
+        <!-- PLANET-ARTICLE:START -->
+        <section class="planet-article" aria-labelledby="faq-title">
+            <h2 id="faq-title">Frequently asked questions</h2>
+            <h3>Is this 3D Solar System to scale?</h3>
+            <p>Not by default. Real distances are so large that the planets would be invisible dots, so sizes and distances are compressed for viewing. Use the <strong>Speed</strong> menu to switch motion to real orbital and rotation periods.</p>
+            <h3>Is it free, and do I need to install anything?</h3>
+            <p>It is free and runs in any modern browser with WebGL, on desktop or mobile. There is no download, account or plug-in.</p>
+            <h3>Can I explore the surface of other planets?</h3>
+            <p>Yes. The first-person expeditions let you walk on the Moon, Mars, Venus and Mercury, sink into Jupiter's clouds, and fly through the rings of Saturn and Uranus and the storms of Neptune.</p>
+            <p class="planet-sources">Planet data: <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/" rel="noopener" target="_blank">NASA Planetary Fact Sheet</a>.</p>
+        </section>
+        <!-- PLANET-ARTICLE:END -->
 
         <p class="gesture-hint">Tip: click any visible object for its radius and orbital data. Press <kbd>G</kbd> to show or hide this guide.</p>
     </aside>

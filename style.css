@@ -17,6 +17,12 @@
 .expedition-entry:hover { border-color: #d5af7f; background: #302b21; }
 .planet-facts { margin: 0 0 12px; padding-left: 18px; color: #e4e8f1; font-size: 14px; line-height: 1.55; }
 .planet-facts li::marker { color: var(--accent); }
+.planet-article { margin: 16px 0 0; padding-top: 13px; border-top: 1px solid var(--line); }
+#experience-panel .planet-article h2 { margin: 0 0 8px; font-size: 16px; }
+#experience-panel .planet-article h3 { margin: 14px 0 4px; font-size: 14px; color: #f0e5c6; }
+#experience-panel .planet-article p { margin: 0 0 8px; color: #d6dbe6; font-size: 13.5px; line-height: 1.55; }
+#experience-panel .planet-article .planet-sources { margin-top: 12px; color: var(--muted); font-size: 12px; }
+.planet-article a { color: #ffe08a; }
 .expeditions { margin: 16px 0; padding-top: 13px; border-top: 1px solid var(--line); }
 #experience-panel .expeditions h2 { margin: 0 0 4px; font-size: 13px; }
 #experience-panel .expeditions-intro { margin: 0 0 10px; color: var(--muted); font-size: 12px; line-height: 1.45; }

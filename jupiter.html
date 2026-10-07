@@ -47,6 +47,59 @@
 }
     </script>
 
+    <script id="faq-structured-data" type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Can you stand on Jupiter?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Jupiter has no solid surface; its hydrogen and helium atmosphere simply gets denser and hotter with depth."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How big is Jupiter compared with Earth?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Jupiter is about 11 times wider than Earth, and more than 1,300 Earths could fit inside it."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the Great Red Spot?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A giant, long-lived storm spinning in Jupiter’s southern hemisphere. It is wider than Earth and has been watched for well over 150 years, although it has been slowly shrinking."
+      }
+    }
+  ]
+}
+    </script>
+    <script id="breadcrumb-structured-data" type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "3D Solar System",
+      "item": "https://www.3dsolarsystem.net/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Jupiter",
+      "item": "https://www.3dsolarsystem.net/jupiter.html"
+    }
+  ]
+}
+    </script>
+
     <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
@@ -132,6 +185,22 @@
                 <a href="neptune.html" data-focus="Neptune">Neptune</a>
             </div>
         </nav>
+
+        <!-- PLANET-ARTICLE:START -->
+        <section class="planet-article" aria-labelledby="about-title">
+            <h2 id="about-title">About Jupiter</h2>
+            <p>Jupiter is the largest planet in the Solar System — more than twice as massive as all the other planets combined and about 11 times Earth’s diameter. It is a gas giant made mostly of hydrogen and helium, with no solid surface. Its colourful stripes are cloud bands stretched by fast rotation: a day on Jupiter lasts under 10 hours, the shortest of any planet.</p>
+            <p>The Great Red Spot is a storm larger than Earth that has been observed for well over 150 years. Jupiter has more than 90 known moons, including the four large Galilean moons discovered in 1610: volcanic Io, ice-covered Europa, Ganymede — the largest moon in the Solar System — and Callisto. NASA’s Juno spacecraft has orbited Jupiter since 2016.</p>
+            <h2>Jupiter: frequently asked questions</h2>
+            <h3>Can you stand on Jupiter?</h3>
+            <p>No. Jupiter has no solid surface; its hydrogen and helium atmosphere simply gets denser and hotter with depth.</p>
+            <h3>How big is Jupiter compared with Earth?</h3>
+            <p>Jupiter is about 11 times wider than Earth, and more than 1,300 Earths could fit inside it.</p>
+            <h3>What is the Great Red Spot?</h3>
+            <p>A giant, long-lived storm spinning in Jupiter’s southern hemisphere. It is wider than Earth and has been watched for well over 150 years, although it has been slowly shrinking.</p>
+            <p class="planet-sources">Sources: <a href="https://science.nasa.gov/jupiter/" rel="noopener" target="_blank">NASA Science — Jupiter</a> · <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/" rel="noopener" target="_blank">NASA Planetary Fact Sheet</a>.</p>
+        </section>
+        <!-- PLANET-ARTICLE:END -->
 
         <p class="gesture-hint">Tip: click any visible object for its radius and orbital data. Press <kbd>G</kbd> to show or hide this guide.</p>
     </aside>

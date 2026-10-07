@@ -47,6 +47,59 @@
 }
     </script>
 
+    <script id="faq-structured-data" type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What are Saturn’s rings made of?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mostly chunks of water ice, from dust-sized grains to boulders several metres across, with small amounts of rock and dust."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Would Saturn float in water?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "In principle, yes: its average density is lower than water’s. Of course, there is no ocean anywhere near big enough to try it."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many moons does Saturn have?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Well over 100 confirmed moons, and the count keeps rising as new small moons are discovered. Titan is by far the largest."
+      }
+    }
+  ]
+}
+    </script>
+    <script id="breadcrumb-structured-data" type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "3D Solar System",
+      "item": "https://www.3dsolarsystem.net/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Saturn",
+      "item": "https://www.3dsolarsystem.net/saturn.html"
+    }
+  ]
+}
+    </script>
+
     <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
@@ -132,6 +185,22 @@
                 <a href="neptune.html" data-focus="Neptune">Neptune</a>
             </div>
         </nav>
+
+        <!-- PLANET-ARTICLE:START -->
+        <section class="planet-article" aria-labelledby="about-title">
+            <h2 id="about-title">About Saturn</h2>
+            <p>Saturn is the sixth planet from the Sun and the second largest, a gas giant about nine times wider than Earth. It is famous for its rings, made mostly of water-ice pieces ranging from tiny grains to boulders several metres across. The main rings span roughly 270,000 km yet are often only tens of metres thick.</p>
+            <p>Saturn is the least dense planet — on average less dense than water. A day lasts about 10.7 hours and a year about 29.4 Earth years. Saturn has well over 100 known moons; the largest, Titan, is bigger than the planet Mercury and has a thick nitrogen atmosphere with lakes of liquid methane. NASA’s Cassini spacecraft studied Saturn from orbit from 2004 to 2017.</p>
+            <h2>Saturn: frequently asked questions</h2>
+            <h3>What are Saturn’s rings made of?</h3>
+            <p>Mostly chunks of water ice, from dust-sized grains to boulders several metres across, with small amounts of rock and dust.</p>
+            <h3>Would Saturn float in water?</h3>
+            <p>In principle, yes: its average density is lower than water’s. Of course, there is no ocean anywhere near big enough to try it.</p>
+            <h3>How many moons does Saturn have?</h3>
+            <p>Well over 100 confirmed moons, and the count keeps rising as new small moons are discovered. Titan is by far the largest.</p>
+            <p class="planet-sources">Sources: <a href="https://science.nasa.gov/saturn/" rel="noopener" target="_blank">NASA Science — Saturn</a> · <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/" rel="noopener" target="_blank">NASA Planetary Fact Sheet</a>.</p>
+        </section>
+        <!-- PLANET-ARTICLE:END -->
 
         <p class="gesture-hint">Tip: click any visible object for its radius and orbital data. Press <kbd>G</kbd> to show or hide this guide.</p>
     </aside>

@@ -534,6 +534,17 @@ for (const page of pages) {
   if (!isExpedition && !/href="uranus-expedition\.html"/.test(html)) errors.push(`${file}: missing Uranus expedition link`);
   if (!isExpedition && !/href="neptune-expedition\.html"/.test(html)) errors.push(`${file}: missing Neptune expedition link`);
 
+  for (const [, id, body] of html.matchAll(/<script id="([^"]+)" type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+    try { JSON.parse(body); } catch (error) { errors.push(`${file}: invalid JSON-LD in #${id} (${error.message})`); }
+  }
+  if (page !== 'index' && !html.includes('id="breadcrumb-structured-data"')) errors.push(`${file}: missing BreadcrumbList structured data`);
+  if (!isExpedition && !html.includes('id="faq-structured-data"')) errors.push(`${file}: missing FAQPage structured data`);
+  if (!isExpedition && page !== 'index') {
+    const article = (html.match(/<!-- PLANET-ARTICLE:START -->([\s\S]*?)<!-- PLANET-ARTICLE:END -->/) || ['', ''])[1];
+    const words = article.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
+    if (words < 200) errors.push(`${file}: planet article is too thin (${words} words)`);
+    if (!article.includes('science.nasa.gov')) errors.push(`${file}: planet article must cite NASA sources`);
+  }
   const jsonLd = capture(html, /<script id="app-structured-data" type="application\/ld\+json">([\s\S]*?)<\/script>/i, 'structured data', file);
   if (jsonLd) {
     try { JSON.parse(jsonLd); } catch (error) { errors.push(`${file}: invalid structured data JSON (${error.message})`); }

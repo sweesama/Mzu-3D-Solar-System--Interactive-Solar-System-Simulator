@@ -1,30 +1,36 @@
 # Mzu 3D Solar System
 
-> A free, browser-based 3D visualization for exploring planets and selected Solar System objects.
+> A free, browser-based 3D Solar System explorer with first-person expeditions to eight worlds. No download, account, or AI service is needed.
 
 ## Start here
 
-- [Interactive explorer](https://www.3dsolarsystem.net/): Rotate, zoom, select objects, follow a planet tour, and share a focused view.
-- [Mercury](https://www.3dsolarsystem.net/mercury.html)
-- [Mercury expedition](https://www.3dsolarsystem.net/mercury-expedition.html): Walk and jump through an artistic cratered plain under a huge Sun in a black, star-filled sky, discover five observation points including a lobate scarp and bright hollows, inspect a 3D specimen, and keep a journal in your browser.
-- [Venus](https://www.3dsolarsystem.net/venus.html)
-- [Venus expedition](https://www.3dsolarsystem.net/venus-expedition.html): Walk and jump through an artistic volcanic plain under a crushing orange sky in near-Earth gravity, discover five observation points, inspect a 3D specimen, and keep a journal in your browser.
-- [Earth](https://www.3dsolarsystem.net/earth.html)
-- [Moon expedition](https://www.3dsolarsystem.net/moon.html): Walk and jump through an artistic lunar landscape leaving footprints, discover five observation points, inspect a 3D rock, and keep a journal in your browser.
-- [Mars](https://www.3dsolarsystem.net/mars.html)
-- [Mars expedition](https://www.3dsolarsystem.net/mars-expedition.html): Walk and jump through an artistic Martian plain in lighter gravity, discover five observation points including dunes and layered rock, inspect a 3D specimen, and keep a journal in your browser.
-- [Jupiter](https://www.3dsolarsystem.net/jupiter.html)
-- [Jupiter descent](https://www.3dsolarsystem.net/jupiter-expedition.html): Ride an imagined probe down through Jupiter's cloud decks — drift past ammonia cirrus, a giant storm vortex, and deep lightning, fire the ascent thruster with Space, record five altitude-based discoveries, and keep a journal in your browser.
-- [Saturn](https://www.3dsolarsystem.net/saturn.html)
-- [Saturn ring cruise](https://www.3dsolarsystem.net/saturn-expedition.html): Cruise Saturn's ring plane alongside the Cassini spacecraft — skim glittering ice bands, cross the Cassini division, meet a shepherd moonlet, record five discoveries, and keep a journal in your browser.
-- [Uranus sideways ring flight](https://www.3dsolarsystem.net/uranus-expedition.html): Thread Uranus's narrow charcoal-dark rings beside Voyager 2 — thin bands under a Sun that hangs over the tipped giant's pole, a shepherd moonlet, the famous 98° tilt marker, five discoveries, and a journal in your browser.
-- [Uranus](https://www.3dsolarsystem.net/uranus.html)
-- [Neptune](https://www.3dsolarsystem.net/neptune.html)
-- [Neptune storm-layer flight](https://www.3dsolarsystem.net/neptune-expedition.html): Cruise Neptune's storm layer beside Voyager 2 — white methane cirrus streaming over a deep-blue deck, the Great Dark Spot vortex turning on the horizon, a captured-moon sighting, five discoveries, and a journal in your browser.
+- [Interactive explorer](https://www.3dsolarsystem.net/): Rotate, zoom, select objects, follow a planet tour, switch between artistic and real orbital speeds, and share a focused view.
+
+## Planet pages (3D view + facts + FAQ with NASA sources)
+
+- [Mercury](https://www.3dsolarsystem.net/mercury.html): smallest planet; 88-day year, 176-day solar day, −180 °C to 430 °C.
+- [Venus](https://www.3dsolarsystem.net/venus.html): hottest planet (~465 °C); spins backwards; a day is longer than its year.
+- [Earth](https://www.3dsolarsystem.net/earth.html): 23.4° tilt and seasons; the Moon at 384,400 km.
+- [Mars](https://www.3dsolarsystem.net/mars.html): red iron-oxide dust, thin CO₂ air, Olympus Mons, 687-day year.
+- [Jupiter](https://www.3dsolarsystem.net/jupiter.html): largest planet, no solid surface, Great Red Spot, Galilean moons.
+- [Saturn](https://www.3dsolarsystem.net/saturn.html): icy rings ~270,000 km across, density below water, Titan.
+- [Uranus](https://www.3dsolarsystem.net/uranus.html): ~98° axial tilt, 84-year orbit, methane blue-green colour.
+- [Neptune](https://www.3dsolarsystem.net/neptune.html): winds up to ~2,000 km/h, 165-year orbit, found by mathematical prediction.
+
+## First-person expeditions (each page ends with a crawlable article: facts, discoveries, controls, science notes)
+
+- [Walk on the Moon](https://www.3dsolarsystem.net/moon.html): walk and jump in lunar gravity (1.62 m/s²) under a black sky with Earth above the horizon; real NASA lunar module model.
+- [Walk on Mars](https://www.3dsolarsystem.net/mars-expedition.html): 3.71 m/s² gravity, layered rock, dunes, butterscotch sky; real NASA rover model.
+- [Walk on Venus](https://www.3dsolarsystem.net/venus-expedition.html): volcanic plain under a heavy orange sky at ~465 °C; Magellan orbiter overhead.
+- [Walk on Mercury](https://www.3dsolarsystem.net/mercury-expedition.html): cratered plain, black sky, a Sun two to three times wider than from Earth, lobate scarp and hollows.
+- [Descend into Jupiter](https://www.3dsolarsystem.net/jupiter-expedition.html): probe descent through ammonia clouds, a giant storm and the lightning layer.
+- [Fly through Saturn's rings](https://www.3dsolarsystem.net/saturn-expedition.html): ring-plane cruise inside the Cassini Division at true ring proportions, beside NASA's Cassini model.
+- [Fly through Uranus's rings](https://www.3dsolarsystem.net/uranus-expedition.html): narrow charcoal-dark rings of the sideways ice giant, beside Voyager 2.
+- [Fly into Neptune's storms](https://www.3dsolarsystem.net/neptune-expedition.html): storm-layer flight toward a Great Dark Spot-style vortex, beside Voyager 2.
 
 ## Important limitation
 
-This is an artistic educational visualization, not a live ephemeris or professional astronomy tool. Planet sizes, distances, orbital periods, and animation speed are adjusted for visibility. Some textures are artistic or procedural.
+This is an artistic educational visualization, not a live ephemeris or professional astronomy tool. Planet sizes and distances are compressed for visibility in every mode. Motion is compressed by default; the Speed menu switches to real orbital and rotation period ratios (display-capped at two turns per second). Expedition landscapes are science-inspired artistic reconstructions, not survey data.
 
 ## Useful capabilities
 
@@ -33,3 +39,4 @@ This is an artistic educational visualization, not a live ephemeris or professio
 - Embeddable view using `?embed=1`
 - Downloadable canvas snapshot
 - Basic radius, semi-major-axis, and eccentricity information for selectable objects
+- Facts follow the NASA Planetary Fact Sheet (https://nssdc.gsfc.nasa.gov/planetary/factsheet/) and NASA Science planet pages

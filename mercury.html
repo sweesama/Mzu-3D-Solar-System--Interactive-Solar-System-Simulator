@@ -47,6 +47,59 @@
 }
     </script>
 
+    <script id="faq-structured-data" type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is Mercury the hottest planet?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Venus is hotter, at about 465 °C, because its thick carbon-dioxide atmosphere traps heat. Mercury’s days are scorching, but with almost no atmosphere its nights fall to about −180 °C."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long is a day on Mercury?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mercury spins once every 59 Earth days, but because it also moves quickly along its orbit, a full solar day from one sunrise to the next lasts about 176 Earth days — two Mercury years."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Mercury have any moons?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Mercury and Venus are the only planets in the Solar System without moons."
+      }
+    }
+  ]
+}
+    </script>
+    <script id="breadcrumb-structured-data" type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "3D Solar System",
+      "item": "https://www.3dsolarsystem.net/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Mercury",
+      "item": "https://www.3dsolarsystem.net/mercury.html"
+    }
+  ]
+}
+    </script>
+
     <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
@@ -132,6 +185,22 @@
                 <a href="neptune.html" data-focus="Neptune">Neptune</a>
             </div>
         </nav>
+
+        <!-- PLANET-ARTICLE:START -->
+        <section class="planet-article" aria-labelledby="about-title">
+            <h2 id="about-title">About Mercury</h2>
+            <p>Mercury is the smallest of the eight planets, only slightly larger than Earth’s Moon, and the closest to the Sun at an average of about 58 million km (0.39 AU). It races around the Sun in 88 Earth days but turns slowly, so one full day–night cycle, sunrise to sunrise, lasts about 176 Earth days.</p>
+            <p>With almost no atmosphere to hold heat, its surface swings from about 430 °C in daylight to about −180 °C at night. Mercury’s iron core makes up an unusually large share of the planet; as it cooled, the whole planet shrank and its crust wrinkled into long cliffs called lobate scarps. NASA’s MESSENGER spacecraft orbited Mercury from 2011 to 2015 and found evidence of water ice in permanently shadowed craters near the poles.</p>
+            <h2>Mercury: frequently asked questions</h2>
+            <h3>Is Mercury the hottest planet?</h3>
+            <p>No. Venus is hotter, at about 465 °C, because its thick carbon-dioxide atmosphere traps heat. Mercury’s days are scorching, but with almost no atmosphere its nights fall to about −180 °C.</p>
+            <h3>How long is a day on Mercury?</h3>
+            <p>Mercury spins once every 59 Earth days, but because it also moves quickly along its orbit, a full solar day from one sunrise to the next lasts about 176 Earth days — two Mercury years.</p>
+            <h3>Does Mercury have any moons?</h3>
+            <p>No. Mercury and Venus are the only planets in the Solar System without moons.</p>
+            <p class="planet-sources">Sources: <a href="https://science.nasa.gov/mercury/" rel="noopener" target="_blank">NASA Science — Mercury</a> · <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/" rel="noopener" target="_blank">NASA Planetary Fact Sheet</a>.</p>
+        </section>
+        <!-- PLANET-ARTICLE:END -->
 
         <p class="gesture-hint">Tip: click any visible object for its radius and orbital data. Press <kbd>G</kbd> to show or hide this guide.</p>
     </aside>
