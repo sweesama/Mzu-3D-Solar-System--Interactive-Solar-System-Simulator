@@ -705,11 +705,18 @@ self.onmessage = function(e) {
                     uColor2: { value: new THREE.Color(0xFFD700) },
                     uColor3: { value: new THREE.Color(0xFF4500) }
                 },
+                // ✨ 太阳表面：用球面三维坐标采样噪声（没有贴图接缝、两极不挤压），叠加
+                // 大尺度对流 + 细密米粒组织 + 偶尔出现的黑子，再做"临边昏暗"（中心亮、边缘暗而偏红）。
                 vertexShader: `
-                    varying vec2 vUv;
+                    varying vec3 vSunPos;
+                    varying vec3 vSunNormal;
+                    varying vec3 vSunView;
                     void main() {
-                        vUv = uv;
-                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                        vSunPos = normalize(position);
+                        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                        vSunNormal = normalize(normalMatrix * normal);
+                        vSunView = normalize(-mvPosition.xyz);
+                        gl_Position = projectionMatrix * mvPosition;
                     }
                 `,
                 fragmentShader: `
@@ -717,26 +724,36 @@ self.onmessage = function(e) {
                     uniform vec3 uColor1;
                     uniform vec3 uColor2;
                     uniform vec3 uColor3;
-                    varying vec2 vUv;
+                    varying vec3 vSunPos;
+                    varying vec3 vSunNormal;
+                    varying vec3 vSunView;
                     ${const_shader_noise_functions}
 
                     void main() {
-                        float noiseSpeed = 0.25;
-                        float noiseScale = 2.5;
-                        float displacement = fbm(vec3(vUv * noiseScale, time * noiseSpeed)) * 0.5 + 0.5;
-                        
-                        float noiseSpeed2 = 0.1;
-                        float noiseScale2 = 5.0;
-                        float displacement2 = fbm(vec3(vUv * noiseScale2 + vec2(5.0, 3.0), time * noiseSpeed2)) * 0.5 + 0.5;
+                        vec3 p = vSunPos;
+                        // 大尺度对流斑块，缓慢翻滚
+                        float convection = fbm(p * 2.2 + vec3(0.0, time * 0.035, time * 0.02)) * 0.5 + 0.5;
+                        // 米粒组织：高频噪声取"山脊"形状，得到一颗颗亮颗粒+暗色边界
+                        float granule = 1.0 - abs(snoise(p * 13.0 + vec3(time * 0.08)));
+                        granule = pow(granule, 2.0);
+                        // 黑子：只出现在南北纬约 5°–35° 的"黑子带"里，而且只有极少数，像真实太阳
+                        float belt = smoothstep(0.06, 0.14, abs(p.y)) * smoothstep(0.6, 0.45, abs(p.y));
+                        float spotField = snoise(p * 4.0 + vec3(17.0, 3.0, time * 0.006)) * belt;
+                        float umbra = smoothstep(0.8, 0.88, spotField);
+                        float penumbra = smoothstep(0.7, 0.82, spotField);
 
-                        float combinedNoise = smoothstep(0.3, 0.7, displacement * 0.55 + displacement2 * 0.45);
+                        float heat = clamp(convection * 0.75 + granule * 0.3, 0.0, 1.0);
+                        vec3 color = mix(uColor3, uColor1, smoothstep(0.15, 0.55, heat));
+                        color = mix(color, uColor2, smoothstep(0.5, 0.95, heat));
+                        color = mix(color, vec3(1.0, 0.95, 0.8), smoothstep(0.6, 1.0, heat) * 0.55);
+                        color *= 1.0 - penumbra * 0.3 - umbra * 0.5;
 
-                        vec3 color = mix(uColor1, uColor2, combinedNoise);
-                        color = mix(color, uColor3, pow(combinedNoise, 2.5) * 0.6);
-                        
-                        float brightSpotNoise = snoise(vec3(vUv * 12.0, time * 0.6));
-                        float brightSpots = smoothstep(0.5, 0.8, pow(brightSpotNoise, 3.0));
-                        color = mix(color, vec3(1.0, 0.95, 0.8), brightSpots * 0.6);
+                        // 临边昏暗：mu = 视线与法线夹角余弦，经典线性近似 I = 1 - u(1 - mu)
+                        float mu = clamp(dot(vSunNormal, vSunView), 0.0, 1.0);
+                        float limb = 1.0 - 0.62 * (1.0 - mu);
+                        color *= limb;
+                        color = mix(color * vec3(1.0, 0.72, 0.45), color, smoothstep(0.0, 0.45, mu));
+                        color *= 1.25;
 
                         gl_FragColor = vec4(color, 1.0);
                     }
@@ -793,23 +810,56 @@ self.onmessage = function(e) {
             pointLight.add(lensflare);
 
 
-            const glowMaterial = new THREE.SpriteMaterial({ /* ... NO CHANGE ... */
-                map: createProceduralTexture(128, 128, (ctx, w, h) => {
-                    const grad = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, w/2);
-                    grad.addColorStop(0.0, 'rgba(255, 220, 180, 0.7)');
-                    grad.addColorStop(0.2, 'rgba(255, 200, 100, 0.5)');
-                    grad.addColorStop(0.5, 'rgba(255, 160, 0, 0.2)');
-                    grad.addColorStop(1.0, 'rgba(255, 120, 0, 0.0)');
-                    ctx.fillStyle = grad;
-                    ctx.fillRect(0,0,w,h);
-                }),
+            // ✨ 日冕：一张始终朝向镜头的平面，着色器按"离日面边缘的距离"计算光晕衰减，
+            // 并沿径向加入缓慢流动的噪声"冕流"，替代原来静止的渐变贴图。
+            const CORONA_EXTENT = 4.0; // 平面半宽 = 4 倍太阳半径
+            const coronaMaterial = new THREE.ShaderMaterial({
+                uniforms: { time: shaderUniforms.time, uExtent: { value: CORONA_EXTENT } },
+                vertexShader: `
+                    varying vec2 vCoronaUv;
+                    void main() {
+                        vCoronaUv = uv;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform float time;
+                    uniform float uExtent;
+                    varying vec2 vCoronaUv;
+                    ${const_shader_noise_functions}
+                    void main() {
+                        vec2 q = (vCoronaUv - 0.5) * 2.0 * uExtent; // 以太阳半径为单位
+                        float r = length(q);
+                        if (r < 0.98) discard;
+                        vec2 dir = q / r;
+                        float h = r - 1.0;
+                        // 冕流：沿径向拉长的噪声，缓慢向外流动
+                        float streamer = fbm(vec3(dir * 2.6, h * 0.9 - time * 0.06)) * 0.5 + 0.5;
+                        streamer = mix(0.55, 1.35, smoothstep(0.35, 0.8, streamer));
+                        float inner = exp(-h * 5.5);
+                        float outer = exp(-h * 0.95) * 0.45 * streamer;
+                        float fade = 1.0 - smoothstep(uExtent * 0.75, uExtent, r);
+                        float glow = (inner + outer) * fade;
+                        vec3 color = mix(vec3(1.0, 0.55, 0.18), vec3(1.0, 0.9, 0.7), clamp(inner * 1.2, 0.0, 1.0));
+                        gl_FragColor = vec4(color * glow, glow);
+                    }
+                `,
                 blending: THREE.AdditiveBlending,
                 transparent: true,
-                depthWrite: false,
+                depthWrite: false
             });
-            const sunGlow = new THREE.Sprite(glowMaterial); /* ... NO CHANGE ... */
-            sunGlow.scale.set(sunRadiusVisual * 6, sunRadiusVisual * 6, 1.0); // Use visual radius
-            sunGlow.name = "sunGlowSprite";
+            const sunGlow = new THREE.Mesh(new THREE.PlaneGeometry(sunRadiusVisual * CORONA_EXTENT * 2, sunRadiusVisual * CORONA_EXTENT * 2), coronaMaterial);
+            sunGlow.name = "sunGlowSprite"; // 名字保留：遮挡/视野判断代码按这个名字找光晕
+            sunGlow.renderOrder = 2;
+            // 每帧让平面正对镜头（相当于一个能跑自定义着色器的"精灵"）
+            const coronaParentQuat = new THREE.Quaternion();
+            sunGlow.onBeforeRender = (rendererRef, sceneRef, cameraRef) => {
+                if (!sunGlow.parent) return;
+                sunGlow.parent.getWorldQuaternion(coronaParentQuat).invert();
+                sunGlow.quaternion.copy(coronaParentQuat).multiply(cameraRef.quaternion);
+                sunGlow.updateMatrix();
+                sunGlow.matrixWorld.multiplyMatrices(sunGlow.parent.matrixWorld, sunGlow.matrix);
+            };
             sunMesh.add(sunGlow);
 
             return sunMesh;
