@@ -84,7 +84,7 @@
     });
     const keys = new Set(), touchKeys = new Set(), obstacles = [];
     const stations = expedition.stations;
-    let discoveryUI = null, featuredRock = null, composer = null, fxaaPass = null, cinePass = null, flarePass = null, sunMesh = null;
+    let discoveryUI = null, featuredRock = null, composer = null, fxaaPass = null, cinePass = null, sunMesh = null;
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open;
     const position = { x: stations[0].x, z: stations[0].z };
     const touchDevice = matchMedia('(pointer: coarse)').matches;
@@ -498,29 +498,26 @@
             fragmentShader: 'varying vec3 vN; varying vec3 vV; void main(){float f=pow(1.0-max(0.0,dot(normalize(vN),normalize(vV))),4.0); gl_FragColor=vec4(0.16,0.45,0.9,f*0.55);}'
         }));
         earth.add(atmosphere);
-        const sun = new THREE.Mesh(new THREE.SphereGeometry(7, 24, 16), new THREE.MeshBasicMaterial({ color: 0xfff5dc }));
+        // 太阳本体亮度超过 1，泛光通道（UnrealBloomPass）会把它的边缘自然地晕开，不再需要贴图式光斑
+        const sun = new THREE.Mesh(new THREE.SphereGeometry(7, 32, 24), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xfff5dc).multiplyScalar(4) }));
         sun.position.copy(sunlight.position).normalize().multiplyScalar(2100);
         scene.add(sun);
         sunMesh = sun;
-        const glowCanvas = document.createElement('canvas');
-        glowCanvas.width = 256; glowCanvas.height = 64;
-        const glowContext = glowCanvas.getContext('2d');
-        const glowGradient = glowContext.createRadialGradient(128, 96, 4, 128, 96, 96);
-        glowGradient.addColorStop(0, 'rgba(255,244,214,0.5)');
-        glowGradient.addColorStop(0.4, 'rgba(240,228,200,0.18)');
-        glowGradient.addColorStop(1, 'rgba(230,220,195,0)');
-        glowContext.save();
-        glowContext.translate(0, 32);
-        glowContext.scale(1, 0.42);
-        glowContext.translate(0, -32);
-        glowContext.fillStyle = glowGradient;
-        glowContext.fillRect(0, -96, 256, 256);
-        glowContext.restore();
-        const horizonGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(glowCanvas), transparent: true, opacity: 0.5, depthWrite: false, blending: THREE.AdditiveBlending }));
+        // 地平线辉光：一块竖直的平面，用顶点颜色做"中间亮、四周渐隐"的渐变，纯 Three.js 几何体，不需要贴图
+        const glowGeometry = new THREE.PlaneGeometry(2400, 190, 48, 8);
+        const glowColors = new Float32Array(glowGeometry.attributes.position.count * 3);
+        for (let i = 0; i < glowGeometry.attributes.position.count; i++) {
+            const u = glowGeometry.attributes.position.getX(i) / 1200;
+            const v = glowGeometry.attributes.position.getY(i) / 95;
+            const falloff = Math.pow(Math.max(0, 1 - Math.abs(u)), 2) * Math.pow(Math.max(0, 1 - Math.abs(v)), 2) * 0.5;
+            glowColors.set([0.94 * falloff, 0.9 * falloff, 0.78 * falloff], i * 3);
+        }
+        glowGeometry.setAttribute('color', new THREE.BufferAttribute(glowColors, 3));
+        const horizonGlow = new THREE.Mesh(glowGeometry, new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false }));
         const sunFlat = new THREE.Vector3(sun.position.x, 0, sun.position.z).normalize();
         horizonGlow.position.copy(sunFlat).multiplyScalar(2500);
         horizonGlow.position.y = 55;
-        horizonGlow.scale.set(2400, 190, 1);
+        horizonGlow.lookAt(0, 55, 0);
         scene.add(horizonGlow);
         return Promise.race([earthReady, new Promise(resolve => setTimeout(resolve, 5000))]);
     }
@@ -827,7 +824,6 @@
         }
         if (discoveryUI) discoveryUI.update(now);
         if (cinePass) cinePass.material.uniforms.uTime.value = now * 0.001;
-        if (flarePass && sunMesh) window.SolarFlare.update(flarePass, sunMesh, camera);
         if (composer) composer.render(); else renderer.render(scene, camera);
         if (!sampleTime) sampleTime = now;
         frameCount++;
@@ -951,8 +947,7 @@
                 composer = new THREE.EffectComposer(renderer);
                 composer.addPass(new THREE.RenderPass(scene, camera));
                 composer.addPass(new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.6, 0.55, 0.8));
-                flarePass = window.SolarFlare ? window.SolarFlare.create() : null;
-                if (flarePass) composer.addPass(flarePass);
+
                 composer.addPass(new THREE.ShaderPass(THREE.GammaCorrectionShader));
                 if (THREE.FXAAShader) {
                     fxaaPass = new THREE.ShaderPass(THREE.FXAAShader);

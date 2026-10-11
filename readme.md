@@ -65,6 +65,7 @@ Never hand-edit `mercury.html` … `neptune.html`: change `index.html` or the da
 
 - `expedition-dust.js` (`ExpeditionDust.create`) holds the footstep and landing dust used by the Moon, Mars, Venus and Mercury expeditions. Each page passes in its own colour, opacity, gravity, terrain sampler and optional wind `drift`; the spawning, arc, ground contact, fading and disposal logic lives once. Load it before the engine script.
 - `expedition-look.js` (`ExpeditionLook.applyDrag`) is the drag-to-look maths used by all eight expeditions: sensitivity, yaw wrap-around and pitch limits in one place. It is a pure function, so `node` can check it against the old formula (the maximum difference was 0).
+- **Moon sun and horizon:** the Sun is a bright (×4) basic sphere, so the existing bloom pass makes its glow. The Moon no longer uses the screen-space lens flare (its halo ring read as a pasted sticker). The horizon glow is a vertically oriented plane with vertex-colour falloff, not a canvas texture.
 - `flare-pass.js` (`SolarFlare`) is the shared screen-space lens flare, as described in the Moon, Mars and Mercury notes.
 
 ## Speed control (main explorer)
