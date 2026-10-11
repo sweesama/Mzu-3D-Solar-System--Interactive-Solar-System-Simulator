@@ -221,7 +221,7 @@ for (const planet of planets) {
   const canonical = `${SITE}${slug}.html`;
   const image = `${SITE}og/${slug}.jpg`;
   const imageAlt = `${planet.name} in the Mzu 3D Solar System`;
-  const title = `${planet.name} in 3D | Interactive Solar System Explorer`;
+  const title = `${planet.name} 3D: Interactive Planet Model & Facts`;
   let html = source;
 
   html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${title}</title>`);
