@@ -1183,7 +1183,7 @@
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x6b5a44);
-            scene.fog = new THREE.FogExp2(0xa08b6b, 0.0024);
+            scene.fog = new THREE.FogExp2(0xa98f6e, 0.0014);
             camera = new THREE.PerspectiveCamera(58, innerWidth / innerHeight, 0.08, 7200);
             ambientLight = new THREE.AmbientLight(0xcbb894, 1.4);
             scene.add(ambientLight);
@@ -1233,7 +1233,7 @@
                     composer.addPass(fxaaPass);
                 }
                 cinePass = new THREE.ShaderPass({
-                    uniforms: { tDiffuse: { value: null }, uTime: { value: 0 }, uVig: { value: 0.42 }, uGrain: { value: 0.028 } },
+                    uniforms: { tDiffuse: { value: null }, uTime: { value: 0 }, uVig: { value: 0.34 }, uGrain: { value: 0.016 } },
                     vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
                     fragmentShader: `uniform sampler2D tDiffuse; uniform float uTime, uVig, uGrain; varying vec2 vUv;
                         float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }

@@ -41,9 +41,9 @@
     }
     function height(x, z) {
         let h = (noise(x * 0.008 + 7, z * 0.008 + 12) - 0.5) * 15;
-        h += (noise(x * 0.034, z * 0.034) - 0.5) * 2.8;
-        h += (noise(x * 0.13, z * 0.13) - 0.5) * 0.65;
-        h += (noise(x * 0.45, z * 0.45) - 0.5) * 0.16;
+        h += (noise(x * 0.034, z * 0.034) - 0.5) * 3.6;
+        h += (noise(x * 0.13, z * 0.13) - 0.5) * 0.95;
+        h += (noise(x * 0.45, z * 0.45) - 0.5) * 0.24;
         for (const crater of craters) {
             const dx = x - crater.x, dz = z - crater.z;
             const distance = Math.hypot(dx, dz) / crater.radius;

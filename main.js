@@ -784,14 +784,24 @@ self.onmessage = function(e) {
             }
 
             if (scaleMode === 'artistic') return;
-            planetMarkers.forEach(marker => {
+            // 1) 镜头离某颗行星很近时，行星本身已经够大，隐藏它的标记
+            // 2) 其余标记按屏幕位置排队：靠近镜头的优先保留，和已保留标记距离太近的隐藏，避免名字互相重叠
+            const shown = [];
+            const candidates = planetMarkers.filter(marker => marker.userData.focusMesh).map(marker => {
                 const target = marker.userData.focusMesh;
-                if (!target) return;
                 target.getWorldPosition(_helperTarget);
                 const radius = getWorldRadius(target, 1);
-                // 镜头离这颗行星不到 40 倍半径时，行星本身已经足够大，隐藏标记
-                marker.visible = camera.position.distanceTo(_helperTarget) > radius * 40;
-            });
+                const distance = camera.position.distanceTo(_helperTarget);
+                return { marker, distance, nearby: distance < radius * 40, screen: _helperTarget.clone().project(camera) };
+            }).sort((a, b) => a.distance - b.distance);
+            for (const item of candidates) {
+                const { marker, screen } = item;
+                const inFront = screen.z < 1;
+                const x = (screen.x * 0.5 + 0.5) * innerWidth, y = (-screen.y * 0.5 + 0.5) * innerHeight;
+                const crowded = shown.some(p => Math.hypot(p.x - x, p.y - y) < 90);
+                marker.visible = !item.nearby && inFront && !crowded;
+                if (marker.visible) shown.push({ x, y });
+            }
         }
 
         function updateEclipseShadows() {

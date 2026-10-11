@@ -229,7 +229,7 @@
                 float broad = lunarNoise(vGroundPosition.xz * 0.038) - 0.5;
                 float fine = lunarNoise(vGroundPosition.xz * 1.8) - 0.5;
                 float detailFade = 1.0 - smoothstep(25.0, 130.0, distance(cameraPosition, vGroundPosition));
-                diffuseColor.rgb *= 0.94 + broad * 0.22 + fine * 0.06 * detailFade;
+                diffuseColor.rgb *= 0.92 + broad * 0.36 + fine * 0.14 * detailFade;
                 diffuseColor.rgb *= 1.0 + sin(vGroundPosition.y * 3.1) * 0.055;
             `);
         };
@@ -514,7 +514,7 @@
             side: THREE.BackSide, depthWrite: false, depthTest: false,
             uniforms: {
                 zenith: { value: new THREE.Color(0x8f5f42).convertSRGBToLinear() },
-                horizon: { value: new THREE.Color(0xe3b489).convertSRGBToLinear() }
+                horizon: { value: new THREE.Color(0xc99a72).convertSRGBToLinear() }
             },
             vertexShader: 'varying vec3 vP; void main(){vP=position; vec4 mv=modelViewMatrix*vec4(position,1.0); gl_Position=projectionMatrix*mv; gl_Position.z=gl_Position.w;}',
             fragmentShader: 'uniform vec3 zenith; uniform vec3 horizon; varying vec3 vP; void main(){float h=clamp(normalize(vP).y,0.0,1.0); vec3 c=mix(horizon,zenith,pow(h,0.6)); gl_FragColor=vec4(c,1.0);}'
@@ -523,7 +523,7 @@
         sky.frustumCulled = false;
         sky.renderOrder = -1;
         scene.add(sky);
-        scene.fog = new THREE.Fog(new THREE.Color(0xd9ab84).convertSRGBToLinear(), 240, 4200);
+        scene.fog = new THREE.Fog(new THREE.Color(0xb88a66).convertSRGBToLinear(), 420, 4400);
         const sun = new THREE.Mesh(new THREE.SphereGeometry(4.6, 24, 16), new THREE.MeshBasicMaterial({ color: 0xfff3dd, fog: false }));
         sun.position.copy(sunlight.position).normalize().multiplyScalar(2100);
         scene.add(sun);
