@@ -3,15 +3,15 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>3D Solar System Explorer | Interactive Planet Visualization</title>
-    <meta name="description" content="Explore a free interactive 3D Solar System, then walk on the Moon and Mars or fly through Saturn's rings in first person. No download or account needed.">
+    <title>Interactive 3D Solar System Simulator – Free in Your Browser</title>
+    <meta name="description" content="Free interactive 3D solar system simulator. Orbit the Sun and eight planets, switch to real distances or true scale, then walk on the Moon and Mars. No download.">
     <meta name="author" content="Mzu">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="theme-color" content="#05070d">
     <link rel="canonical" href="https://www.3dsolarsystem.net/">
 
-    <meta property="og:title" content="3D Solar System Explorer">
-    <meta property="og:description" content="Explore planets in a free, interactive 3D Solar System visualization built for learning and curiosity.">
+    <meta property="og:title" content="Interactive 3D Solar System Simulator">
+    <meta property="og:description" content="Orbit the Sun and eight planets in 3D, switch to real distances or true scale, and walk on the Moon and Mars in first person. Free, in your browser.">
     <meta property="og:image" content="https://www.3dsolarsystem.net/og/home.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -21,7 +21,7 @@
     <meta property="og:site_name" content="Mzu 3D Solar System">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="3D Solar System Explorer">
+    <meta name="twitter:title" content="Interactive 3D Solar System Simulator">
     <meta name="twitter:description" content="Focus on planets, follow a guided tour, and share or embed an interactive Solar System view.">
     <meta name="twitter:image" content="https://www.3dsolarsystem.net/og/home.jpg">
     <meta name="twitter:image:alt" content="The Sun and eight planets on their orbits in the Mzu 3D Solar System">
@@ -31,7 +31,8 @@
       "@context": "https://schema.org",
       "@type": "WebApplication",
       "name": "Mzu 3D Solar System",
-      "description": "A free interactive 3D visualization for exploring planets and selected Solar System objects.",
+      "alternateName": "Interactive 3D Solar System Simulator",
+      "description": "A free interactive 3D solar system simulator for exploring the planets, real-scale distances and first-person expeditions to the Moon, Mars and other worlds.",
       "url": "https://www.3dsolarsystem.net/",
       "image": "https://www.3dsolarsystem.net/og/home.jpg",
       "screenshot": "https://www.3dsolarsystem.net/og/home.jpg",
@@ -51,15 +52,60 @@
     </script>
 
     <script id="faq-structured-data" type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
     {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        { "@type": "Question", "name": "Is this 3D Solar System to scale?", "acceptedAnswer": { "@type": "Answer", "text": "Not by default. Real distances are so large that the planets would be invisible dots, so sizes and distances are compressed for viewing. The Speed menu switches motion to real orbital and rotation periods." } },
-        { "@type": "Question", "name": "Is it free, and do I need to install anything?", "acceptedAnswer": { "@type": "Answer", "text": "It is free and runs in any modern browser with WebGL, on desktop or mobile. There is no download, account or plug-in." } },
-        { "@type": "Question", "name": "Can I explore the surface of other planets?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. First-person expeditions let you walk on the Moon, Mars, Venus and Mercury, sink into Jupiter's clouds, and fly through the rings of Saturn and Uranus and the storms of Neptune." } }
-      ]
+      "@type": "Question",
+      "name": "Is this 3D Solar System to scale?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Not by default. Real distances are so large that the planets would be invisible dots, so sizes and distances are compressed for viewing. Open the Scale menu and choose Real distances, Real sizes or True scale to see the real proportions, and use the Speed menu to switch motion to real orbital and rotation periods."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it show where the planets are today?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The planets move on their orbits, but their starting positions are not taken from a live ephemeris, so this is not a tool for finding a planet in tonight's sky. Use it to compare sizes, distances and orbital periods, and to explore the worlds up close."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is it free, and do I need to install anything?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It is free and runs in any modern browser with WebGL, on desktop or mobile. There is no download, account or plug-in."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I explore the surface of other planets?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The first-person expeditions let you walk on the Moon, Mars, Venus and Mercury, sink into Jupiter's clouds, and fly through the rings of Saturn and Uranus and the storms of Neptune."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it work on phones and tablets?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Drag with one finger to orbit, pinch to zoom and tap a planet to select it. On older devices, set Quality to Low or leave it on Auto, which lowers the detail if the frame rate drops."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use it in a classroom or embed it on my website?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Use Share view to copy a link that opens on the planet you are looking at, or Copy embed to get an iframe snippet for a class page or blog. Links such as /?focus=Saturn open straight on a planet."
+      }
     }
+  ]
+}
     </script>
 
     <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
@@ -90,9 +136,9 @@
 
         <!-- PAGE-CONTENT:START -->
         <section class="experience-copy">
-            <p class="eyebrow">Interactive space explorer</p>
-            <h1>Explore the Solar System in 3D</h1>
-            <p>Drag to orbit the camera, scroll or pinch to zoom, and select a world to inspect it. Start the short guided tour if you are not sure where to begin.</p>
+            <p class="eyebrow">Free · runs in your browser</p>
+            <h1>Interactive 3D Solar System Simulator</h1>
+            <p>Explore the Solar System in 3D: drag to orbit the camera, scroll or pinch to zoom, and select a world to inspect it. Start the short guided tour if you are not sure where to begin.</p>
             <p class="model-note"><strong>Model note:</strong> This is an artistic educational visualization. Sizes, distances, and time are compressed for visibility; it is not a live ephemeris or a professional astronomy tool.</p>
         </section>
         <!-- PAGE-CONTENT:END -->
@@ -142,14 +188,31 @@
         </nav>
 
         <!-- PLANET-ARTICLE:START -->
-        <section class="planet-article" aria-labelledby="faq-title">
+        <section class="planet-article" aria-labelledby="features-title">
+            <h2 id="features-title">What you can do in this solar system simulator</h2>
+            <ul>
+                <li><strong>Fly around the Sun and all eight planets</strong>, with major moons such as the Moon, Phobos and Deimos, the Galilean moons of Jupiter and Saturn's rings. Click any object for its radius, distance from the Sun and orbital eccentricity.</li>
+                <li><strong>Switch between artistic and real scale.</strong> The default view compresses sizes and distances so everything fits on screen. <strong>Real distances</strong>, <strong>Real sizes</strong> and <strong>True scale</strong> show how empty and how large the Solar System really is.</li>
+                <li><strong>Run time at real speed.</strong> Set the clock from one hour to one year per second and watch the planets move on their true orbital and rotation periods.</li>
+                <li><strong>Take the guided planet tour</strong> for a short introduction to each world, or open a planet's own page for facts and frequently asked questions.</li>
+                <li><strong>Leave orbit and explore in first person</strong>: walk on the Moon, Mars, Venus and Mercury, descend into Jupiter, or fly through the rings and storms of the outer planets.</li>
+                <li><strong>Share, save and embed</strong> the exact view you are looking at as a link, an image or an iframe.</li>
+            </ul>
+            <h2>How to use the 3D solar system</h2>
+            <p>Drag to rotate the view, scroll or pinch to zoom, and click or tap a planet to focus on it. Press <kbd>G</kbd> to hide this guide and see the whole scene. The <strong>Speed</strong>, <strong>Scale</strong> and <strong>Quality</strong> menus are in the corner of the screen.</p>
             <h2 id="faq-title">Frequently asked questions</h2>
             <h3>Is this 3D Solar System to scale?</h3>
-            <p>Not by default. Real distances are so large that the planets would be invisible dots, so sizes and distances are compressed for viewing. Use the <strong>Speed</strong> menu to switch motion to real orbital and rotation periods.</p>
+            <p>Not by default. Real distances are so large that the planets would be invisible dots, so sizes and distances are compressed for viewing. Open the <strong>Scale</strong> menu and choose <strong>Real distances</strong>, <strong>Real sizes</strong> or <strong>True scale</strong> to see the real proportions, and use the <strong>Speed</strong> menu to switch motion to real orbital and rotation periods.</p>
+            <h3>Does it show where the planets are today?</h3>
+            <p>No. The planets move on their orbits, but their starting positions are not taken from a live ephemeris, so this is not a tool for finding a planet in tonight's sky. Use it to compare sizes, distances and orbital periods, and to explore the worlds up close.</p>
             <h3>Is it free, and do I need to install anything?</h3>
             <p>It is free and runs in any modern browser with WebGL, on desktop or mobile. There is no download, account or plug-in.</p>
             <h3>Can I explore the surface of other planets?</h3>
             <p>Yes. The first-person expeditions let you walk on the Moon, Mars, Venus and Mercury, sink into Jupiter's clouds, and fly through the rings of Saturn and Uranus and the storms of Neptune.</p>
+            <h3>Does it work on phones and tablets?</h3>
+            <p>Yes. Drag with one finger to orbit, pinch to zoom and tap a planet to select it. On older devices, set <strong>Quality</strong> to Low or leave it on Auto, which lowers the detail if the frame rate drops.</p>
+            <h3>Can I use it in a classroom or embed it on my website?</h3>
+            <p>Yes. Use <strong>Share view</strong> to copy a link that opens on the planet you are looking at, or <strong>Copy embed</strong> to get an iframe snippet for a class page or blog. Links such as <code>/?focus=Saturn</code> open straight on a planet.</p>
             <p class="planet-sources">Planet data: <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/" rel="noopener" target="_blank">NASA Planetary Fact Sheet</a>.</p>
         </section>
         <!-- PLANET-ARTICLE:END -->

@@ -381,3 +381,6 @@ body.embed-mode #embed-badge { display: block; }
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
 }
+#experience-panel .planet-article ul { margin: 0 0 10px; padding-left: 18px; color: #d6dbe6; font-size: 13.5px; line-height: 1.55; }
+#experience-panel .planet-article li { margin: 0 0 6px; }
+#experience-panel .planet-article h2:not(:first-child) { margin-top: 16px; }
