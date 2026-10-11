@@ -365,17 +365,17 @@ body.embed-mode #embed-badge { display: block; }
     .control-btn { min-width: 0; }
     .quality-control { min-width: 0; }
     .quality-control select { min-width: 0; width: 100%; }
-    #info-panel { right: 8px; bottom: 112px; left: 8px; margin: 0 auto; }
+    #info-panel { right: 8px; bottom: 160px; left: 8px; margin: 0 auto; }
     .panel-open-button { top: 8px; left: 8px; }
-    #action-toast { bottom: 114px; }
+    #action-toast { bottom: 162px; }
 }
 
 @media (max-width: 390px) {
     .primary-actions { grid-template-columns: 1fr; }
     #scene-controls { grid-template-columns: 1fr 1fr; }
     .quality-control { grid-column: 1 / -1; grid-template-columns: auto 1fr; }
-    #info-panel { bottom: 160px; }
-    #action-toast { bottom: 162px; }
+    #info-panel { bottom: 208px; }
+    #action-toast { bottom: 210px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

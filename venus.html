@@ -250,6 +250,16 @@
             </select>
             <small id="time-status" aria-live="polite"></small>
         </label>
+        <label class="quality-control time-control" for="scale-select" title="Real distances place planets at their true relative distances. Real sizes shrink the Sun, planets and moons to their true relative sizes. True scale combines both.">
+            <span>Scale</span>
+            <select id="scale-select" aria-describedby="scale-status">
+                <option value="artistic">Artistic</option>
+                <option value="distance">Real distances</option>
+                <option value="size">Real sizes</option>
+                <option value="true">True scale</option>
+            </select>
+            <small id="scale-status" aria-live="polite"></small>
+        </label>
         <button id="music-button" class="control-btn" type="button">Music: Off</button>
         <button id="orbit-glow-button" class="control-btn" type="button">Orbit glow: Off</button>
     </div>

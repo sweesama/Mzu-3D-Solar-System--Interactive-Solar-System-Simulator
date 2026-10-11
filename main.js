@@ -139,6 +139,107 @@
             const spin = realRates(obj).spin;
             return spin === null ? artistic : clampVisualRate(spin * realDaysPerSecond);
         }
+        // ✨ 比例模式：artistic（默认，压缩后好看）/ distance（真实距离）/ size（真实大小）/ true（真实距离+真实大小）
+        // 真实距离：1 天文单位 = AU_SCENE 个场景单位，海王星约在 1200 处。
+        // 真实大小：行星、矮行星、卫星和太阳按真实半径缩放（小行星和彗星保持原样，否则完全看不见）。
+        const AU_SCENE = 40;
+        const KM_PER_AU = 149597870.7;
+        const SUN_RADIUS_KM = 695700;
+        const SCALE_MODE_STORAGE_KEY = 'mzu-scale-mode';
+        let scaleMode = 'artistic';
+        const isRealDistance = () => scaleMode === 'distance' || scaleMode === 'true';
+        const isRealSize = () => scaleMode === 'size' || scaleMode === 'true';
+        const planetMarkers = [];
+        let kuiperBeltObject = null;
+
+        // 每公里对应多少场景单位：真实距离下与天文单位一致；否则以太阳视觉半径为基准
+        const kmToScene = () => isRealDistance() ? AU_SCENE / KM_PER_AU : sunRadiusVisual / SUN_RADIUS_KM;
+
+        function applyScaleMode() {
+            const realDistance = isRealDistance();
+            const realSize = isRealSize();
+            const k = kmToScene();
+            celestialObjects.forEach(obj => {
+                if (obj.baseOrbitRadius === undefined) obj.baseOrbitRadius = obj.orbitRadius;
+                const data = (obj.mesh && obj.mesh.userData) || {};
+                let orbit = obj.baseOrbitRadius;
+                if (obj.isMoon) {
+                    // 卫星轨道只在"完全真实比例"时才用真实距离，否则会钻进放大过的行星里
+                    if (realDistance && realSize && data.orbitSemiMajorAxisAU) orbit = data.orbitSemiMajorAxisAU * KM_PER_AU * k;
+                } else if (realDistance) {
+                    const au = data.orbitSemiMajorAxisAU || sceneRadiusToAU(obj.baseOrbitRadius);
+                    orbit = au * AU_SCENE;
+                }
+                obj.orbitRadius = orbit;
+                if (obj.orbitLine) {
+                    const factor = obj.baseOrbitRadius > 0 ? orbit / obj.baseOrbitRadius : 1;
+                    obj.orbitLine.scale.set(factor, factor, 1);
+                }
+                const scalable = (obj.isPlanet || obj.isMoon) && obj.mesh && obj.radius;
+                if (scalable) {
+                    const realRadius = data.radiusMetric ? data.radiusMetric * k : obj.radius;
+                    obj.mesh.scale.setScalar(realSize ? realRadius / obj.radius : 1);
+                }
+                updateOrbitalPosition(obj);
+            });
+            if (sun) sun.scale.setScalar(realSize ? (SUN_RADIUS_KM * k) / sunRadiusVisual : 1);
+            if (kuiperBeltObject) {
+                const factor = realDistance ? sceneRadiusToAU(200) * AU_SCENE / 200 : 1;
+                kuiperBeltObject.scale.setScalar(factor);
+            }
+            controls.maxDistance = realDistance ? 4500 : 1500;
+            planetMarkers.forEach(marker => { marker.visible = scaleMode !== 'artistic'; });
+        }
+
+        // 当前在世界坐标里的真实半径（考虑缩放）；精灵标记会先换成它对应的行星
+        const _worldRadiusScale = new THREE.Vector3();
+        function getWorldRadius(object, fallback) {
+            const geometry = object && object.geometry;
+            if (geometry) {
+                if (!geometry.boundingSphere) geometry.computeBoundingSphere();
+                object.getWorldScale(_worldRadiusScale);
+                return geometry.boundingSphere.radius * _worldRadiusScale.x;
+            }
+            return fallback || 1;
+        }
+
+        // 比例下拉框：切换后重新摆放所有天体；正在追踪某个天体就重新飞过去，否则退到能看全太阳系的位置
+        function initializeScaleControl() {
+            const select = document.getElementById('scale-select');
+            const status = document.getElementById('scale-status');
+            if (!select) return;
+            const descriptions = {
+                artistic: 'Compressed for viewing',
+                distance: 'True distances · sizes enlarged',
+                size: 'True sizes · distances compressed',
+                true: 'True scale · planets are tiny dots'
+            };
+            const apply = (value, reframe) => {
+                scaleMode = descriptions[value] ? value : 'artistic';
+                status.textContent = descriptions[scaleMode];
+                applyScaleMode();
+                if (!reframe) return;
+                if (trackedObject && trackedObject.userData && trackedObject.userData.displayName) {
+                    selectObject(trackedObject, trackedObject.userData);
+                    return;
+                }
+                activeCameraTweens.forEach(t => t.stop());
+                const overview = isRealDistance() ? new THREE.Vector3(0, 900, 1700) : new THREE.Vector3(0, 100, 200);
+                activeCameraTweens = [
+                    new TWEEN.Tween(camera.position).to({ x: overview.x, y: overview.y, z: overview.z }, 1500).easing(TWEEN.Easing.Quadratic.InOut).start(),
+                    new TWEEN.Tween(controls.target).to({ x: 0, y: 0, z: 0 }, 1500).easing(TWEEN.Easing.Quadratic.InOut).start()
+                ];
+            };
+            let saved = null;
+            try { saved = localStorage.getItem(SCALE_MODE_STORAGE_KEY); } catch (error) { saved = null; }
+            if (saved && descriptions[saved]) select.value = saved;
+            apply(select.value, select.value !== 'artistic');
+            select.addEventListener('change', () => {
+                apply(select.value, true);
+                try { localStorage.setItem(SCALE_MODE_STORAGE_KEY, select.value); } catch (error) { /* 无痕模式下不保存 */ }
+            });
+        }
+
         let animationFrameId = null;
         let starTwinkleUniforms = null;
         let softDotTexture = null;
@@ -665,8 +766,36 @@ self.onmessage = function(e) {
         }
         const _eclipseWorldPos = new THREE.Vector3();
         const _eclipseWorldScale = new THREE.Vector3();
+        // 每帧：星空与银河背景跟随镜头（相当于无限远）；靠近很小的天体时把近裁剪面调小，
+        // 否则真实大小模式下镜头还没贴近行星，行星就被裁掉了；离某颗行星很近时隐藏它的标记
+        let starfieldObject = null, milkyWayObject = null;
+        const _helperTarget = new THREE.Vector3();
+        function updateScaleViewHelpers() {
+            if (!starfieldObject) starfieldObject = scene.getObjectByName('starfield');
+            if (!milkyWayObject) milkyWayObject = scene.getObjectByName('milkyWayBackground');
+            if (starfieldObject) starfieldObject.position.copy(camera.position);
+            if (milkyWayObject) milkyWayObject.position.copy(camera.position);
+
+            const focusDistance = camera.position.distanceTo(controls.target);
+            const desiredNear = isRealSize() ? THREE.MathUtils.clamp(focusDistance * 0.01, 1e-5, 0.1) : 0.1;
+            if (Math.abs(camera.near - desiredNear) / desiredNear > 0.2) {
+                camera.near = desiredNear;
+                camera.updateProjectionMatrix();
+            }
+
+            if (scaleMode === 'artistic') return;
+            planetMarkers.forEach(marker => {
+                const target = marker.userData.focusMesh;
+                if (!target) return;
+                target.getWorldPosition(_helperTarget);
+                const radius = getWorldRadius(target, 1);
+                // 镜头离这颗行星不到 40 倍半径时，行星本身已经足够大，隐藏标记
+                marker.visible = camera.position.distanceTo(_helperTarget) > radius * 40;
+            });
+        }
+
         function updateEclipseShadows() {
-            const sunRadius = sun && sun.geometry && sun.geometry.parameters ? sun.geometry.parameters.radius : 1;
+            const sunRadius = (sun && sun.geometry && sun.geometry.parameters ? sun.geometry.parameters.radius : 1) * (sun ? sun.scale.x : 1);
             for (const receiver of eclipseReceivers) {
                 receiver.uniforms.uSunRadius.value = sunRadius;
                 const slots = receiver.uniforms.uOccluders.value;
@@ -803,24 +932,10 @@ self.onmessage = function(e) {
                 ctx.fillStyle = gradient;
                 ctx.fillRect(0,0,w,h);
             });
-            const textureFlareHex = createFlareTexture(128, (ctx, w, h, color) => {
-                ctx.fillStyle = `rgba(${color.r*255},${color.g*255},${color.b*255},0.5)`;
-                const S = w / 2;
-                ctx.beginPath();
-                for (let i = 0; i < 6; i++) { ctx.lineTo(S + S * Math.cos(i * 2 * Math.PI / 6), S + S * Math.sin(i * 2 * Math.PI / 6)); }
-                ctx.closePath(); ctx.fill();
-            });
-             const textureFlareRing = createFlareTexture(128, (ctx, w, h, color) => {
-                ctx.strokeStyle = `rgba(${color.r*255},${color.g*255},${color.b*255},0.5)`;
-                ctx.lineWidth = w * 0.1; ctx.beginPath(); ctx.arc(w/2, h/2, w*0.4, 0, 2*Math.PI); ctx.stroke();
-            });
 
             const lensflare = new THREE.Lensflare(); /* ... NO CHANGE ... */
+            // 只保留柔和的主光晕；原来的六边形/圆环"鬼影"像贴纸，太阳在画面中央时会直接盖在日面上
             lensflare.addElement(new THREE.LensflareElement(textureFlare0, 700, 0, pointLight.color));
-            lensflare.addElement(new THREE.LensflareElement(textureFlareHex, 60, 0.6, pointLight.color.clone().lerp(new THREE.Color(0x88ffff), 0.5)));
-            lensflare.addElement(new THREE.LensflareElement(textureFlareHex, 70, 0.7, pointLight.color.clone().lerp(new THREE.Color(0xff88ff), 0.5)));
-            lensflare.addElement(new THREE.LensflareElement(textureFlareRing, 120, 0.9, pointLight.color.clone().lerp(new THREE.Color(0xffff88), 0.5)));
-            lensflare.addElement(new THREE.LensflareElement(textureFlareHex, 100, 1.0, pointLight.color.clone().lerp(new THREE.Color(0xffaa88), 0.5)));
             lensflare.name = "sunLensflareSystem";
             pointLight.add(lensflare);
 
@@ -2596,6 +2711,7 @@ self.onmessage = function(e) {
                     const moonMesh = new THREE.Mesh(moonGeometry, moonMaterial);
                     moonMesh.name = moonData.name;
                     moonMesh.userData = moonData; // Contains metric data if available
+                    moonData.focusMesh = moonMesh;
                     // 卫星进入母星影子时会变暗（月食），同时它也会把影子投到母星上
                     addEclipseShadows(moonMaterial, [planetMesh]);
                     if (planetMesh.userData.eclipseOccluders && planetMesh.userData.eclipseOccluders.length < ECLIPSE_MAX_OCCLUDERS) planetMesh.userData.eclipseOccluders.push(moonMesh);
@@ -2657,6 +2773,8 @@ self.onmessage = function(e) {
                     // Store moon orbit line reference for glow toggle
                     moonOrbitLine.userData = { isMoonOrbit: true };
                     orbitLines.push(moonOrbitLine);
+                    const moonEntry = celestialObjects.find(o => o.mesh && o.mesh.name === moonData.name && o.isMoon);
+                    if (moonEntry) moonEntry.orbitLine = moonOrbitLine;
                 });
             }
 
@@ -2815,6 +2933,38 @@ self.onmessage = function(e) {
             // Store orbit line reference for glow toggle
             orbitLine.userData = { isPlanetOrbit: true };
             orbitLines.push(orbitLine);
+            const planetEntry = celestialObjects.find(o => o.mesh === planetMesh);
+            if (planetEntry) planetEntry.orbitLine = orbitLine;
+
+            // 真实比例模式下行星太小看不见：加一个固定屏幕大小的圆圈标记和名字，点它也能聚焦
+            planetData.focusMesh = planetMesh;
+            const marker = new THREE.Sprite(new THREE.SpriteMaterial({ map: getMarkerTexture(planetData.displayName || planetData.name), depthTest: false, depthWrite: false, transparent: true, sizeAttenuation: false }));
+            marker.center.set(0.125, 0.5);
+            marker.scale.set(0.16, 0.04, 1);
+            marker.renderOrder = 10;
+            marker.userData = planetData;
+            marker.name = planetData.name + '_marker';
+            marker.visible = scaleMode !== 'artistic';
+            axialTiltGroup.add(marker);
+            planetMarkers.push(marker);
+        }
+
+        // 标记贴图：左边一个空心圆圈，右边是名字（画在一张 256×64 的画布上）
+        function getMarkerTexture(label) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256; canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            ctx.strokeStyle = 'rgba(255, 214, 120, 0.95)';
+            ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.arc(32, 32, 12, 0, Math.PI * 2); ctx.stroke();
+            ctx.font = '600 26px Inter, "Segoe UI", sans-serif';
+            ctx.fillStyle = 'rgba(240, 236, 226, 0.95)';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 4;
+            ctx.fillText(label, 56, 33);
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.encoding = THREE.sRGBEncoding;
+            return texture;
         }
 
         // 创建不同类型的行星环材质
@@ -3376,6 +3526,7 @@ self.onmessage = function(e) {
                 depthWrite: false
             });
             const stars = new THREE.Points(starGeometry, starMaterial);
+            stars.name = "starfield"; // 每帧跟随镜头，星空永远在"无限远"，真实距离模式下也不会和外行星混在一起
             scene.add(stars);
         }
 
@@ -3487,6 +3638,9 @@ self.onmessage = function(e) {
                         type: "Kuiper Belt Objects"
                     };
                     scene.add(kuiperBelt);
+                    // Web Worker 是异步的，柯伊伯带可能在比例模式设置之后才生成，这里补一次缩放
+                    kuiperBeltObject = kuiperBelt;
+                    if (isRealDistance()) kuiperBelt.scale.setScalar(sceneRadiusToAU(200) * AU_SCENE / 200);
                     console.log("Kuiper Belt re-initialized with " + kuiperObjectCount + " objects via Web Worker.");
                     worker.terminate();
                 }
@@ -3628,6 +3782,10 @@ self.onmessage = function(e) {
         }
 
         function selectObject(tempObj, data, options = {}) {
+                    // 点到的是点击辅助球或屏幕标记时，换成它代表的真正天体（镜头距离按天体本身大小算）
+                    if (data && data.focusMesh && tempObj !== data.focusMesh && (tempObj.isSprite || (tempObj.name || '').endsWith('_hitzone'))) {
+                        tempObj = data.focusMesh;
+                    }
                     document.getElementById('info-title').innerText = data.displayName;
                     document.getElementById('info-name').innerText = `Name: ${data.displayName}`;
                     document.getElementById('info-type').innerText = `Type: ${data.type || 'Unknown'}`;
@@ -3664,6 +3822,11 @@ self.onmessage = function(e) {
                         return; // 直接结束，保持当前相机位置
                     }
 
+                    flyCameraToObject(tempObj, data, 1500);
+        }
+
+        // 镜头飞向某个天体并开始追踪（点击选择和导览共用）
+        function flyCameraToObject(tempObj, data, duration = 1500) {
                     // Set tracked object for camera tracking
                     trackedObject = tempObj;
                     isTransitioningCamera = true;
@@ -3675,16 +3838,6 @@ self.onmessage = function(e) {
                         tempObj.userData._lastPos = targetPosition.clone();
                     }
 
-                    // 找到对应的天体条目，预测 1.5 秒（镜头飞行时长）后的位置作为瞄准点
-                    let aimPosition = targetPosition;
-                    let entryMesh = tempObj;
-                    const isEntryNode = node => celestialObjects.some(o => o.mesh === node || o.axialTiltGroup === node);
-                    while (entryMesh && !isEntryNode(entryMesh)) entryMesh = entryMesh.parent;
-                    const targetEntry = entryMesh ? celestialObjects.find(o => o.mesh === entryMesh || o.axialTiltGroup === entryMesh) : null;
-                    if (targetEntry && targetEntry.pivot) {
-                        aimPosition = predictWorldPosition(targetEntry, 1.5);
-                    }
-
                     // ✨ Phase 3.x：先停掉旧 tween，避免新旧 tween 同时改 camera.position 互相打架
                     // （之前点击太阳偶尔进入太阳内部就是这个 bug 导致的）
                     activeCameraTweens.forEach(t => t.stop());
@@ -3693,34 +3846,46 @@ self.onmessage = function(e) {
                     // Calculate target distance based on object size
                     // ✨ 所有非恒星天体统一视觉大小：distance = radius * 2.5
                     // 不论是行星、矮行星、卫星还是彗星核，点击后都填满约 40% 屏幕
-                    const objectRadius = data.radius || 1;
+                    // 按世界坐标里的实际半径算镜头距离（真实大小模式下行星会缩得很小）
+                    const objectRadius = getWorldRadius(tempObj, data.radius || 1);
                     let distance;
                     if (data.type === "Star") {
-                        distance = Math.max(objectRadius * 4, 60); // 太阳保留较远距离
-                        controls.minDistance = 20;
+                        distance = isRealSize() ? objectRadius * 6 : Math.max(objectRadius * 4, 60); // 太阳保留较远距离
+                        controls.minDistance = isRealSize() ? objectRadius * 1.5 : 20;
                     } else {
                         distance = objectRadius * 2.5;
-                        controls.minDistance = Math.max(0.5, objectRadius * 1.2);
+                        controls.minDistance = isRealSize() ? Math.max(1e-5, objectRadius * 1.2) : Math.max(0.5, objectRadius * 1.2);
                     }
 
                     // Transition camera using TWEEN
+                    // 镜头飞行每一帧都追着天体的"实时位置"插值，而不是飞向预测的终点：
+                    // 真实大小模式下镜头只离行星千分之几个单位，预测哪怕差 1% 都会让镜头停在很远的地方
                     const offset = camera.position.clone().sub(controls.target).normalize();
                     if (offset.length() < 0.1) offset.set(0, 0, 1);
                     offset.multiplyScalar(distance);
-                    const newCamPos = aimPosition.clone().add(offset);
-
-                    const camTween = new TWEEN.Tween(camera.position)
-                        .to({ x: newCamPos.x, y: newCamPos.y, z: newCamPos.z }, 1500)
+                    const startCamera = camera.position.clone();
+                    const startTarget = controls.target.clone();
+                    const liveTarget = new THREE.Vector3();
+                    const flight = { t: 0 };
+                    const flightTarget = tempObj;
+                    const camTween = new TWEEN.Tween(flight)
+                        .to({ t: 1 }, duration)
                         .easing(TWEEN.Easing.Quadratic.InOut)
-                        .onComplete(() => { isTransitioningCamera = false; })
+                        .onUpdate(() => {
+                            flightTarget.getWorldPosition(liveTarget);
+                            controls.target.lerpVectors(startTarget, liveTarget, flight.t);
+                            camera.position.lerpVectors(startCamera, liveTarget.clone().add(offset), flight.t);
+                        })
+                        .onComplete(() => {
+                            flightTarget.getWorldPosition(liveTarget);
+                            controls.target.copy(liveTarget);
+                            camera.position.copy(liveTarget).add(offset);
+                            if (flightTarget.userData) flightTarget.userData._lastPos = liveTarget.clone();
+                            isTransitioningCamera = false;
+                        })
                         .start();
 
-                    const targetTween = new TWEEN.Tween(controls.target)
-                        .to({ x: aimPosition.x, y: aimPosition.y, z: aimPosition.z }, 1500)
-                        .easing(TWEEN.Easing.Quadratic.InOut)
-                        .start();
-
-                    activeCameraTweens.push(camTween, targetTween);
+                    activeCameraTweens.push(camTween);
         }
 
         function onPointerUp(event) { // Updated to show more specific data
@@ -3863,23 +4028,6 @@ self.onmessage = function(e) {
             applyRendererPixelRatio();
             renderer.setSize(window.innerWidth, window.innerHeight);
  
-        }
-
-        // 快进预测某个天体 secondsAhead 秒后的世界坐标（算完立即还原，不影响真实状态）。
-        // 用于镜头飞行终点：瞄准"目标将要到达的位置"，否则飞卫星这类快目标时落点总是落后。
-        function predictWorldPosition(entry, secondsAhead) {
-            const savedRotations = celestialObjects.map(o => o.pivot.rotation.y);
-            celestialObjects.forEach(o => {
-                o.pivot.rotation.y += orbitRateFor(o) * secondsAhead;
-                updateOrbitalPosition(o);
-            });
-            const pos = new THREE.Vector3();
-            entry.mesh.getWorldPosition(pos);
-            celestialObjects.forEach((o, i) => {
-                o.pivot.rotation.y = savedRotations[i];
-                updateOrbitalPosition(o);
-            });
-            return pos;
         }
 
         // 根据 pivot 的轨道角度把一个天体摆到当前轨道位置上（animate 每帧调用，初始化聚焦前也会先用一次）
@@ -4028,6 +4176,7 @@ self.onmessage = function(e) {
 
 
             controls.update();
+            updateScaleViewHelpers();
             updateEclipseShadows();
             if (starTwinkleUniforms) {
                 starTwinkleUniforms.uTime.value = elapsedTime;
@@ -4159,6 +4308,7 @@ self.onmessage = function(e) {
                 animate();
                 initializeMusicButton();
                 initializeTimeScaleControl();
+                initializeScaleControl();
             }).catch(error => {
                 console.error("The 3D scene could not be initialized:", error);
                 const errorDiv = document.createElement('div');

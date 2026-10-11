@@ -60,7 +60,19 @@ Never hand-edit `mercury.html` … `neptune.html`: change `index.html` or the da
 
 - The **Speed** menu switches between *Artistic* (compressed, for easy viewing) and *Real* speeds at 1 hour / 1 day / 1 week / 1 month / 1 year per second. The choice is saved in `localStorage` (`mzu-time-scale`).
 - Real mode uses true sidereal orbital and rotation periods from `REAL_PERIODS` in `main.js` (NASA fact sheets; tidally locked moons spin once per orbit). Bodies without table data (asteroids, comets, Kuiper objects) use Kepler's third law from their semi-major axis. Retrograde motion keeps its sign (Triton); Venus and Uranus get their backward/sideways spin from their axial tilt.
-- Any motion faster than 2 turns per second is capped for display only, to avoid stroboscopic "backwards" spinning. Distances and sizes are still compressed in every mode.
+- Any motion faster than 2 turns per second is capped for display only, to avoid stroboscopic "backwards" spinning.
+
+## Scale control (main explorer)
+
+- The **Scale** menu has four modes, saved in `localStorage` (`mzu-scale-mode`):
+  - *Artistic*: the default, compressed for viewing.
+  - *Real distances*: planets, dwarf planets, asteroids and comets orbit at their true semi-major axes, with 1 AU = `AU_SCENE` (40) scene units, so Neptune sits about 1,200 units out. Sizes stay enlarged.
+  - *Real sizes*: the Sun, planets, dwarf planets and moons get their true relative radii, with distances still compressed.
+  - *True scale*: both together. Moon orbits also switch to their real distances here (the Moon at 60 Earth radii).
+- `applyScaleMode()` rescales orbit radii, orbit lines (scaled about the focus), body meshes (rings, clouds and atmospheres scale with their planet), the Sun and the Kuiper belt. Asteroids and comets keep their artistic size, or they would be invisible.
+- When any real mode is on, each planet gets a fixed-size screen marker with its name (`*_marker` sprites). Clicking a marker focuses that planet, and the marker hides once you are within about 40 radii of the planet.
+- The starfield and Milky Way sphere follow the camera, so they stay "at infinity" even with outer planets 1,200+ units away. In real-size modes the camera near plane shrinks with focus distance so tiny planets are not clipped.
+- Camera flights (`flyCameraToObject`, shared by clicks and the guided tour) interpolate toward the target's *live* position every frame instead of a predicted end point. At true scale the camera stops only thousandths of a unit from a planet, so any prediction error would otherwise strand it far away. Flight distance is always 2.5× the body's current world radius.
 
 ## Rendering notes (main explorer)
 
