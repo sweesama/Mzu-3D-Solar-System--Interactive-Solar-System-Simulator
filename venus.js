@@ -102,7 +102,12 @@
     let noticeTimer, lastBoundaryNotice = 0, drag = null;
     let gravity = VenusTerrain.GRAVITY, audio = null, soundEnabled = true;
     let footprints = null, printCursor = 0, lastPrintMark = 0;
-    const dust = { bursts: [], texture: null };
+    const dustFx = ExpeditionDust.create({
+        THREE, getScene: () => scene, getWalker: () => walker, random: () => rand(), getGravity: () => gravity,
+        sampleGround: (x, z) => VenusTerrain.sampleSurface(surface, x, z),
+        color: 0x9a7350, opacity: 0.6,
+        drift: [0.14, 0.06],
+    });
     const keys = new Set(), touchKeys = new Set(), obstacles = [], walkables = [];
     const stations = expedition.stations;
     let discoveryUI = null, featuredRock = null, composer = null, fxaaPass = null, cinePass = null, orbiter = null, orbiterAngle = 0, drizzle = null;
@@ -651,69 +656,9 @@
         footprints.setMatrixAt(printCursor % 240, matrix);
         footprints.instanceMatrix.needsUpdate = true;
         printCursor++;
-        if (walker.speed > 0.6) spawnDust(x, y + 0.03, z, 4, 0.28);
+        if (walker.speed > 0.6) dustFx.spawn(x, y + 0.03, z, 4, 0.28);
         if (audio) audio.step(walker.speed / VenusTerrain.WALK_SPEED);
         return { x, z };
-    }
-    function dustTexture() {
-        if (dust.texture) return dust.texture;
-        const canvas = document.createElement('canvas');
-        canvas.width = canvas.height = 32;
-        const context = canvas.getContext('2d');
-        const gradient = context.createRadialGradient(16, 16, 0, 16, 16, 16);
-        gradient.addColorStop(0, 'rgba(255,255,255,0.85)');
-        gradient.addColorStop(0.5, 'rgba(255,255,255,0.3)');
-        gradient.addColorStop(1, 'rgba(255,255,255,0)');
-        context.fillStyle = gradient;
-        context.fillRect(0, 0, 32, 32);
-        dust.texture = new THREE.CanvasTexture(canvas);
-        return dust.texture;
-    }
-    function spawnDust(x, y, z, count, energy) {
-        const positions = new Float32Array(count * 3);
-        const velocities = new Float32Array(count * 3);
-        for (let i = 0; i < count; i++) {
-            const angle = rand() * Math.PI * 2, spread = energy * (0.3 + rand() * 0.9);
-            positions[i * 3] = x; positions[i * 3 + 1] = y; positions[i * 3 + 2] = z;
-            velocities[i * 3] = Math.cos(angle) * spread + walker.vx * 0.3;
-            velocities[i * 3 + 1] = energy * (0.5 + rand() * 0.9);
-            velocities[i * 3 + 2] = Math.sin(angle) * spread + walker.vz * 0.3;
-        }
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        const material = new THREE.PointsMaterial({ size: 0.05 + energy * 0.05, map: dustTexture(), color: 0x9a7350, transparent: true, opacity: 0.6, depthWrite: false, sizeAttenuation: true });
-        const points = new THREE.Points(geometry, material);
-        points.frustumCulled = false;
-        scene.add(points);
-        dust.bursts.push({ points, velocities, age: 0, life: 1.15 + energy * 0.4 });
-        if (dust.bursts.length > 24) {
-            const old = dust.bursts.shift();
-            scene.remove(old.points);
-            old.points.geometry.dispose(); old.points.material.dispose();
-        }
-    }
-    function updateDust(dt) {
-        for (let i = dust.bursts.length - 1; i >= 0; i--) {
-            const burst = dust.bursts[i];
-            burst.age += dt;
-            const attribute = burst.points.geometry.attributes.position;
-            for (let j = 0; j < attribute.count; j++) {
-                let px = attribute.getX(j) + (burst.velocities[j * 3] + 0.14) * dt;
-                let py = attribute.getY(j) + burst.velocities[j * 3 + 1] * dt;
-                let pz = attribute.getZ(j) + (burst.velocities[j * 3 + 2] + 0.06) * dt;
-                burst.velocities[j * 3 + 1] -= gravity * dt;
-                const ground = VenusTerrain.sampleSurface(surface, px, pz) + 0.01;
-                if (py < ground) { py = ground; burst.velocities[j * 3] *= 0.3; burst.velocities[j * 3 + 1] = 0; burst.velocities[j * 3 + 2] *= 0.3; }
-                attribute.setXYZ(j, px, py, pz);
-            }
-            attribute.needsUpdate = true;
-            burst.points.material.opacity = Math.max(0, 0.65 * (1 - burst.age / burst.life));
-            if (burst.age >= burst.life) {
-                scene.remove(burst.points);
-                burst.points.geometry.dispose(); burst.points.material.dispose();
-                dust.bursts.splice(i, 1);
-            }
-        }
     }
     function buildDrizzle() {
         const count = quality === 'high' ? 1100 : quality === 'low' ? 400 : 700;
@@ -726,7 +671,7 @@
         }
         const geometry = new THREE.BufferGeometry();
         geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        const material = new THREE.PointsMaterial({ size: 0.07, map: dustTexture(), color: 0xf2d2a2, transparent: true, opacity: 0.26, depthWrite: false, sizeAttenuation: true });
+        const material = new THREE.PointsMaterial({ size: 0.07, map: dustFx.texture(), color: 0xf2d2a2, transparent: true, opacity: 0.26, depthWrite: false, sizeAttenuation: true });
         const points = new THREE.Points(geometry, material);
         points.frustumCulled = false;
         scene.add(points);
@@ -962,10 +907,10 @@
                 const rise = slabTop - walker.y;
                 if (rise > -0.28 && rise <= 0.5) { walker.y = slabTop; walker.vy = 0; walker.grounded = true; onSlab = true; }
             }
-            if (!wasAirborne && !walker.grounded) { spawnDust(position.x, walker.y + 0.06, position.z, 10, 0.45); if (audio) audio.jump(); }
+            if (!wasAirborne && !walker.grounded) { dustFx.spawn(position.x, walker.y + 0.06, position.z, 10, 0.45); if (audio) audio.jump(); }
             if (wasAirborne && walker.grounded) {
                 const energy = Math.min(1.5, Math.max(0.3, fallSpeed / 3));
-                spawnDust(position.x, walker.y + 0.05, position.z, Math.round(14 + energy * 14), 0.4 + energy * 0.7);
+                dustFx.spawn(position.x, walker.y + 0.05, position.z, Math.round(14 + energy * 14), 0.4 + energy * 0.7);
                 if (audio) audio.land(energy);
             }
             const printMark = Math.floor(walker.stride / Math.PI);
@@ -983,7 +928,7 @@
             updateCamera();
             if (cameraTween.t >= 1) { const target = cameraTween.body; cameraTween = null; showMoonlet(target); }
         }
-        if (exploring && dt > 0) updateDust(dt);
+        if (exploring && dt > 0) dustFx.update(dt);
         if (dt > 0) updateDrizzle(dt, now);
         if (stationBeacon) stationBeacon.material.opacity = 0.15 + 0.75 * (0.5 + 0.5 * Math.sin(now * 0.0028));
         if (orbiter && dt > 0) {

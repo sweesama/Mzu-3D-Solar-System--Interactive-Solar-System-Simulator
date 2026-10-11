@@ -56,6 +56,11 @@ node --check main.js
 
 Never hand-edit `mercury.html` … `neptune.html`: change `index.html` or the data in `generate_seo_pages.cjs` (intro, quick facts, featured expedition card) and regenerate.
 
+## Shared expedition modules
+
+- `expedition-dust.js` (`ExpeditionDust.create`) holds the footstep and landing dust used by the Moon, Mars, Venus and Mercury expeditions. Each page passes in its own colour, opacity, gravity, terrain sampler and optional wind `drift`; the spawning, arc, ground contact, fading and disposal logic lives once. Load it before the engine script.
+- `flare-pass.js` (`SolarFlare`) is the shared screen-space lens flare, as described in the Moon, Mars and Mercury notes.
+
 ## Speed control (main explorer)
 
 - The **Speed** menu switches between *Artistic* (compressed, for easy viewing) and *Real* speeds at 1 hour / 1 day / 1 week / 1 month / 1 year per second. The choice is saved in `localStorage` (`mzu-time-scale`).
