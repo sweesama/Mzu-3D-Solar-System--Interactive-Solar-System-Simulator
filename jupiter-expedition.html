@@ -116,7 +116,7 @@
             <p class="arrival-description" data-i18n="intro">Ride an imagined probe down through Jupiter's cloud decks — banded haze above, a giant storm to the west, and lightning far below.</p>
             <button id="begin-button" class="primary-button" type="button" disabled><span data-i18n="begin">Begin descent</span><span aria-hidden="true">→</span></button>
             <p class="arrival-hint" data-i18n="arrivalHint">No download. Just a little curiosity.</p>
-            <a class="about-cue" href="#about">About this expedition ↓</a>
+            <a class="about-cue" href="#about"><span class="lang-en">About this expedition ↓</span><span class="lang-zh">关于本次探索 ↓</span></a>
         </section>
 
         <section id="field-card" class="field-card route-card" hidden>
@@ -208,6 +208,7 @@
     </dialog>
     <article id="about" class="about-world" aria-labelledby="about-title">
         <div class="about-inner">
+            <div class="lang-en">
             <p class="eyebrow">About this expedition</p>
             <h2 id="about-title">What would it be like to fall into Jupiter?</h2>
             <p>Jupiter has no surface to stand on, so this expedition is an atmospheric descent. You ride an imagined probe down through the clouds of the largest planet — past white ammonia cirrus and the rim of a giant storm, into a dark layer lit by lightning — with five discoveries at five different depths, all in your browser.</p>
@@ -246,6 +247,47 @@
                     <li><a href="index.html">The full 3D Solar System</a></li>
             </ul>
             <p class="about-footer">Mzu 3D Solar System is a free educational project. No account, download or AI service is needed. <a class="about-top" href="#">Back to the expedition ↑</a></p>
+            </div>
+            <div class="lang-zh">
+            <p class="eyebrow">关于本次探索</p>
+            <h2>坠入木星会是什么感觉？</h2>
+            <p>木星没有可以站立的表面，所以这次探索是一场大气层下降。你将乘坐一个虚构的探测器穿过这颗最大行星的云层——经过白色的氨冰卷云和一场巨型风暴的边缘，进入被闪电照亮的深层——五个发现分布在五个不同的深度，全部在浏览器中完成。</p>
+            <p>木星主要由氢和氦组成，没有固体表面，大气越往下越稠密、越炽热。它的条纹是被快速自转拉伸的云带，一天不到 10 小时，是太阳系中最短的自转周期。1995 年，美国宇航局的伽利略号探测器曾降落伞式进入这些云层，在热量和压力使其失效前传回了约一小时的数据。</p>
+            <h3>快速数据</h3>
+            <dl class="about-facts">
+                <div><dt>云顶引力</dt><dd>24.79 m/s²，约为地球的 2.5 倍</dd></div>
+                <div><dt>固体表面</dt><dd>无——大气只是越往下越稠密</dd></div>
+                <div><dt>大气</dt><dd>按分子数约 90% 氢、10% 氦</dd></div>
+                <div><dt>自转周期</dt><dd>约 9 小时 56 分钟</dd></div>
+                <div><dt>大红斑</dt><dd>比地球还宽的风暴，至少自 19 世纪起就被观测到</dd></div>
+                <div><dt>探测器</dt><dd>伽利略号下降探测器（1995）；朱诺号 2016 年起在轨</dd></div>
+            </dl>
+            <h3>五个发现</h3>
+            <ol class="about-discoveries">
+                <li><strong>氨的薄纱</strong> — 木星三层云中最高的一层。</li>
+                <li><strong>一颗冻结的晶体</strong> — 标本查看器中的氨冰颗粒。</li>
+                <li><strong>比国家更长寿的风暴</strong> — 比地球还宽的飓风边缘。</li>
+                <li><strong>深处的闪光</strong> — 由水驱动的风暴层中的闪电。</li>
+                <li><strong>信号消失之处</strong> — 热量与压力结束探测器任务的深度。</li>
+            </ol>
+            <h3>如何探索</h3>
+            <p>点击“开始下降”。探测器会自行下沉；按住空格键启动上升推进器，用 W A S D 或方向键横向漂移，Shift 加速。拖动鼠标环顾四周。</p>
+            <h3>科学与艺术重建</h3>
+            <p>云层结构、风暴和闪电基于伽利略号、朱诺号及望远镜的观测；开始时头顶会出现一个真实的 NASA 伽利略轨道器三维模型。云层形状、深度与风暴位置是艺术重建，并非测量数据。</p>
+            <h3>继续探索</h3>
+            <ul class="about-links">
+                    <li><a href="jupiter.html">木星与伽利略卫星（3D 太阳系）</a></li>
+                    <li><a href="moon.html">漫步月球</a></li>
+                    <li><a href="mars-expedition.html">漫步火星</a></li>
+                    <li><a href="venus-expedition.html">漫步金星</a></li>
+                    <li><a href="mercury-expedition.html">漫步水星</a></li>
+                    <li><a href="saturn-expedition.html">穿越土星环</a></li>
+                    <li><a href="uranus-expedition.html">穿越天王星环</a></li>
+                    <li><a href="neptune-expedition.html">飞入海王星风暴</a></li>
+                    <li><a href="index.html">完整的 3D 太阳系</a></li>
+            </ul>
+            <p class="about-footer">Mzu 3D 太阳系是一个免费的科普项目，无需注册账号、下载或 AI 服务。 <a class="about-top" href="#">返回探索 ↑</a></p>
+            </div>
         </div>
     </article>
     <noscript><div class="no-script">JavaScript and WebGL are needed for this expedition. <a href="index.html">Return to the Solar System</a>.</div></noscript>

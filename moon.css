@@ -213,5 +213,10 @@ html.can-read #moon-canvas { touch-action: pan-y; }
 .about-links li { font-size: 13px; }
 .about-footer { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 12px !important; color: #9d9e95 !important; }
 .about-top { font: 10px ui-monospace, Consolas, monospace; letter-spacing: .14em; }
+/* Language switch: the page's language button sets <html lang>, so only one version is shown. */
+html[lang="zh-CN"] .lang-en, html:not([lang="zh-CN"]) .lang-zh { display: none !important; }
+html[lang="zh-CN"] .about-world { font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif; }
+html[lang="zh-CN"] .about-world h2 { font-family: "Songti SC", SimSun, "Noto Serif SC", serif; }
+html[lang="zh-CN"] .about-world p, html[lang="zh-CN"] .about-world li { line-height: 1.9; }
 @media (max-width: 720px) { .about-world { padding: 90px 22px 60px; } .about-world p, .about-world li { font-size: 14px; } .about-cue { margin-top: 4px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } html.can-read { scroll-behavior: auto; } }

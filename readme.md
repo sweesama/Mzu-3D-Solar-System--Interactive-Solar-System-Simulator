@@ -56,6 +56,11 @@ node --check main.js
 
 Never hand-edit `mercury.html` … `neptune.html`: change `index.html` or the data in `generate_seo_pages.cjs` (intro, quick facts, featured expedition card) and regenerate.
 
+## Expedition About articles (English and Chinese)
+
+- Each expedition page's `<article id="about">` holds two versions: `.lang-en` and `.lang-zh`. `moon.css` shows only the one matching `<html lang>`, which the page's language button sets. The arrival-card cue link has the same pair of spans.
+- Search engines read both versions in the HTML, so the English text stays crawlable. Keep the two versions in step when facts change, since they are written by hand, not generated.
+
 ## Shared expedition modules
 
 - `expedition-dust.js` (`ExpeditionDust.create`) holds the footstep and landing dust used by the Moon, Mars, Venus and Mercury expeditions. Each page passes in its own colour, opacity, gravity, terrain sampler and optional wind `drift`; the spawning, arc, ground contact, fading and disposal logic lives once. Load it before the engine script.
