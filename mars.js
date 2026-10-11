@@ -1036,8 +1036,8 @@
         canvas.addEventListener('pointermove', event => {
             if (!drag || drag.id !== event.pointerId) return;
             cameraTween = null;
-            yaw = THREE.MathUtils.euclideanModulo(yaw - (event.clientX - drag.x) * 0.003 + Math.PI, Math.PI * 2) - Math.PI;
-            pitch = THREE.MathUtils.clamp(pitch - (event.clientY - drag.y) * 0.003, -1.45, 1.2);
+            const look = ExpeditionLook.applyDrag(yaw, pitch, event.clientX - drag.x, event.clientY - drag.y);
+            yaw = look.yaw; pitch = look.pitch;
             drag.moved ||= Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) > 6;
             drag.x = event.clientX; drag.y = event.clientY;
             sunlight.shadow.needsUpdate = true;
