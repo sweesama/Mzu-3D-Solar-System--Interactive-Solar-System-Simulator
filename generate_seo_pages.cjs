@@ -9,7 +9,7 @@ const SITE = 'https://www.3dsolarsystem.net/';
 const planets = [
   {
     name: 'Mercury',
-    description: 'Explore Mercury in an interactive 3D Solar System visualization and learn why this small, cratered world has the shortest year of any planet.',
+    description: '3D view of Mercury: rotate and zoom a free interactive Mercury model in your browser, then learn why this small, cratered world has the shortest year of any planet.',
     intro: 'Mercury is the smallest planet and the closest major planet to the Sun. Its year lasts about 88 Earth days, while its heavily cratered surface records a long history of impacts.',
     detail: 'Use the scene to inspect Mercury in context, then compare its small visual radius and eccentric orbit with the other planets.',
     facts: ['Year: 88 Earth days', 'Distance from the Sun: about 58 million km', 'Surface gravity: 3.7 m/s²'],
@@ -17,7 +17,7 @@ const planets = [
   },
   {
     name: 'Venus',
-    description: 'Explore Venus in an interactive 3D Solar System visualization and learn about its dense carbon-dioxide atmosphere and extreme greenhouse effect.',
+    description: '3D view of Venus: rotate and zoom a free interactive Venus model in your browser, then learn about its dense carbon-dioxide atmosphere and extreme greenhouse effect.',
     intro: 'Venus is similar to Earth in size but radically different at the surface. A dense carbon-dioxide atmosphere and sulfuric-acid clouds help make it the hottest planet.',
     detail: 'Focus the 3D view on Venus, inspect its reference data, and compare its nearly circular orbit with those of neighbouring planets.',
     facts: ['Surface temperature: about 465 °C', 'Surface pressure: about 92 times Earth’s', 'Rotation: 243 Earth days, backwards'],
@@ -25,7 +25,7 @@ const planets = [
   },
   {
     name: 'Earth',
-    description: 'Explore Earth and the Moon in an interactive 3D Solar System visualization with basic planetary and orbital reference data.',
+    description: '3D view of Earth: rotate and zoom a free interactive Earth model in your browser, then check basic planetary and orbital reference data.',
     intro: 'Earth is the third planet from the Sun and the only world currently known to support life. Liquid surface water covers most of the planet, and the Moon is its natural satellite.',
     detail: 'Use the 3D view to focus on Earth, select the Moon, and compare their available radius and orbit fields.',
     facts: ['Mean radius: about 6,371 km', 'Year: about 365.25 days', 'Moon: about 384,400 km away'],
@@ -33,7 +33,7 @@ const planets = [
   },
   {
     name: 'Mars',
-    description: 'Explore Mars, Phobos, and Deimos in an interactive 3D Solar System visualization and learn about the cold, dusty Red Planet.',
+    description: '3D view of Mars: rotate and zoom a free interactive Mars model in your browser, then learn about the cold, dusty Red Planet.',
     intro: 'Mars is a cold, rocky world with a thin atmosphere dominated by carbon dioxide. Iron minerals in its soil give the planet its familiar red appearance.',
     detail: 'Focus on Mars, then select its small moons Phobos and Deimos to compare the objects represented in the scene.',
     facts: ['Day (sol): about 24 h 40 min', 'Surface gravity: 3.71 m/s², 38% of Earth’s', 'Moons: Phobos and Deimos'],
@@ -41,7 +41,7 @@ const planets = [
   },
   {
     name: 'Jupiter',
-    description: 'Explore Jupiter and selected Galilean moons in an interactive 3D Solar System visualization with key planetary reference data.',
+    description: '3D view of Jupiter: rotate and zoom a free interactive Jupiter model in your browser, with selected Galilean moons and key facts.',
     intro: 'Jupiter is the largest planet in the Solar System. Its striped atmosphere hosts powerful storms, including the long-lived Great Red Spot.',
     detail: 'Use the 3D view to focus on Jupiter and select its represented moons to compare their sizes and orbital fields.',
     facts: ['Diameter: about 11 times Earth’s', 'Day: about 9 h 56 min', 'Galilean moons: Io, Europa, Ganymede, Callisto'],
@@ -49,7 +49,7 @@ const planets = [
   },
   {
     name: 'Saturn',
-    description: 'Explore Saturn, its rings, and selected moons in an interactive 3D Solar System visualization for learning and visual comparison.',
+    description: '3D view of Saturn: rotate and zoom a free interactive Saturn model in your browser, with its rings and selected moons.',
     intro: 'Saturn is a gas giant best known for its broad ring system, made mainly of ice particles with smaller amounts of rocky material and dust.',
     detail: 'Focus on Saturn to view its rings in context, then inspect the represented moons and compare their reference data.',
     facts: ['Main rings: about 270,000 km across', 'Day: about 10.7 hours', 'Average density: lower than water'],
@@ -57,7 +57,7 @@ const planets = [
   },
   {
     name: 'Uranus',
-    description: 'Explore Uranus in an interactive 3D Solar System visualization and learn about the ice giant whose rotation axis is tilted sideways.',
+    description: '3D view of Uranus: rotate and zoom a free interactive Uranus model in your browser, then learn why this ice giant spins tipped on its side.',
     intro: 'Uranus is an ice giant with a rotation axis tilted roughly sideways relative to its orbit. Methane in its atmosphere contributes to its blue-green appearance.',
     detail: 'Use the 3D scene to focus on Uranus and compare its distant orbit and selected moons with the inner Solar System.',
     facts: ['Axial tilt: about 98°', 'Year: about 84 Earth years', 'Visited once: Voyager 2, 1986'],
@@ -65,7 +65,7 @@ const planets = [
   },
   {
     name: 'Neptune',
-    description: 'Explore Neptune in an interactive 3D Solar System visualization and learn about the distant blue ice giant and its strong winds.',
+    description: '3D view of Neptune: rotate and zoom a free interactive Neptune model in your browser, then learn about the distant blue ice giant and its strong winds.',
     intro: 'Neptune is the farthest major planet from the Sun. It is a cold ice giant with active weather and some of the fastest winds measured in the Solar System.',
     detail: 'Focus the scene on Neptune, inspect its available reference data, and compare its orbit with the seven other major planets.',
     facts: ['Winds: up to about 2,000 km/h', 'Year: about 165 Earth years', 'Visited once: Voyager 2, 1989'],
@@ -221,7 +221,7 @@ for (const planet of planets) {
   const canonical = `${SITE}${slug}.html`;
   const image = `${SITE}og/${slug}.jpg`;
   const imageAlt = `${planet.name} in the Mzu 3D Solar System`;
-  const title = `${planet.name} 3D: Interactive Planet Model & Facts`;
+  const title = `${planet.name} 3D View: Rotate an Interactive 3D Model & Facts`;
   let html = source;
 
   html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${title}</title>`);
