@@ -5,6 +5,8 @@
 ## Start here
 
 - [Interactive explorer](https://www.3dsolarsystem.net/): Rotate, zoom, select objects, follow a planet tour, switch between artistic and real orbital speeds, and share a focused view.
+- [How to explore space in 3D](https://www.3dsolarsystem.net/space-explorer-guide.html): step-by-step guide to the controls, scale and speed menus, tour, expeditions and embedding.
+- [Planet sizes and distances compared](https://www.3dsolarsystem.net/planet-sizes-and-distances.html): NASA diameters, distances, periods and a 1-metre-Sun scale model.
 
 ## Planet pages (3D view + facts + FAQ with NASA sources)
 
