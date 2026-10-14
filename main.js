@@ -259,23 +259,23 @@
             'Saturn':  'textures/2k_saturn.jpg',
             'Uranus':  'textures/2k_uranus.jpg',
             'Neptune': 'textures/2k_neptune.jpg',
-            'Moon':    'textures/2k_moon.jpg',
+            'Moon':    'textures/2k_moon.webp',
             // ✨ Phase 3.x：SSS 提供的 4 颗矮行星 fictional（含程序化填补空白）2K 贴图
-            'Ceres':    'textures/2k_ceres_fictional.jpg',
-            'Eris':     'textures/2k_eris_fictional.jpg',
+            'Ceres':    'textures/2k_ceres_fictional.webp',
+            'Eris':     'textures/2k_eris_fictional.webp',
             'Haumea':   'textures/2k_haumea_fictional.jpg',
-            'Makemake': 'textures/2k_makemake_fictional.jpg',
+            'Makemake': 'textures/2k_makemake_fictional.webp',
             // ✨ 卫星贴图（来自 stevealbers.net，基于 NASA Voyager/Galileo/Cassini/Juno 公开域素材）
             // 注意：必须先跑 download_textures.ps1 把文件下载下来，否则会显示原色球（fallback）。
             // 木星卫星：
-            'Io':       'textures/moon_io.jpg',
-            'Europa':   'textures/moon_europa.png',
+            'Io':       'textures/moon_io.webp',
+            'Europa':   'textures/moon_europa.webp',
             'Ganymede': 'textures/moon_ganymede.jpg',
             'Callisto': 'textures/moon_callisto.jpg',
             // 土星卫星：
-            'Mimas':    'textures/moon_mimas.jpg',
+            'Mimas':    'textures/moon_mimas.webp',
             'Titan':    'textures/moon_titan.jpg',
-            'Rhea':     'textures/moon_rhea.jpg',
+            'Rhea':     'textures/moon_rhea.webp',
             // 天王星卫星：
             'Miranda':  'textures/moon_miranda.jpg',
             'Ariel':    'textures/moon_ariel.jpg',
