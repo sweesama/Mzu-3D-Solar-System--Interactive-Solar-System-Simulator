@@ -291,6 +291,8 @@
             'Triton':   'textures/moon_triton.jpg',
             // 冥卫：
             'Charon':   'textures/moon_charon.jpg',
+            // 海卫/冥卫 Nix：Celestia 内容库中由新视野号照片重投影的地图（CC-BY-3.0，作者 Askaniy Anpilogov）
+            'Nix':      'textures/moon_nix_celestia.jpg',
             // 冥王星（Steve Albers 基于 New Horizons 数据的地图，8K 缩小为 2K）：
             'Pluto':    'textures/pluto_rgb_cyl_2k.jpg',
             // 火星卫星（来自 Grant Hutchison/Cornell，基于 NASA 公开域素材）：
@@ -393,9 +395,9 @@
                 moons: [
                     { name: 'Charon', displayName: 'Charon', type: "Moon", e: 0.0002, radius: 0.09, radiusMetric: 606.0, orbitRadius: 1.0, orbitSemiMajorAxisAU: 0.000196, speed: 0.112, color: 0x8b7d6b, materialProps: { roughness: 0.85, metalness: 0.05 }, isCharon: true, rotationSpeed: 0.015 },
                     { name: 'Styx', displayName: 'Styx', type: "Moon", e: 0.0001, radius: 0.02, radiusMetric: 16.0, orbitRadius: 1.8, orbitSemiMajorAxisAU: 0.000324, speed: 0.085, color: 0x6b5d4b, materialProps: { roughness: 0.9, metalness: 0.0 }, isTinyMoon: true, rotationSpeed: 0.01 },
-                    { name: 'Nix', displayName: 'Nix', type: "Moon", e: 0.0001, radius: 0.025, radiusMetric: 49.8, orbitRadius: 2.2, orbitSemiMajorAxisAU: 0.000396, speed: 0.072, color: 0x7b6d5b, materialProps: { roughness: 0.9, metalness: 0.0 }, isTinyMoon: true, rotationSpeed: 0.01 },
+                    { name: 'Nix', displayName: 'Nix', type: "Moon", e: 0.0001, radius: 0.025, radiusMetric: 49.8, orbitRadius: 2.2, orbitSemiMajorAxisAU: 0.000396, speed: 0.072, color: 0x7b6d5b, materialProps: { roughness: 0.9, metalness: 0.0 }, isTinyMoon: true, shapeModel: 'nix', rotationSpeed: 0.01 },
                     { name: 'Kerberos', displayName: 'Kerberos', type: "Moon", e: 0.0001, radius: 0.015, radiusMetric: 19.0, orbitRadius: 2.6, orbitSemiMajorAxisAU: 0.000468, speed: 0.062, color: 0x5b4d3b, materialProps: { roughness: 0.9, metalness: 0.0 }, isTinyMoon: true, rotationSpeed: 0.01 },
-                    { name: 'Hydra', displayName: 'Hydra', type: "Moon", e: 0.0001, radius: 0.03, radiusMetric: 61.0, orbitRadius: 3.0, orbitSemiMajorAxisAU: 0.000540, speed: 0.055, color: 0x7b6d5b, materialProps: { roughness: 0.9, metalness: 0.0 }, isTinyMoon: true, rotationSpeed: 0.01 }
+                    { name: 'Hydra', displayName: 'Hydra', type: "Moon", e: 0.0001, radius: 0.03, radiusMetric: 61.0, orbitRadius: 3.0, orbitSemiMajorAxisAU: 0.000540, speed: 0.055, color: 0x7b6d5b, materialProps: { roughness: 0.9, metalness: 0.0 }, isTinyMoon: true, shapeModel: 'hydra', rotationSpeed: 0.01 }
                 ]
             },
             { name: 'Ceres', displayName: 'Ceres', type: "Dwarf Planet", e: 0.0760, color: 0x8b7355,
@@ -411,7 +413,8 @@
                 radius: 0.14, radiusMetric: 797.5, orbitRadius: 270, orbitSemiMajorAxisAU: 43.335,
                 speed: 0.0042, rotationSpeed: 0.030, axialTilt: 0.5934, materialProps: { roughness: 0.8, metalness: 0.1 }, isHaumea: true,
                 moons: [
-                    { name: 'Hiaka', displayName: 'Hiaka', type: "Moon", e: 0.0001, radius: 0.02, radiusMetric: 320.0, orbitRadius: 0.8, orbitSemiMajorAxisAU: 0.000294, speed: 0.085, color: 0x7b6b5b, materialProps: { roughness: 0.9, metalness: 0.0 }, rotationSpeed: 0.01 },
+                    // Hi'iaka: triaxial ellipsoid a x b x c = 240 x 180 x 143 km (Ortiz et al., 2025, stellar occultations); visible albedo 0.76, so icy-bright
+                    { name: 'Hiaka', displayName: 'Hiaka', type: "Moon", e: 0.0001, radius: 0.02, radiusMetric: 320.0, orbitRadius: 0.8, orbitSemiMajorAxisAU: 0.000294, speed: 0.085, color: 0xd9d3c7, materialProps: { roughness: 0.9, metalness: 0.0 }, ellipsoid: [240, 180, 143], rotationSpeed: 0.01 },
                     { name: 'Namaka', displayName: 'Namaka', type: "Moon", e: 0.0001, radius: 0.015, radiusMetric: 170.0, orbitRadius: 1.2, orbitSemiMajorAxisAU: 0.000441, speed: 0.065, color: 0x6b5b4b, materialProps: { roughness: 0.9, metalness: 0.0 }, rotationSpeed: 0.01 }
                 ]
             }
@@ -2728,11 +2731,28 @@ self.onmessage = function(e) {
                         });
                     }
 
-                    const moonMaterial = new THREE.MeshStandardMaterial({ map: moonTexture, ...moonData.materialProps });
+                    // Untextured moons (Hiaka, Namaka, Styx, ...) use their designed colour instead of the default white
+                    const moonMaterial = new THREE.MeshStandardMaterial({ map: moonTexture, color: moonTexture ? 0xffffff : __fallbackColor, ...moonData.materialProps });
                     // ✨ 把材质引用回填到 onError 闭包用的变量，让加载失败时能把 map 清掉、避免黑球
                     __pendingMoonMat = moonMaterial;
                     const moonGeometry = new THREE.SphereGeometry(moonVisualRadius, lowDetailMode ? 16 : 40, lowDetailMode ? 16 : 28);
                     const moonMesh = new THREE.Mesh(moonGeometry, moonMaterial);
+                    // Triaxial body: squash the sphere to the measured axis ratios (longest axis = the moon's radius)
+                    if (moonData.ellipsoid) moonMesh.scale.set(1, moonData.ellipsoid[1] / moonData.ellipsoid[0], moonData.ellipsoid[2] / moonData.ellipsoid[0]);
+                    if (moonData.shapeModel) {
+                        // Published New Horizons shape models (Porter et al., CC BY 4.0), decimated by build_hydra_shape.cjs.
+                        // They replace the placeholder sphere when they arrive; the sphere stays if loading fails.
+                        fetch(`models/${moonData.shapeModel}_shape.json`).then(r => r.ok ? r.json() : null).then(shape => {
+                            if (!shape) return;
+                            const shapeGeometry = new THREE.BufferGeometry();
+                            shapeGeometry.setAttribute('position', new THREE.Float32BufferAttribute(shape.positions.map(v => v * moonVisualRadius), 3));
+                            if (shape.uvs) shapeGeometry.setAttribute('uv', new THREE.Float32BufferAttribute(shape.uvs, 2));
+                            shapeGeometry.setIndex(shape.indices);
+                            shapeGeometry.computeVertexNormals();
+                            moonGeometry.dispose();
+                            moonMesh.geometry = shapeGeometry;
+                        }).catch(() => { });
+                    }
                     moonMesh.name = moonData.name;
                     moonMesh.userData = moonData; // Contains metric data if available
                     moonData.focusMesh = moonMesh;

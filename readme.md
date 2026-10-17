@@ -306,3 +306,12 @@ Checked each expedition's first-glance scene against known physics and removed p
 - **Mars sky clouds** are now noise-textured shader planes.
 - **Uranus rings** use the published radii and optical depths (Epsilon at the station's 2670 units).
 - **Not yet verified on screen:** Jupiter's lightning (random, not captured), the Great Red Spot close-up, and the Saturn moons in the browser (they load without console errors).
+
+## Attribution: Nix texture
+
+- `textures/moon_nix_celestia.jpg` (2048 x 1024) is the Nix map from the CelestiaContent texture set, which reprojects processed New Horizons images. Author: Askaniy Anpilogov, licence CC-BY-3.0. Source: https://github.com/CelestiaProject/CelestiaContent/blob/master/textures/medres/nix.jpg
+- Hydra, Styx and Kerberos have no published surface maps (Hubble cannot resolve them; New Horizons imaged only Nix and Hydra in detail). Hydra and Nix shape models exist (Porter, figshare) but carry no colour data, and Hydra's colour map was not found in the Celestia set. Those three keep the procedural cratered surface.
+- `models/hydra_shape.json` is Hydra's shape model from Porter et al., figshare 12779975, licence CC BY 4.0 (https://figshare.com/articles/online_resource/Shape_Model_of_Hydra/12779975). It was decimated from 52,488 to 1,066 triangles by `build_hydra_shape.cjs`. It has no colour data, so Hydra keeps the procedural tint.
+- `models/nix_shape.json` is Nix's shape model from Porter et al., figshare 12779948, licence CC BY 4.0 (https://figshare.com/articles/online_resource/Shape_Model_of_Nix/12779948). Decimated from 80,000 to 4,052 triangles by `build_hydra_shape.cjs <stl> nix`. Nix uses its Celestia map on this shape.
+- Hi'iaka is drawn as a triaxial ellipsoid with axes 240 x 180 x 143 km (Ortiz et al., stellar occultations, 2025, Nature Communications; https://www.nature.com/articles/s41467-025-65749-1). Its colour follows the reported visible albedo of 0.76. Namaka has no measured shape or map; it stays a sphere with its designed colour.
+- Untextured moons (Hiaka, Namaka, Styx, Kerberos, Hydra) now use their designed colour instead of the default white.
