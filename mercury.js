@@ -111,9 +111,8 @@
     });
     const keys = new Set(), touchKeys = new Set(), obstacles = [];
     const stations = expedition.stations;
-    let discoveryUI = null, featuredRock = null, composer = null, fxaaPass = null, cinePass = null, flarePass = null;
+    let discoveryUI = null, featuredRock = null, composer = null, fxaaPass = null, cinePass = null;
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
-    let mercurySun = null;
 
     let skyPivot = null, earthPivot = null;
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
@@ -500,24 +499,10 @@
         scene.add(stars);
         skyPivot = new THREE.Group();
         scene.add(skyPivot);
-        const sun = new THREE.Mesh(new THREE.SphereGeometry(26, 32, 24), new THREE.MeshBasicMaterial({ color: 0xfffaf0 }));
+        // 太阳亮度超过 1，泛光通道会让它自然晕开，不再需要光斑贴图
+        const sun = new THREE.Mesh(new THREE.SphereGeometry(26, 32, 24), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xfffaf0).multiplyScalar(4) }));
         sun.position.copy(sunlight.position).normalize().multiplyScalar(2100);
         skyPivot.add(sun);
-        mercurySun = sun;
-        const haloCanvas = document.createElement('canvas');
-        haloCanvas.width = haloCanvas.height = 128;
-        const haloContext = haloCanvas.getContext('2d');
-        const gradient = haloContext.createRadialGradient(64, 64, 4, 64, 64, 64);
-        gradient.addColorStop(0, 'rgba(255,248,235,0.95)');
-        gradient.addColorStop(0.2, 'rgba(255,240,215,0.5)');
-        gradient.addColorStop(0.55, 'rgba(255,230,195,0.14)');
-        gradient.addColorStop(1, 'rgba(255,230,195,0)');
-        haloContext.fillStyle = gradient;
-        haloContext.fillRect(0, 0, 128, 128);
-        const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(haloCanvas), transparent: true, opacity: 0.95, depthWrite: false }));
-        halo.scale.set(340, 340, 1);
-        halo.position.copy(sun.position);
-        skyPivot.add(halo);
         earthPivot = new THREE.Group();
         skyPivot.add(earthPivot);
         const earthDirection = sun.position.clone().normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.22);
@@ -538,12 +523,6 @@
             skyBodies.push(proxy);
         }
         return Promise.resolve();
-    }
-    // Screen-space lens flare lives in the shared flare-pass.js module — the
-    // shader reads the rendered frame and derives the flare from the sun's
-    // real pixel brightness, so occluding the sun dims it for real.
-    function updateLensFlare() {
-        if (flarePass && mercurySun) window.SolarFlare.update(flarePass, mercurySun, camera);
     }
     function buildAstronaut(texture) {
         const suit = new THREE.MeshStandardMaterial({ color: 0xb8b5ab, roughness: 0.92, bumpMap: texture, bumpScale: 0.012 });
@@ -890,7 +869,6 @@
             sunlight.position.set(position.x - 180, 105, position.z - 160);
             sunlight.shadow.needsUpdate = true;
         }
-        updateLensFlare();
         if (discoveryUI) discoveryUI.update(now);
         if (cinePass) cinePass.material.uniforms.uTime.value = now * 0.001;
         if (composer) composer.render(); else renderer.render(scene, camera);
@@ -1021,8 +999,6 @@
                 composer = new THREE.EffectComposer(renderer);
                 composer.addPass(new THREE.RenderPass(scene, camera));
                 composer.addPass(new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.65, 0.55, 0.72));
-                flarePass = window.SolarFlare ? window.SolarFlare.create() : null;
-                if (flarePass) composer.addPass(flarePass);
                 composer.addPass(new THREE.ShaderPass(THREE.GammaCorrectionShader));
                 if (THREE.FXAAShader) {
                     fxaaPass = new THREE.ShaderPass(THREE.FXAAShader);
