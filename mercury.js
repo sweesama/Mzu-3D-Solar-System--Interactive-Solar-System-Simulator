@@ -408,12 +408,14 @@
                     transform.position.set(x, MercuryTerrain.sampleSurface(surface, x, z) + lift * 0.38, z);
                     transform.scale.setScalar(s);
                     transform.rotation.set((rand() - 0.5) * 0.9, rand() * Math.PI * 2, (rand() - 0.5) * 0.9);
-                    color.setScalar(0.78 + rand() * 0.22);
+                    const k = 0.78 + rand() * 0.22;
+                    color.setRGB(k, k * 0.95, k * 0.9); // Mercury's grey is a touch warmer than the Moon's
                 } else {
                     transform.position.set(x, MercuryTerrain.sampleSurface(surface, x, z) + size * 0.12, z);
                     transform.scale.set(size * (0.8 + rand() * 0.7), size, size * (0.8 + rand() * 0.5));
                     transform.rotation.set((rand() - 0.5) * 0.9, rand() * Math.PI * 2, (rand() - 0.5) * 0.9);
-                    color.setScalar(0.5 + rand() * 0.4);
+                    const k = 0.5 + rand() * 0.4;
+                    color.setRGB(k, k * 0.95, k * 0.9);
                 }
                 transform.updateMatrix();
                 rocks.setMatrixAt(i, transform.matrix);
@@ -494,7 +496,7 @@
         const starGeometry = new THREE.BufferGeometry();
         starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
         starGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
-        const stars = new THREE.Points(starGeometry, new THREE.PointsMaterial({ size: 5.5, map: dustFx.texture(), vertexColors: true, sizeAttenuation: true, depthWrite: false, transparent: true, opacity: 0.9 }));
+        const stars = new THREE.Points(starGeometry, new THREE.PointsMaterial({ size: 2.6, map: dustFx.texture(), vertexColors: true, sizeAttenuation: false, depthWrite: false, transparent: true, opacity: 0.9 }));
         stars.frustumCulled = false;
         scene.add(stars);
         skyPivot = new THREE.Group();
@@ -507,12 +509,16 @@
         skyPivot.add(earthPivot);
         const earthDirection = sun.position.clone().normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.22);
         earthDirection.y = Math.max(0.1, earthDirection.y - 0.06);
-        const earthDot = new THREE.Mesh(new THREE.SphereGeometry(1.9, 12, 10), new THREE.MeshBasicMaterial({ color: 0xaac8ff }));
+        const earthMap = new THREE.TextureLoader().load('textures/2k_earth_daymap.jpg');
+        earthMap.encoding = THREE.sRGBEncoding;
+        const earthDot = new THREE.Mesh(new THREE.SphereGeometry(3.7, 32, 24), new THREE.MeshBasicMaterial({ map: earthMap }));
         earthDot.position.copy(earthDirection.normalize()).multiplyScalar(2100);
         earthPivot.add(earthDot);
         const venusDirection = sun.position.clone().normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), -0.5);
         venusDirection.y = Math.max(0.12, venusDirection.y - 0.03);
-        const venusDot = new THREE.Mesh(new THREE.SphereGeometry(2.3, 12, 10), new THREE.MeshBasicMaterial({ color: 0xf5ead0 }));
+        const venusMap = new THREE.TextureLoader().load('textures/2k_venus_atmosphere.jpg');
+        venusMap.encoding = THREE.sRGBEncoding;
+        const venusDot = new THREE.Mesh(new THREE.SphereGeometry(3.7, 32, 24), new THREE.MeshBasicMaterial({ map: venusMap }));
         venusDot.position.copy(venusDirection.normalize()).multiplyScalar(2100);
         skyPivot.add(venusDot);
         for (const [body, object, hitRadius, parent] of [['sun', sun, 230, skyPivot], ['earth', earthDot, 120, earthPivot], ['venus', venusDot, 130, skyPivot]]) {

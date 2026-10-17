@@ -396,15 +396,39 @@
         }
         return best;
     }
-    function buildRocks(texture) {
+    // Real NASA-derived asteroid models (Bennu, Itokawa) stand in for boulders; the procedural
+    // rock is only a fallback if the models fail to load.
+    function loadRockModel(url) {
+        return new Promise(resolve => {
+            if (!THREE.GLTFLoader) return resolve(null);
+            createGltfLoader().load(url, gltf => {
+                let mesh = null;
+                gltf.scene.traverse(o => { if (!mesh && o.isMesh) mesh = o; });
+                if (!mesh) return resolve(null);
+                const geometry = mesh.geometry.clone();
+                geometry.computeBoundingBox();
+                geometry.center();
+                const size = new THREE.Vector3();
+                geometry.boundingBox.getSize(size);
+                const norm = 1 / Math.max(size.x, size.y, size.z);
+                geometry.scale(norm, norm, norm);
+                geometry.computeBoundingBox();
+                resolve({ geometry });
+            }, undefined, () => resolve(null));
+        });
+    }
+    function buildRocks(texture, rockModels) {
         const rand = VenusTerrain.random(19690720);
         const rockTex = rockTexture();
         const material = new THREE.MeshStandardMaterial({ map: rockTex, bumpMap: rockTex, bumpScale: 0.14, roughness: 1, vertexColors: true, flatShading: true });
         const transform = new THREE.Object3D();
         const color = new THREE.Color();
-        for (let group = 0; group < 4; group++) {
-            const count = Math.floor(profile.rocks / 4);
-            const rocks = new THREE.InstancedMesh(rockGeometry(group * 19 + 8, 1), material, count);
+        const useModels = rockModels && rockModels.length;
+        const groups = useModels ? rockModels.length : 4;
+        for (let group = 0; group < groups; group++) {
+            const count = Math.floor(profile.rocks / groups);
+            const model = useModels ? rockModels[group % rockModels.length] : null;
+            const rocks = new THREE.InstancedMesh(model ? model.geometry : rockGeometry(group * 19 + 8, 1), material, count);
             for (let i = 0; i < count; i++) {
                 let x = (rand() - 0.5) * 760, z = (rand() - 0.5) * 760;
                 const size = 0.2 + Math.pow(rand(), 3.7) * 2.7;
@@ -414,15 +438,26 @@
                 const upheaved = size > 1.35 && rand() < 0.3;
                 const scaleX = size * (1.4 + rand() * 0.9), scaleZ = size * (0.9 + rand() * 0.5);
                 const scaleY = size * (upheaved ? 1.1 + rand() * 0.6 : 0.4 + rand() * 0.4);
-                transform.position.set(x, VenusTerrain.sampleSurface(surface, x, z) + size * 0.07, z);
-                transform.scale.set(scaleX, scaleY, scaleZ);
-                transform.rotation.set((rand() - 0.5) * (upheaved ? 1.3 : 0.5), rand() * Math.PI * 2, (rand() - 0.5) * (upheaved ? 1.3 : 0.5));
+                if (model) {
+                    // Model rocks: sink the base into the ground so they sit in the dust, not on top of it.
+                    const s = size * 1.9;
+                    const lift = -model.geometry.boundingBox.min.y * s;
+                    transform.position.set(x, VenusTerrain.sampleSurface(surface, x, z) + lift * 0.38, z);
+                    transform.scale.set(s * 1.3, s * 0.85, s);
+                    transform.rotation.set((rand() - 0.5) * 0.5, rand() * Math.PI * 2, (rand() - 0.5) * 0.5);
+                    color.setRGB(0.5 + rand() * 0.2, (0.5 + rand() * 0.2) * 0.9, (0.5 + rand() * 0.2) * 0.78); // basalt under amber light
+                } else {
+                    transform.position.set(x, VenusTerrain.sampleSurface(surface, x, z) + size * 0.07, z);
+                    transform.scale.set(scaleX, scaleY, scaleZ);
+                    transform.rotation.set((rand() - 0.5) * (upheaved ? 1.3 : 0.5), rand() * Math.PI * 2, (rand() - 0.5) * (upheaved ? 1.3 : 0.5));
+                    color.setScalar(0.5 + rand() * 0.4);
+                }
                 transform.updateMatrix();
                 rocks.setMatrixAt(i, transform.matrix);
-                rocks.setColorAt(i, color.setScalar(0.5 + rand() * 0.4));
-                const halfWidth = Math.max(scaleX, scaleZ) * 0.5;
+                rocks.setColorAt(i, color);
+                const halfWidth = Math.max(transform.scale.x, transform.scale.z) * 0.5;
                 if (upheaved) obstacles.push({ x, z, radius: halfWidth * 0.95 });
-                else if (halfWidth >= 0.4 && !registerWalkable(transform, scaleX, scaleY, scaleZ) && halfWidth >= 0.5) obstacles.push({ x, z, radius: halfWidth * 0.8 });
+                else if (halfWidth >= 0.4 && !registerWalkable(transform, transform.scale.x, transform.scale.y, transform.scale.z) && halfWidth >= 0.5) obstacles.push({ x, z, radius: halfWidth * 0.8 });
             }
             rocks.castShadow = quality !== 'low';
             rocks.receiveShadow = true;
@@ -484,23 +519,27 @@
             uniforms: {
                 zenith: { value: new THREE.Color(0x77492a).convertSRGBToLinear() },
                 horizon: { value: new THREE.Color(0xd99a55).convertSRGBToLinear() },
-                flashBoost: { value: 0 }
+                flashBoost: { value: 0 },
+                cloudMap: { value: null }
             },
             vertexShader: 'varying vec3 vP; void main(){vP=position; vec4 mv=modelViewMatrix*vec4(position,1.0); gl_Position=projectionMatrix*mv; gl_Position.z=gl_Position.w;}',
-            fragmentShader: `uniform vec3 zenith; uniform vec3 horizon; uniform float flashBoost; varying vec3 vP;
-                float hsh(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
-                float n2(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(hsh(i),hsh(i+vec2(1.0,0.0)),f.x),mix(hsh(i+vec2(0.0,1.0)),hsh(i+vec2(1.0,1.0)),f.x),f.y);}
+            // The cloud deck is a real Venus atmosphere image wrapped around the dome (equirectangular),
+            // so the banding and swirls are the real cloud structure rather than procedural noise.
+            fragmentShader: `uniform vec3 zenith; uniform vec3 horizon; uniform float flashBoost; uniform sampler2D cloudMap; varying vec3 vP;
                 void main(){
                     vec3 d = normalize(vP);
                     float h = clamp(d.y, 0.0, 1.0);
                     vec3 c = mix(horizon, zenith, pow(h, 0.5));
-                    float bands = n2(vec2(d.x * 2.1 + d.z * 1.3, d.y * 6.5)) - 0.5;
-                    float mottle = n2(vP.xz * 0.0016 + vec2(vP.y * 0.002)) - 0.5;
-                    c *= 1.0 + (bands * 0.08 + mottle * 0.1) * smoothstep(0.02, 0.4, h);
+                    vec2 uv = vec2(atan(d.z, d.x) / 6.2831853 + 0.5, asin(clamp(d.y, -1.0, 1.0)) / 3.1415927 + 0.5);
+                    vec3 cloud = texture2D(cloudMap, uv).rgb;
+                    c = mix(c, c * (0.55 + cloud * 0.9), 0.75 * smoothstep(0.02, 0.4, h));
                     c *= 1.0 + flashBoost * 0.55;
                     gl_FragColor = vec4(c, 1.0);
                 }`
         });
+        const cloudTexture = new THREE.TextureLoader().load('textures/2k_venus_atmosphere.jpg');
+        cloudTexture.encoding = THREE.sRGBEncoding;
+        skyMaterial.uniforms.cloudMap.value = cloudTexture;
         skyMat = skyMaterial;
         const sky = new THREE.Mesh(new THREE.SphereGeometry(6800, 32, 24), skyMaterial);
         sky.frustumCulled = false;
@@ -508,18 +547,15 @@
         scene.add(sky);
         scene.fog = new THREE.Fog(new THREE.Color(0xc98e54).convertSRGBToLinear(), 40, 520);
         const sunDirection = sunlight.position.clone().normalize();
-        const glowCanvas = document.createElement('canvas');
-        glowCanvas.width = glowCanvas.height = 256;
-        const glowContext = glowCanvas.getContext('2d');
-        const glow = glowContext.createRadialGradient(128, 128, 8, 128, 128, 128);
-        glow.addColorStop(0, 'rgba(255,224,170,0.95)');
-        glow.addColorStop(0.3, 'rgba(250,200,140,0.5)');
-        glow.addColorStop(0.7, 'rgba(230,160,100,0.16)');
-        glow.addColorStop(1, 'rgba(230,160,100,0)');
-        glowContext.fillStyle = glow;
-        glowContext.fillRect(0, 0, 256, 256);
-        const sunGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(glowCanvas), transparent: true, opacity: 0.9, depthWrite: false, fog: false }));
-        sunGlow.scale.set(1600, 1600, 1);
+        // The Sun behind Venus's clouds is a broad amber haze. It is a real sphere whose brightness
+        // falls off from its centre to its rim (view-angle falloff), so it blends with the sky
+        // instead of looking like a flat painted disc.
+        const sunGlow = new THREE.Mesh(new THREE.SphereGeometry(800, 48, 32), new THREE.ShaderMaterial({
+            transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending,
+            uniforms: { uColor: { value: new THREE.Color(0xffd6a0).convertSRGBToLinear() }, uIntensity: { value: 0.9 } },
+            vertexShader: 'varying vec3 vN; varying vec3 vV; void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }',
+            fragmentShader: 'uniform vec3 uColor; uniform float uIntensity; varying vec3 vN; varying vec3 vV; void main(){ float f = clamp(dot(normalize(vN), normalize(vV)), 0.0, 1.0); float a = pow(f, 1.8) * uIntensity; gl_FragColor = vec4(uColor * a, 1.0); }'
+        }));
         sunGlow.position.copy(sunDirection).multiplyScalar(2100);
         scene.add(sunGlow);
         const sunProxy = new THREE.Mesh(new THREE.SphereGeometry(420, 8, 6), new THREE.MeshBasicMaterial({ visible: false }));
@@ -938,7 +974,7 @@
         }
         timeUniform.value = now * 0.001;
         if (channelGlow) channelGlow.material.opacity = 0.1 + 0.12 * (0.5 + 0.5 * Math.sin(now * 0.0009)) + flash * 0.15;
-        if (flash > 0.001) { flash *= Math.exp(-dt * 3.4); hemisphereLight.intensity = 0.62 * (1 + flash * 1.7); if (skyMat) skyMat.uniforms.flashBoost.value = flash; }
+        if (flash > 0.001) { flash *= Math.exp(-dt * 3.4); hemisphereLight.intensity = 0.95 * (1 + flash * 1.7); if (skyMat) skyMat.uniforms.flashBoost.value = flash; }
         else if (skyMat && skyMat.uniforms.flashBoost.value !== 0) skyMat.uniforms.flashBoost.value = 0;
         if (Math.hypot(sunlight.target.position.x - position.x, sunlight.target.position.z - position.z) > 20) {
             sunlight.target.position.set(position.x, 0, position.z);
@@ -1060,9 +1096,11 @@
             scene.background = new THREE.Color(0xc98e54);
             camera = new THREE.PerspectiveCamera(58, innerWidth / innerHeight, 0.08, 7200);
             scene.add(new THREE.AmbientLight(0xd9a468, 0.3));
-            hemisphereLight = new THREE.HemisphereLight(0xe3a55f, 0x40281a, 0.62);
+            // Venus's 92-bar air scatters sunlight into a soft, almost shadowless glow: most light
+            // comes from the sky (hemisphere), and the direct sun is weak, so shadows stay faint.
+            hemisphereLight = new THREE.HemisphereLight(0xe3a55f, 0x40281a, 0.95);
             scene.add(hemisphereLight);
-            sunlight = new THREE.DirectionalLight(0xffd2a0, 1.5);
+            sunlight = new THREE.DirectionalLight(0xffd2a0, 0.9);
             sunlight.position.set(-180, 105, -160);
             sunlight.castShadow = true;
             sunlight.shadow.mapSize.set(profile.shadows, profile.shadows);
@@ -1101,7 +1139,8 @@
             const texture = makeTexture();
             buildTerrain(texture);
             await new Promise(resolve => setTimeout(resolve, 20));
-            buildRocks(texture);
+            const rockModels = (await Promise.all([loadRockModel('models/bennu.glb'), loadRockModel('models/itokawa.glb')])).filter(Boolean);
+            buildRocks(texture, rockModels);
             buildAstronaut(texture);
             buildFootprints();
             buildInstrument();

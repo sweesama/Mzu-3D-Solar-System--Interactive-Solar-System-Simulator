@@ -46,25 +46,18 @@
     const RING_R0 = Math.hypot(RING_CX, RING_CZ); // radius of the ring passing the origin
     const SATURN_RADIUS = RING_R0 / 1.99;
     const RING_INNER = SATURN_RADIUS * 1.24, RING_OUTER = SATURN_RADIUS * 2.27;
-    const bandAt = rr => SATURN_RADIUS * rr - RING_R0;
-    const bands = [
-        { r0: bandAt(1.24), r1: bandAt(1.53), d: 0.3 },   // C ring, faint (inward = toward Saturn)
-        { r0: bandAt(1.53), r1: bandAt(1.95), d: 0.9 },   // B ring — the bright, dense one
-        { r0: bandAt(1.95), r1: bandAt(2.03), d: 0.08 },  // Cassini division
-        { r0: bandAt(2.03), r1: bandAt(2.2), d: 0.8 },    // A ring, inner
-        { r0: bandAt(2.2), r1: bandAt(2.215), d: 0.05 },  // Encke gap
-        { r0: bandAt(2.215), r1: bandAt(2.27), d: 0.6 }   // A ring, outer edge
-    ];
+    // Real ring density, 128 samples from the inner C ring (1.24 Saturn radii) to the outer A ring (2.27).
+    // Taken from NASA/Cassini-based textures/2k_saturn_ring_alpha.png (its alpha channel, averaged across
+    // the strip). The Cassini Division shows as the dip near 1.99 radii, matching the true position.
+    const RING_PROFILE = [0,0,0.05,0.05,0.06,0.21,0.16,0.26,0.16,0.27,0.22,0.32,0.27,0.33,0.31,0.4,0.4,0.39,0.42,0.43,0.43,0.43,0.37,0.43,0.43,0.43,0.53,0.4,0.34,0.43,0.34,0.43,0.47,0.61,0.43,0.41,0.49,0.61,0.67,0.84,0.8,0.79,0.82,0.82,0.81,0.82,0.82,0.8,0.82,0.84,0.83,0.85,0.89,0.91,0.87,0.93,0.95,0.95,0.95,0.95,0.92,0.94,0.85,0.94,0.95,0.91,0.95,0.93,0.95,0.95,0.91,0.94,0.98,0.94,0.93,0.89,0.92,0.93,0.92,0.95,0.9,0.91,0.87,0.89,0.89,0.95,0.96,0.91,0.72,0.42,0.4,0.43,0.39,0.18,0.35,0.58,0.59,0.67,0.85,0.82,0.82,0.8,0.78,0.71,0.7,0.72,0.71,0.69,0.7,0.69,0.7,0.69,0.68,0.69,0.71,0.69,0.69,0.69,0.69,0.7,0.16,0.79,0.79,0.8,0.82,0.82,0.93,0.05];
     function ringDensity(x, z) {
-        const r = Math.hypot(x - RING_CX, z - RING_CZ) - RING_R0; // + = outward from Saturn
-        for (const b of bands) {
-            if (r >= b.r0 && r < b.r1) {
-                const t = (r - b.r0) / (b.r1 - b.r0);
-                const edge = Math.min(1, Math.min(t, 1 - t) * 8); // soft band edges
-                return b.d * edge * (0.75 + noise(x * 0.02, z * 0.05) * 0.5);
-            }
-        }
-        return 0.03; // outside the sheet — near empty
+        const rr = Math.hypot(x - RING_CX, z - RING_CZ) / SATURN_RADIUS; // distance from Saturn's centre, in Saturn radii
+        const t = (rr - 1.24) / (2.27 - 1.24);
+        if (t < 0 || t >= 1) return 0.03; // outside the sheet — near empty
+        const n = RING_PROFILE.length, f = Math.max(0, Math.min(n - 1, t * n - 0.5)); // sample centres sit at (i + 0.5) / n
+        const i = Math.floor(f), k = f - i;
+        const d = RING_PROFILE[i] * (1 - k) + RING_PROFILE[Math.min(n - 1, i + 1)] * k;
+        return d * (0.75 + noise(x * 0.02, z * 0.05) * 0.5);
     }
 
     function createWalker(position) {

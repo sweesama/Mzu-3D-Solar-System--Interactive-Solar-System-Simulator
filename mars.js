@@ -11,7 +11,7 @@
             fieldNotes: 'FIELD NOTES', reconstruction: 'An imagined site, informed by Mars science.', gravity: 'GRAVITY', atmosphere: 'ATMOSPHERE', vacuum: 'Thin CO₂', distance: 'FROM ARRIVAL',
             walkingHint: 'W A S D to walk · drag to look · Space to jump · G gravity · M sound', touchHint: 'Arrows to walk · drag to look · tap Jump to leap', station0: 'Layered mesa', station1: 'Boulder field', station2: 'Dune edge',
             astronaut: 'ASTRONAUT', jump: 'Jump', grounded: 'On the surface', airborne: 'Airborne', motionOn: 'Camera motion: On', motionOff: 'Camera motion: Off', motionHint: 'Disable head motion for a steadier view.',
-            guide: 'Field guide', photo: 'Photo mode', quality: 'Quality', auto: 'Auto', high: 'High', balanced: 'Balanced', low: 'Low', artNote: 'SCIENCE-INSPIRED ARTISTIC RECONSTRUCTION · NOT A SCANNED LANDING SITE',
+            guide: 'Field guide', photo: 'Photo mode', night: 'Night sky', quality: 'Quality', auto: 'Auto', high: 'High', balanced: 'Balanced', low: 'Low', artNote: 'SCIENCE-INSPIRED ARTISTIC RECONSTRUCTION · NOT A SCANNED LANDING SITE',
             capture: 'Save photograph', exitPhoto: 'Exit photo mode', loading: 'Preparing the Martian landscape…', fieldGuide: 'THE EXPEDITION FIELD GUIDE', guideTitle: 'Take the long way home.',
             guideIntro: 'This is a small, freely explorable Martian plain, not a whole-planet simulation. The five observation points are different views of the same place; two of them can only be reached on foot.', controlsTitle: 'Moving around',
             gravityCompare: 'Compare Earth gravity · G', gravityMars: 'Back to Martian gravity · G', gravityHint: 'Same takeoff push, different fall. Mars gravity is 3.71 m/s² — lighter than Earth, heavier than the Moon.', soundOn: 'Suit sounds: On', soundOff: 'Suit sounds: Off', soundHint: 'Fan hum and footfalls inside the suit; outside, deep silence broken by an occasional faint gust. M toggles.', gravityMarsTag: 'Martian gravity — 3.71 m/s².', gravityEarth: 'Earth gravity — 9.8 m/s². Same push, far less height.', marsTag: 'MARS', earthTag: 'EARTH',
@@ -48,7 +48,7 @@
             intro: '走进一片艺术重建的火星平原，在较轻的重力中跳跃，观察层状岩石、风吹沙丘和奶油色的天空。', begin: '踏上火星', arrivalHint: '无需下载，带上好奇心就好。', fieldNotes: '探索手记', reconstruction: '受火星科学启发的虚构地点。',
             gravity: '火星重力', atmosphere: '大气环境', vacuum: '稀薄二氧化碳', distance: '距抵达点', walkingHint: 'W A S D 行走 · 拖动转头 · 空格跳跃 · G 重力 · M 声音', touchHint: '方向按钮行走 · 拖动画面转头 · 点击跳跃',
             astronaut: '宇航员视角', jump: '跳跃', grounded: '双脚着地', airborne: '腾空中', motionOn: '镜头起伏：开', motionOff: '镜头起伏：关', motionHint: '关闭头部起伏可获得更平稳的视角。',
-            station0: '层状平顶山', station1: '岩石原野', station2: '沙丘边缘', guide: '探索指南', photo: '摄影模式', quality: '画质', auto: '自动', high: '高', balanced: '均衡', low: '低',
+            station0: '层状平顶山', station1: '岩石原野', station2: '沙丘边缘', guide: '探索指南', photo: '摄影模式', night: '夜空', quality: '画质', auto: '自动', high: '高', balanced: '均衡', low: '低',
             artNote: '科学启发的艺术重建 · 非真实着陆点扫描', capture: '保存照片', exitPhoto: '退出摄影', loading: '正在准备火星风景…', fieldGuide: '火星探索指南', guideTitle: '慢一点，看看远方。',
             guideIntro: '这是一片可以自由漫游的火星平原，而非完整火星。五个观察点都位于同一个场景，其中两个只能徒步走到。', controlsTitle: '如何探索',
             gravityCompare: '对比地球重力 · G', gravityMars: '恢复火星重力 · G', gravityHint: '同样的起跳力度，不同的下落感受。火星重力 3.71 m/s²——比地球轻，比月球重。', soundOn: '宇航服声音：开', soundOff: '宇航服声音：关', soundHint: '宇航服内的风扇低鸣与脚步声；外部是深邃的寂静，偶尔掠过一阵微弱而沉闷的风。M 切换。', gravityMarsTag: '火星重力 — 3.71 m/s²。', gravityEarth: '地球重力 — 9.8 m/s²。同样的起跳，高度骤减。', marsTag: '火星', earthTag: '地球',
@@ -112,6 +112,26 @@
     const keys = new Set(), touchKeys = new Set(), obstacles = [];
     const stations = expedition.stations;
     let discoveryUI = null, featuredRock = null, composer = null, fxaaPass = null, cinePass = null, sunMesh = null, motes = null;
+    let marsSkyMaterial = null, marsHemisphere = null, nightStars = null, nightMode = false, nightAmount = 0, dayPalette = null;
+    // Night colours: near-black navy sky, faint blue fill light and no sun.
+    let nightPalette = null;
+    function updateNight(dt) {
+        if (!dayPalette) {
+            dayPalette = { zenith: marsSkyMaterial.uniforms.zenith.value.clone(), horizon: marsSkyMaterial.uniforms.horizon.value.clone(), fog: scene.fog.color.clone(), background: scene.background.clone(), hemi: marsHemisphere.color.clone() };
+            nightPalette = { zenith: new THREE.Color(0x02030a).convertSRGBToLinear(), horizon: new THREE.Color(0x0a1020).convertSRGBToLinear(), fog: new THREE.Color(0x080c16).convertSRGBToLinear(), hemi: new THREE.Color(0x3a4a6a).convertSRGBToLinear() };
+        }
+        nightAmount += ((nightMode ? 1 : 0) - nightAmount) * Math.min(1, dt * 2.5);
+        const k = nightAmount, d = dayPalette, n = nightPalette;
+        marsSkyMaterial.uniforms.zenith.value.lerpColors(d.zenith, n.zenith, k);
+        marsSkyMaterial.uniforms.horizon.value.lerpColors(d.horizon, n.horizon, k);
+        scene.fog.color.lerpColors(d.fog, n.fog, k);
+        scene.background.lerpColors(d.background, n.fog, k);
+        marsHemisphere.color.lerpColors(d.hemi, n.hemi, k);
+        marsHemisphere.intensity = 0.42 * (1 - k) + 0.28 * k;
+        sunlight.intensity = 2.15 * (1 - k);
+        if (sunMesh) sunMesh.visible = k < 0.5;
+        if (nightStars) { nightStars.material.opacity = 0.95 * k; nightStars.visible = k > 0.01; }
+    }
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
     const position = { x: stations[0].x, z: stations[0].z };
@@ -173,7 +193,7 @@
         $('loading-overlay').hidden = false;
         $('loading-label').textContent = t(key);
         document.querySelector('.loading-orbit').style.animation = 'none';
-        document.querySelectorAll('.station-button, #begin-button, #photo-button').forEach(button => { button.disabled = true; });
+        document.querySelectorAll('.station-button, #begin-button, #photo-button, #night-button').forEach(button => { button.disabled = true; });
         if (error) console.error('Mars expedition:', error);
     }
     function makeTexture() {
@@ -230,7 +250,6 @@
                 float fine = lunarNoise(vGroundPosition.xz * 1.8) - 0.5;
                 float detailFade = 1.0 - smoothstep(25.0, 130.0, distance(cameraPosition, vGroundPosition));
                 diffuseColor.rgb *= 0.92 + broad * 0.36 + fine * 0.14 * detailFade;
-                diffuseColor.rgb *= 1.0 + sin(vGroundPosition.y * 3.1) * 0.055;
             `);
         };
         return material;
@@ -447,12 +466,14 @@
                     transform.position.set(x, MarsTerrain.sampleSurface(surface, x, z) + lift * 0.38, z);
                     transform.scale.set(s * (ventifact ? 1.3 : 1), s * 0.9, s);
                     transform.rotation.set((rand() - 0.5) * 0.5, ventifact ? -0.9 + (rand() - 0.5) * 0.4 : rand() * Math.PI * 2, (rand() - 0.5) * 0.5);
-                    color.setScalar(0.78 + rand() * 0.22);
+                    const k = 0.78 + rand() * 0.22;
+                    color.setRGB(k, k * 0.7, k * 0.52); // basalt under a red-brown dust coat
                 } else {
                     transform.position.set(x, MarsTerrain.sampleSurface(surface, x, z) + size * 0.12, z);
                     transform.scale.set(size * (0.75 + rand() * 0.85) * (ventifact ? 1.5 + rand() * 0.4 : 1), size * (0.62 + rand() * 0.5), size * (0.75 + rand() * 0.6));
                     transform.rotation.set((rand() - 0.5) * 0.4, ventifact ? -0.9 + (rand() - 0.5) * 0.4 : rand() * Math.PI * 2, (rand() - 0.5) * 0.4);
-                    color.setScalar(0.5 + rand() * 0.4);
+                    const k = 0.5 + rand() * 0.4;
+                    color.setRGB(k, k * 0.66, k * 0.5);
                 }
                 transform.updateMatrix();
                 rocks.setMatrixAt(i, transform.matrix);
@@ -523,29 +544,38 @@
         sky.frustumCulled = false;
         sky.renderOrder = -1;
         scene.add(sky);
+        marsSkyMaterial = skyMaterial;
+        // Stars: invisible by day (the dusty sky scatters their light), visible at night when the
+        // thin Martian air is clear. updateNight() fades them in with the night-sky button.
+        let starSeed = 4721;
+        const starRand = () => (starSeed = (starSeed * 16807) % 2147483647) / 2147483647;
+        const starPositions = new Float32Array(1800 * 3);
+        const starColors = new Float32Array(1800 * 3);
+        for (let i = 0; i < 1800; i++) {
+            const theta = starRand() * Math.PI * 2, y = 0.03 + starRand() * 0.97;
+            const r = Math.sqrt(Math.max(0, 1 - y * y));
+            starPositions.set([Math.cos(theta) * r * 6400, y * 6400, Math.sin(theta) * r * 6400], i * 3);
+            const bright = 0.3 + Math.pow(starRand(), 2.2) * 0.9, warm = starRand();
+            starColors.set([bright, bright * (0.9 + warm * 0.1), bright * (0.85 + (1 - warm) * 0.15)], i * 3);
+        }
+        const starGeometry = new THREE.BufferGeometry();
+        starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        starGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+        nightStars = new THREE.Points(starGeometry, new THREE.PointsMaterial({ size: 2.6, map: dustFx.texture(), vertexColors: true, sizeAttenuation: false, depthWrite: false, transparent: true, opacity: 0, fog: false }));
+        nightStars.frustumCulled = false;
+        nightStars.visible = false;
+        scene.add(nightStars);
         scene.fog = new THREE.Fog(new THREE.Color(0xb88a66).convertSRGBToLinear(), 420, 4400);
         // 太阳亮度超过 1，泛光通道会让它自然晕开，不再需要光斑贴图
-        const sun = new THREE.Mesh(new THREE.SphereGeometry(4.6, 32, 24), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xfff3dd).multiplyScalar(4), fog: false }));
+        const sun = new THREE.Mesh(new THREE.SphereGeometry(6.4, 32, 24), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xfff3dd).multiplyScalar(4), fog: false }));
         sun.position.copy(sunlight.position).normalize().multiplyScalar(2100);
         scene.add(sun);
         sunMesh = sun;
-        const haloCanvas = document.createElement('canvas');
-        haloCanvas.width = haloCanvas.height = 128;
-        const haloContext = haloCanvas.getContext('2d');
-        const gradient = haloContext.createRadialGradient(64, 64, 2, 64, 64, 64);
-        gradient.addColorStop(0, 'rgba(190,214,245,0.9)');
-        gradient.addColorStop(0.25, 'rgba(170,196,235,0.45)');
-        gradient.addColorStop(0.6, 'rgba(210,170,140,0.18)');
-        gradient.addColorStop(1, 'rgba(210,170,140,0)');
-        haloContext.fillStyle = gradient;
-        haloContext.fillRect(0, 0, 128, 128);
-        const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(haloCanvas), transparent: true, opacity: 0.85, depthWrite: false, fog: false }));
-        halo.scale.set(150, 150, 1);
-        halo.position.copy(sun.position);
-        scene.add(halo);
         const earthDirection = sun.position.clone().normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.3);
         earthDirection.y = Math.max(0.18, earthDirection.y - 0.09);
-        const earthDot = new THREE.Mesh(new THREE.SphereGeometry(2.2, 12, 10), new THREE.MeshBasicMaterial({ color: 0xbcd2ff, fog: false }));
+        const earthMap = new THREE.TextureLoader().load('textures/2k_earth_daymap.jpg');
+        earthMap.encoding = THREE.sRGBEncoding;
+        const earthDot = new THREE.Mesh(new THREE.SphereGeometry(3.7, 32, 24), new THREE.MeshBasicMaterial({ map: earthMap, fog: false }));
         earthDot.position.copy(earthDirection.normalize()).multiplyScalar(2100);
         scene.add(earthDot);
         for (const [body, object, hitRadius] of [['sun', sun, 170], ['earth', earthDot, 140]]) {
@@ -556,7 +586,10 @@
             skyBodies.push(proxy);
         }
         for (const [body, mx, my, mz, size] of [['phobos', -820, 940, -1350, 4.2], ['deimos', 340, 520, -1950, 2.6]]) {
-            const moonlet = new THREE.Mesh(new THREE.SphereGeometry(size, 14, 10), new THREE.MeshStandardMaterial({ color: 0x7a6250, roughness: 1 }));
+            // Real NASA-derived surface maps for Phobos and Deimos instead of a flat brown ball
+            const moonTexture = new THREE.TextureLoader().load(`textures/moon_${body}.jpg`);
+            moonTexture.encoding = THREE.sRGBEncoding;
+            const moonlet = new THREE.Mesh(new THREE.SphereGeometry(size, 32, 24), new THREE.MeshStandardMaterial({ map: moonTexture, color: 0xffffff, roughness: 1 }));
             moonlet.position.set(mx, my, mz);
             scene.add(moonlet);
             const proxy = new THREE.Mesh(new THREE.SphereGeometry(140, 8, 6), new THREE.MeshBasicMaterial({ visible: false }));
@@ -918,36 +951,26 @@
         if (discoveryUI) discoveryUI.update(0);
         $('moon-canvas').focus({ preventScroll: true });
     }
+    // A dust devil is a funnel: narrow at the ground, flaring at the top. The surface is a lathe
+    // (spun profile) shaded by a small GLSL program that paints spiral dust streaks and fades
+    // the edges by viewing angle, so the funnel reads as a volume instead of a flat paper sheet.
     function buildDustDevil() {
-        const canvas = document.createElement('canvas');
-        canvas.width = 128; canvas.height = 256;
-        const context = canvas.getContext('2d');
-        for (let i = 0; i < 26; i++) {
-            const x = Math.random() * 128;
-            const gradient = context.createLinearGradient(0, 256, 0, 0);
-            gradient.addColorStop(0, 'rgba(196,150,116,0.55)');
-            gradient.addColorStop(0.55, 'rgba(206,164,128,0.28)');
-            gradient.addColorStop(1, 'rgba(206,164,128,0)');
-            context.strokeStyle = gradient;
-            context.lineWidth = 3 + Math.random() * 7;
-            context.beginPath();
-            context.moveTo(x, 256);
-            for (let y = 256; y > 0; y -= 16) context.lineTo(x + Math.sin(y * 0.05 + i) * 9 + (256 - y) * 0.06, y);
-            context.stroke();
-        }
-        const texture = new THREE.CanvasTexture(canvas);
-        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
         const group = new THREE.Group();
-        const makeColumn = (topR, bottomR, height, opacity) => {
-            const material = new THREE.MeshBasicMaterial({ map: texture.clone(), transparent: true, opacity, depthWrite: false, side: THREE.DoubleSide });
-            const mesh = new THREE.Mesh(new THREE.CylinderGeometry(topR, bottomR, height, 14, 1, true), material);
-            mesh.position.y = height / 2;
+        const tint = new THREE.Color(0xc89a72).convertSRGBToLinear();
+        const makeFunnel = (profile, strength) => {
+            const points = profile.map(([r, y]) => new THREE.Vector2(r, y));
+            const material = new THREE.ShaderMaterial({
+                transparent: true, depthWrite: false, side: THREE.DoubleSide,
+                uniforms: { uTime: { value: 0 }, uTint: { value: tint }, uStrength: { value: strength } },
+                vertexShader: 'varying vec2 vUv; varying vec3 vN; varying vec3 vV; void main(){ vUv = uv; vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }',
+                fragmentShader: 'uniform float uTime; uniform vec3 uTint; uniform float uStrength; varying vec2 vUv; varying vec3 vN; varying vec3 vV; void main(){ float v = vUv.y; float ph = vUv.x * 6.2831853 * 3.0 + v * 11.0 - uTime * 2.2; float streak = 0.5 + 0.5 * sin(ph) * sin(ph * 0.37 + v * 5.0); float rim = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 1.4); float edge = smoothstep(0.0, 0.14, v) * (1.0 - smoothstep(0.82, 1.0, v)); float a = (0.12 + 0.55 * streak) * (0.35 + rim) * edge * uStrength; gl_FragColor = vec4(uTint * (0.8 + 0.4 * streak), a); }'
+            });
+            const mesh = new THREE.Mesh(new THREE.LatheGeometry(points, 32), material);
             group.add(mesh);
             return mesh;
         };
-        const outer = makeColumn(2.2, 4.6, 34, 0.3);
-        const inner = makeColumn(1.2, 2.6, 27, 0.34);
-        inner.position.y = 15;
+        const outer = makeFunnel([[0.6, 0], [1.4, 8], [2.4, 18], [3.6, 27], [5.2, 34]], 0.9);
+        const inner = makeFunnel([[0.5, 0], [1.0, 10], [1.8, 20], [2.6, 27]], 0.7);
         group.userData = { outer, inner };
         dustDevil = group;
         scene.add(group);
@@ -960,8 +983,8 @@
         dustDevil.position.set(x, MarsTerrain.height(x, z) - 0.5, z);
         dustDevil.userData.outer.rotation.y += 0.028;
         dustDevil.userData.inner.rotation.y -= 0.043;
-        dustDevil.userData.outer.material.map.offset.y = -t * 0.14;
-        dustDevil.userData.inner.material.map.offset.y = -t * 0.22;
+        dustDevil.userData.outer.material.uniforms.uTime.value = t;
+        dustDevil.userData.inner.material.uniforms.uTime.value = t;
         const pulse = 0.85 + 0.15 * Math.sin(t * 0.9);
         dustDevil.scale.set(pulse, 1, pulse);
     }
@@ -970,6 +993,7 @@
         animationId = requestAnimationFrame(frame);
         const dt = Math.min((now - (lastTime || now)) / 1000, 0.1);
         lastTime = now;
+        updateNight(dt);
         if (exploring && !photoMode && !isDialogOpen() && dt > 0) {
             const forward = Number(keys.has('KeyW') || keys.has('ArrowUp') || touchKeys.has('forward')) - Number(keys.has('KeyS') || keys.has('ArrowDown') || touchKeys.has('back'));
             const right = Number(keys.has('KeyD') || keys.has('ArrowRight') || touchKeys.has('right')) - Number(keys.has('KeyA') || keys.has('ArrowLeft') || touchKeys.has('left'));
@@ -1123,7 +1147,8 @@
             scene.background = new THREE.Color(0xd9ab84);
             camera = new THREE.PerspectiveCamera(58, innerWidth / innerHeight, 0.08, 7200);
             scene.add(new THREE.AmbientLight(0xd8b094, 0.14));
-            scene.add(new THREE.HemisphereLight(0xe6bd92, 0x5a3a28, 0.42));
+            marsHemisphere = new THREE.HemisphereLight(0xe6bd92, 0x5a3a28, 0.42);
+            scene.add(marsHemisphere);
             sunlight = new THREE.DirectionalLight(0xffe4c4, 2.15);
             sunlight.position.set(-180, 105, -160);
             sunlight.castShadow = true;
@@ -1178,7 +1203,7 @@
             discoveryUI = window.createMoonDiscoveries({ scene, camera, surface, rock: featuredRock, getWalker: () => walker, isExploring: () => exploring, isPhotoMode: () => photoMode, clearMovement, onPhoto: () => setPhoto(true), onDiscover: () => { if (audio) audio.chime(); }, getNotes: () => t('notes'), language, expedition: window.MarsExpedition, terrain: MarsTerrain, strings: discoveryStrings });
             ready = true;
             $('loading-overlay').hidden = true;
-            document.querySelectorAll('.station-button, #begin-button, #photo-button').forEach(button => { button.disabled = false; });
+            document.querySelectorAll('.station-button, #begin-button, #photo-button, #night-button').forEach(button => { button.disabled = false; });
             bindInput();
             animationId = requestAnimationFrame(frame);
         } catch (error) { fail('error', error); }
@@ -1195,6 +1220,7 @@
     $('guide-dialog').addEventListener('close', () => { if (ready) $('moon-canvas').focus({ preventScroll: true }); });
     $('moonlet-dialog').addEventListener('close', () => { if (ready) $('moon-canvas').focus({ preventScroll: true }); });
     $('photo-button').addEventListener('click', () => setPhoto(true));
+    $('night-button').addEventListener('click', () => { nightMode = !nightMode; $('night-button').setAttribute('aria-pressed', String(nightMode)); });
     $('exit-photo-button').addEventListener('click', () => setPhoto(false));
     $('fullscreen-button').addEventListener('click', async () => {
         try {

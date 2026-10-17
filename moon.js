@@ -466,6 +466,25 @@
         scene.add(gravel);
     }
     function buildSky() {
+        // The Moon has no air, so the sky is black at all times and stars never fade out.
+        // In sunlight the ground is so bright that only the brighter stars read to the eye.
+        let starSeed = 9137;
+        const starRand = () => (starSeed = (starSeed * 16807) % 2147483647) / 2147483647;
+        const starPositions = new Float32Array(1600 * 3);
+        const starColors = new Float32Array(1600 * 3);
+        for (let i = 0; i < 1600; i++) {
+            const theta = starRand() * Math.PI * 2, y = -0.2 + starRand() * 1.2;
+            const r = Math.sqrt(Math.max(0, 1 - y * y));
+            starPositions.set([Math.cos(theta) * r * 6400, y * 6400, Math.sin(theta) * r * 6400], i * 3);
+            const bright = 0.3 + Math.pow(starRand(), 2.2) * 0.9, warm = starRand();
+            starColors.set([bright, bright * (0.9 + warm * 0.1), bright * (0.85 + (1 - warm) * 0.15)], i * 3);
+        }
+        const starGeometry = new THREE.BufferGeometry();
+        starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        starGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+        const starField = new THREE.Points(starGeometry, new THREE.PointsMaterial({ size: 2.6, map: dustFx.texture(), vertexColors: true, sizeAttenuation: false, depthWrite: false, transparent: true, opacity: 0.95, fog: false }));
+        starField.frustumCulled = false;
+        scene.add(starField);
         const earthMaterial = new THREE.MeshStandardMaterial({ color: 0x7fafd0, roughness: 0.95 });
         const earth = new THREE.Mesh(new THREE.SphereGeometry(36, 64, 48), earthMaterial);
         earth.position.set(350, 340, -1250);

@@ -418,22 +418,9 @@
         // The Sun — a fierce spark ten times farther than Earth's.
         // Placed behind the departure view so Saturn's camera-facing face is lit.
         const sunDir = new THREE.Vector3(0.62, 0.2, 0.76).normalize();
-        const sun = new THREE.Mesh(new THREE.SphereGeometry(4.5, 24, 18), new THREE.MeshBasicMaterial({ color: 0xfff8ea, fog: false }));
+        const sun = new THREE.Mesh(new THREE.SphereGeometry(7.3, 24, 18), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xfff8ea).multiplyScalar(4), fog: false }));
         sun.position.copy(sunDir).multiplyScalar(4200);
         skyPivot.add(sun);
-        const haloCanvas = document.createElement('canvas');
-        haloCanvas.width = haloCanvas.height = 128;
-        const haloContext = haloCanvas.getContext('2d');
-        const gradient = haloContext.createRadialGradient(64, 64, 2, 64, 64, 64);
-        gradient.addColorStop(0, 'rgba(255,248,235,0.95)');
-        gradient.addColorStop(0.2, 'rgba(255,240,220,0.4)');
-        gradient.addColorStop(1, 'rgba(255,230,200,0)');
-        haloContext.fillStyle = gradient;
-        haloContext.fillRect(0, 0, 128, 128);
-        const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(haloCanvas), transparent: true, opacity: 0.8, depthWrite: false, fog: false }));
-        halo.scale.set(150, 150, 1);
-        halo.position.copy(sun.position);
-        skyPivot.add(halo);
         const sunProxy = new THREE.Mesh(new THREE.SphereGeometry(190, 8, 6), new THREE.MeshBasicMaterial({ visible: false }));
         sunProxy.position.copy(sun.position);
         sunProxy.userData.body = 'sun';
@@ -441,7 +428,9 @@
         skyBodies.push(sunProxy);
         sunMesh = sun;
         // Earth — a pale point near the Sun.
-        const earth = new THREE.Mesh(new THREE.SphereGeometry(3, 16, 12), new THREE.MeshBasicMaterial({ color: 0xaac4e8, fog: false }));
+        const earthMap = new THREE.TextureLoader().load('textures/2k_earth_daymap.jpg');
+        earthMap.encoding = THREE.sRGBEncoding;
+        const earth = new THREE.Mesh(new THREE.SphereGeometry(7.3, 32, 24), new THREE.MeshBasicMaterial({ map: earthMap, fog: false }));
         earth.position.copy(sunDir.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.06)).multiplyScalar(4200);
         earth.position.y += 140;
         skyPivot.add(earth);
