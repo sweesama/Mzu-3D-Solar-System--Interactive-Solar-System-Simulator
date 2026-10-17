@@ -295,3 +295,14 @@ Checked each expedition's first-glance scene against known physics and removed p
 - **Moon:** rocks and regolith are neutral grey and lit by a hard-edged sun with no air haze, which matches the physics. No change was needed.
 - **Mercury:** rocks are a touch warmer grey. Mercury's sun radius already matches its real angular size (about 1.4 degrees).
 - **Distant suns and Earth dots:** Mars keeps its true sun size (about 0.35 degrees). Jupiter, Saturn, Uranus and Neptune use a minimum visible size of about 0.2 degrees for the sun and Earth points, because the real discs are 0.02 to 0.1 degrees and would be invisible. Real angular sizes are much smaller; these are visibility-adjusted.
+
+## Mars ground from real data; Saturn moons; Jupiter/Neptune vortices
+
+- **Walkable Mars ground now uses a real HiRISE DTM.** `textures/mars_hirise_jezero_2m.bin` is a 1 km patch of the HiRISE Jezero DTM (DTEEC_023247_1985_022957_1985_U01, 1 m/px, PDS). `build_mars_hirise.cjs` reads only the needed rows through HTTP range requests (the full file is 642 MB, not downloaded). The file stores the ground *detail* (height minus a 50 m average) at 2 m, so the hand-placed mesas, route and stations stay where they are. The whole 300 m walk zone is covered. `validate_site.cjs` re-checks every Mars route with this detail applied; the steepest walkable slope is about 34 degrees, below the 40 degree block threshold.
+- **Far Mars horizon uses real MOLA topography.** `textures/mars_mola_jezero_16ppd.bin` (640 x 640, 16 px/deg, 3.7 km/px) comes from the 33 MB NASA MEGDR file via `build_mars_dem.cjs`. Heights are exaggerated 5x.
+- **Higher-resolution options checked:** HiRISE DTMs are ~0.5-0.6 GB per site; the HRSC/MOLA blend at 200 m is 11 GB (3.55 GB as a cloud-optimised GeoTIFF). The 200 m data would only give about 5 samples across the 600 m walk zone, so HiRISE is the useful step.
+- **Saturn moons:** Enceladus, Tethys, Dione and Iapetus are now in the scene, with their own textures (resized to 2048 x 1024 for deployment; `.vercelignore` no longer excludes them). Real periods (`REAL_PERIODS`) and real semi-major axes were added so real-distance mode places and spins them correctly. Titan now sits outside Rhea and the artistic speeds fall with orbital period. Scene orbit radii are artistic, not to scale.
+- **Jupiter and Neptune:** the cloud-puff sprites were removed (the volumetric cloud and storm layers already provide the depth). The Great Red Spot and Neptune's Great Dark Spot are now native shader spirals instead of painted canvas. Jupiter's lightning is a thin jagged line instead of a vertical textured plane.
+- **Mars sky clouds** are now noise-textured shader planes.
+- **Uranus rings** use the published radii and optical depths (Epsilon at the station's 2670 units).
+- **Not yet verified on screen:** Jupiter's lightning (random, not captured), the Great Red Spot close-up, and the Saturn moons in the browser (they load without console errors).

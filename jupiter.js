@@ -105,7 +105,7 @@
     const stations = expedition.stations;
     let discoveryUI = null, featuredRock = null;
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
-    let skyPivot = null, earthPivot = null, crystalField = [], skyMaterial = null, ambientLight = null, flashTimer = 6, thrustActive = false, stormDisc = null, bolts = [], boltTimer = 0, deckShader = null, puffGroup = null, composer = null, fxaaPass = null, cinePass = null, stormPts = null, stormVel = null, volCloud = null, sunMesh = null, shaftPass = null;
+    let skyPivot = null, earthPivot = null, crystalField = [], skyMaterial = null, ambientLight = null, flashTimer = 6, thrustActive = false, stormDisc = null, bolts = [], boltTimer = 0, deckShader = null, composer = null, fxaaPass = null, cinePass = null, stormPts = null, stormVel = null, volCloud = null, sunMesh = null, shaftPass = null;
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
     const position = { x: stations[0].x, z: stations[0].z };
     const touchDevice = matchMedia('(pointer: coarse)').matches;
@@ -357,107 +357,41 @@
         featuredRock.position.set(62, JupiterAtmo.sampleSurface(surface, 62, 84) + 26, 84);
         scene.add(featuredRock);
     }
+    // The Great Red Spot: a native shader spiral (log-spiral arms, dark eye, soft rim) instead of a painted canvas.
     function buildStorm() {
-        const canvas = document.createElement('canvas');
-        canvas.width = canvas.height = 512;
-        const ctx = canvas.getContext('2d');
-        ctx.translate(256, 256);
-        const palette = ['rgba(168,80,60,0.9)', 'rgba(196,120,80,0.75)', 'rgba(232,214,180,0.8)', 'rgba(140,70,52,0.85)'];
-        for (let arm = 0; arm < 3; arm++) {
-            for (let i = 0; i < 260; i++) {
-                const t = i / 260;
-                const angle = t * Math.PI * 5 + arm * (Math.PI * 2 / 3);
-                const r = 18 + t * 218;
-                const jitter = (rand() - 0.5) * 9;
-                ctx.fillStyle = palette[(i + arm) % palette.length];
-                ctx.globalAlpha = (1 - t) * 0.5 + 0.12;
-                ctx.beginPath();
-                ctx.ellipse(Math.cos(angle) * r + jitter, Math.sin(angle) * r + jitter, 9 - t * 5, 4 - t * 2, angle + 1.4, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-        ctx.globalAlpha = 1;
-        const eye = ctx.createRadialGradient(0, 0, 0, 0, 0, 42);
-        eye.addColorStop(0, 'rgba(120,50,40,0.95)');
-        eye.addColorStop(0.6, 'rgba(150,80,58,0.8)');
-        eye.addColorStop(1, 'rgba(150,80,58,0)');
-        ctx.fillStyle = eye;
-        ctx.fillRect(-42, -42, 84, 84);
-        const texture = new THREE.CanvasTexture(canvas);
-        const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthWrite: false, opacity: 0.95 });
-        const s = JupiterAtmo.storm;
+        const material = new THREE.ShaderMaterial({
+            transparent: true, depthWrite: false, fog: false,
+            vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+            fragmentShader: 'varying vec2 vUv; void main(){ vec2 p = (vUv - 0.5) * 2.0; float r = length(p); float a = atan(p.y, p.x); float arms = sin(3.0 * a - log(r + 0.03) * 9.0); float bands = smoothstep(0.2, 0.9, arms * 0.5 + 0.5); vec3 red = vec3(0.66, 0.31, 0.24); vec3 cream = vec3(0.91, 0.84, 0.7); vec3 dark = vec3(0.47, 0.27, 0.2); vec3 col = mix(dark, red, bands); col = mix(col, cream, smoothstep(0.75, 1.0, bands) * 0.5 * (1.0 - r)); col = mix(col, vec3(0.47, 0.2, 0.16), smoothstep(0.35, 0.0, r) * 0.6); float alpha = (1.0 - smoothstep(0.82, 1.0, r)) * (0.35 + 0.55 * bands) * 0.95; gl_FragColor = vec4(col, alpha); }'
+        });        const s = JupiterAtmo.storm;
         stormDisc = new THREE.Mesh(new THREE.CircleGeometry(s.radius * 1.5, 48), material);
         stormDisc.rotation.x = -Math.PI / 2;
         stormDisc.position.set(s.x, JupiterAtmo.deckHeight(s.x, s.z) + s.rim + 4, s.z);
         stormDisc.renderOrder = 2;
         scene.add(stormDisc);
     }
-    function boltTexture() {
-        const canvas = document.createElement('canvas');
-        canvas.width = 64; canvas.height = 256;
-        const ctx = canvas.getContext('2d');
-        ctx.strokeStyle = 'rgba(220,235,255,0.95)';
-        ctx.lineWidth = 3;
-        ctx.shadowColor = 'rgba(160,190,255,0.9)';
-        ctx.shadowBlur = 12;
-        ctx.beginPath();
-        let x = 32;
-        ctx.moveTo(x, 6);
-        for (let y = 6; y < 246; y += 18) { x += (rand() - 0.5) * 26; ctx.lineTo(Math.max(6, Math.min(58, x)), y); }
-        ctx.stroke();
-        return new THREE.CanvasTexture(canvas);
+    // A lightning bolt is a jagged thin line of light, not a textured sheet. The old version was a
+    // 14x56 vertical plane that read as a bright vertical band in the middle of the view.
+    function boltGeometry() {
+        const points = [];
+        let x = 0, z = 0;
+        for (let i = 0; i < 18; i++) {
+            const y = -i * 3.2;
+            points.push(new THREE.Vector3(x, y, z));
+            x += (rand() - 0.5) * 4; z += (rand() - 0.5) * 4;
+        }
+        return new THREE.BufferGeometry().setFromPoints(points);
     }
     function buildBolts() {
-        const texture = boltTexture();
         for (let i = 0; i < 4; i++) {
-            const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
-            const bolt = new THREE.Mesh(new THREE.PlaneGeometry(14, 56), material);
+            const material = new THREE.LineBasicMaterial({ color: 0xdfeaff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+            const bolt = new THREE.Line(boltGeometry(), material);
             const angle = rand() * Math.PI * 2, r = 40 + rand() * 160;
             bolt.position.set(Math.cos(angle) * r, -55 - rand() * 110, Math.sin(angle) * r);
             bolt.visible = false;
             scene.add(bolt);
             bolts.push(bolt);
         }
-    }
-    function puffTexture() {
-        const canvas = document.createElement('canvas');
-        canvas.width = canvas.height = 128;
-        const ctx = canvas.getContext('2d');
-        for (let i = 0; i < 26; i++) {
-            const a = rand() * Math.PI * 2, r = rand() * 34;
-            const x = 64 + Math.cos(a) * r, y = 64 + Math.sin(a) * r;
-            const s = 14 + rand() * 30;
-            const g = ctx.createRadialGradient(x, y, 0, x, y, s);
-            const v = 200 + rand() * 55;
-            g.addColorStop(0, `rgba(${v},${v * 0.94},${v * 0.82},${0.10 + rand() * 0.14})`);
-            g.addColorStop(1, 'rgba(0,0,0,0)');
-            ctx.fillStyle = g;
-            ctx.fillRect(x - s, y - s, s * 2, s * 2);
-        }
-        return new THREE.CanvasTexture(canvas);
-    }
-    function buildPuffs() {
-        const tex = puffTexture();
-        puffGroup = new THREE.Group();
-        const tint = new THREE.Color();
-        const palette = [0xf2e6cc, 0xe0c8a4, 0xd8b088, 0xc89878, 0xf8f2e4];
-        for (let i = 0; i < 240; i++) {
-            const layer = rand();
-            const y = layer < 0.5 ? -15 + rand() * 45 : layer < 0.82 ? 30 + rand() * 130 : 160 + rand() * 120;
-            const angle = rand() * Math.PI * 2, r = 20 + Math.sqrt(rand()) * 340;
-            const x = Math.cos(angle) * r, z = Math.sin(angle) * r;
-            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-                map: tex, color: tint.setHex(palette[Math.floor(rand() * palette.length)]).clone(),
-                transparent: true, opacity: 0.18 + rand() * 0.22, depthWrite: false
-            }));
-            const w = 60 + rand() * 200;
-            sprite.scale.set(w, w * (0.3 + rand() * 0.25), 1);
-            sprite.position.set(x, y, z);
-            sprite.userData.phase = rand() * Math.PI * 2;
-            puffGroup.add(sprite);
-        }
-        puffGroup.renderOrder = 1;
-        scene.add(puffGroup);
     }
     // Bake a tileable 3D noise volume (Perlin-style fbm in R, inverted Worley cells in G).
     // The raymarch shader samples this to know how dense the cloud is at any point in space.
@@ -1034,12 +968,6 @@
             if (boltTimer <= 0) for (const bolt of bolts) if (bolt.visible) { bolt.material.opacity -= dt * 3; if (bolt.material.opacity <= 0) bolt.visible = false; }
             if (stormDisc) stormDisc.rotation.z += dt * 0.06;
             if (deckShader && deckShader.userData.shader) deckShader.userData.shader.uniforms.uTime.value = now * 0.001;
-            if (puffGroup) {
-                for (const puff of puffGroup.children) {
-                    puff.position.x += Math.sin(now * 0.0001 + puff.userData.phase) * dt * 2.2;
-                    puff.position.y += Math.cos(now * 0.00013 + puff.userData.phase) * dt * 0.6;
-                }
-            }
             if (stormPts) {
                 const arr = stormPts.geometry.attributes.position.array;
                 for (let i = 0; i < stormVel.length; i++) {
@@ -1241,7 +1169,6 @@
             buildRocks();
             buildStorm();
             buildBolts();
-            buildPuffs();
             if (!location.search.includes('nocloud')) buildVolumeClouds();
             buildCrystalStorm();
             await buildAstronaut(texture);

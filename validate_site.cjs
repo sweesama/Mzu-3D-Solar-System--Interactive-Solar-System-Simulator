@@ -108,23 +108,33 @@ assert.equal(marsExpedition.canDiscover({ x: -85, z: -69, grounded: true }, 0), 
 assert.equal(marsExpedition.canDiscover({ x: 0, z: 6, grounded: true }, 0), false);
 assert.equal(marsExpedition.canDiscover({ x: 31, z: -63, grounded: true }, 3), true);
 assert.equal(marsExpedition.canDiscover({ x: 106, z: 101, grounded: true }, 4), true);
-for (const segments of [192, 288, 384]) {
-  const routeSurface = mars.createSurface(960, segments);
-  for (const [from, to] of marsExpedition.edges) {
-    const a = marsExpedition.nodes[from], b = marsExpedition.nodes[to];
-    for (const [start, end] of [[a, b], [b, a]]) {
-      const distance = Math.hypot(end.x - start.x, end.z - start.z);
-      let p = start;
-      for (let d = 0; d < distance; d += 0.25) {
-        const fraction = Math.min(1, (d + 0.25) / distance);
-        const next = { x: start.x + (end.x - start.x) * fraction, z: start.z + (end.z - start.z) * fraction };
-        const actual = mars.move(routeSurface, p, next.x - p.x, next.z - p.z, []);
-        assert.ok(Math.hypot(actual.x - next.x, actual.z - next.z) < 0.001, `Mars route ${from}-${to} must be walkable at ${segments} segments`);
-        p = next;
+function checkMarsRoutes(label) {
+  for (const segments of [192, 288, 384]) {
+    const routeSurface = mars.createSurface(960, segments);
+    for (const [from, to] of marsExpedition.edges) {
+      const a = marsExpedition.nodes[from], b = marsExpedition.nodes[to];
+      for (const [start, end] of [[a, b], [b, a]]) {
+        const distance = Math.hypot(end.x - start.x, end.z - start.z);
+        let p = start;
+        for (let d = 0; d < distance; d += 0.25) {
+          const fraction = Math.min(1, (d + 0.25) / distance);
+          const next = { x: start.x + (end.x - start.x) * fraction, z: start.z + (end.z - start.z) * fraction };
+          const actual = mars.move(routeSurface, p, next.x - p.x, next.z - p.z, []);
+          assert.ok(Math.hypot(actual.x - next.x, actual.z - next.z) < 0.001, `Mars route ${from}-${to} must be walkable at ${segments} segments ${label}`);
+          p = next;
+        }
       }
     }
   }
 }
+checkMarsRoutes('(procedural ground)');
+// Real HiRISE micro-relief must not block the walk either
+const hiriseBytes = fs.readFileSync(path.join(__dirname, 'textures', 'mars_hirise_jezero_2m.bin'));
+const hirise = new Int16Array(hiriseBytes.length / 2);
+for (let i = 0; i < hirise.length; i++) hirise[i] = hiriseBytes.readInt16LE(i * 2);
+mars.setDetail(hirise);
+checkMarsRoutes('(with HiRISE detail)');
+mars.setDetail(null);
 const marsDirection = marsExpedition.guidance({ x: 0, z: 6 }, 0);
 assert.ok(marsDirection.distance > 0 && Number.isFinite(marsDirection.x));
 const venus = loadBrowserModule('venus-terrain.js', 'VenusTerrain');

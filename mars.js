@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
     'use strict';
     const $ = id => document.getElementById(id);
     const parameters = new URLSearchParams(location.search);
@@ -284,6 +284,46 @@
         };
         return material;
     }
+    // Real NASA MOLA topography (16 px/deg, cropped around Jezero crater by build_mars_dem.cjs).
+    // It drives the far mountain ring only: one world unit is 0.3 km, and heights are exaggerated 5x
+    // so real relief reads at the horizon. The walkable ground is unchanged.
+    const DEM_KM_PER_UNIT = 0.3, DEM_EXAGGERATION = 5, DEM_SIZE = 640, DEM_PIXEL_KM_EW = 3.52, DEM_PIXEL_KM_NS = 3.7;
+    let marsDem = null, marsDemReference = 0;
+    async function loadMarsDem() {
+        try {
+            const response = await fetch('textures/mars_mola_jezero_16ppd.bin');
+            if (!response.ok) return null;
+            const view = new DataView(await response.arrayBuffer());
+            const data = new Float32Array(DEM_SIZE * DEM_SIZE);
+            for (let i = 0; i < data.length; i++) data[i] = view.getInt16(i * 2, true);
+            marsDemReference = data[(DEM_SIZE / 2) * DEM_SIZE + DEM_SIZE / 2];
+            return data;
+        } catch (error) { return null; }
+    }
+    // Real HiRISE 1 m DTM (Jezero), 1 km window around the expedition origin, 2 m samples, centimetres.
+    // Feeds the walkable ground's micro-relief via MarsTerrain.setDetail; the walk stays on the same terrain.
+    async function loadHirisePatch() {
+        try {
+            const response = await fetch('textures/mars_hirise_jezero_2m.bin');
+            if (!response.ok) return;
+            const view = new DataView(await response.arrayBuffer());
+            const data = new Int16Array(500 * 500);
+            for (let i = 0; i < data.length; i++) data[i] = view.getInt16(i * 2, true);
+            MarsTerrain.setDetail(data);
+        } catch (error) { /* keep the procedural ground if the patch is unavailable */ }
+    }
+    // Bilinear sample of the crop at world position (x, z). Returns null outside the crop's footprint.
+    function sampleMarsDem(data, x, z) {
+        const col = DEM_SIZE / 2 + (x * DEM_KM_PER_UNIT) / DEM_PIXEL_KM_EW;
+        const row = DEM_SIZE / 2 + (z * DEM_KM_PER_UNIT) / DEM_PIXEL_KM_NS;
+        const c = Math.max(0, Math.min(DEM_SIZE - 1.001, col)), r = Math.max(0, Math.min(DEM_SIZE - 1.001, row));
+        const c0 = Math.floor(c), r0 = Math.floor(r), fc = c - c0, fr = r - r0;
+        const at = (rr, cc) => data[rr * DEM_SIZE + cc];
+        const top = at(r0, c0) * (1 - fc) + at(r0, c0 + 1) * fc;
+        const bottom = at(r0 + 1, c0) * (1 - fc) + at(r0 + 1, c0 + 1) * fc;
+        const elevationMetres = top * (1 - fr) + bottom * fr - marsDemReference;
+        return elevationMetres / 1000 / DEM_KM_PER_UNIT * DEM_EXAGGERATION;
+    }
     function buildTerrain(texture) {
         surface = MarsTerrain.createSurface(960, profile.segments);
         const geometry = new THREE.PlaneGeometry(surface.size, surface.size, surface.segments, surface.segments);
@@ -328,7 +368,10 @@
             const ridge = Math.exp(-Math.pow((r - 1100) / 510, 2));
             const broken = 0.55 + 0.35 * MarsTerrain.noise(x * 0.008, z * 0.008) + 0.1 * MarsTerrain.noise(x * 0.026, z * 0.026);
             const fractured = (Math.abs(MarsTerrain.noise(x * 0.012 + 31, z * 0.012) * 2 - 1) - 0.4) * 12 + (MarsTerrain.noise(x * 0.022, z * 0.022 + 19) - 0.5) * 3;
-            const h = MarsTerrain.height(x, z) - 0.6 + blend * (ridge * ((45 + n * 170) * broken + fractured) + n * 28);
+            const real = marsDem ? sampleMarsDem(marsDem, x, z) : null;
+            const h = real !== null
+                ? MarsTerrain.height(x, z) - 0.6 + blend * (real + n * 6)
+                : MarsTerrain.height(x, z) - 0.6 + blend * (ridge * ((45 + n * 170) * broken + fractured) + n * 28);
             farPositions.setY(i, h);
             const color = 0.67 + n * 0.19;
             farColors.set([color, color * 0.8, color * 0.6], i * 3);
@@ -599,20 +642,26 @@
             skyBodies.push(proxy);
         }
         for (const [cx, cy, cz, sx, sy, opacity] of [[-1500, 1500, -3200, 1600, 300, 0.1], [900, 1800, -2600, 1300, 240, 0.08], [2200, 1300, -800, 1500, 260, 0.09], [-2400, 1700, 900, 1800, 320, 0.07]]) {
-            const cloudCanvas = document.createElement('canvas');
-            cloudCanvas.width = 256; cloudCanvas.height = 64;
-            const cloudContext = cloudCanvas.getContext('2d');
-            const cloudGradient = cloudContext.createRadialGradient(128, 32, 4, 128, 32, 120);
-            cloudGradient.addColorStop(0, 'rgba(255,238,220,0.9)');
-            cloudGradient.addColorStop(0.5, 'rgba(255,232,205,0.35)');
-            cloudGradient.addColorStop(1, 'rgba(255,230,200,0)');
-            cloudContext.fillStyle = cloudGradient;
-            cloudContext.beginPath();
-            cloudContext.ellipse(128, 32, 124, 30, 0, 0, Math.PI * 2);
-            cloudContext.fill();
-            const cloud = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cloudCanvas), transparent: true, opacity, depthWrite: false }));
+            // Thin ice-cloud wisp: a soft-edged ellipse whose density is modulated by noise, so it has
+            // real texture instead of a painted gradient. It is turned to face the expedition origin.
+            const cloud = new THREE.Mesh(new THREE.PlaneGeometry(sx, sy), new THREE.ShaderMaterial({
+                transparent: true, depthWrite: false, side: THREE.DoubleSide, fog: false,
+                uniforms: { uOpacity: { value: opacity * 1.6 } },
+                vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+                fragmentShader: `uniform float uOpacity; varying vec2 vUv;
+                    float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+                    float noise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+                        return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y); }
+                    void main(){
+                        vec2 p = (vUv - 0.5) * vec2(2.0, 2.0);
+                        float ellipse = 1.0 - smoothstep(0.55, 1.0, length(vec2(p.x, p.y * 2.6)));
+                        float density = noise(vUv * vec2(9.0, 5.0)) * 0.6 + noise(vUv * vec2(21.0, 11.0)) * 0.4;
+                        float a = ellipse * smoothstep(0.25, 0.8, density) * uOpacity;
+                        gl_FragColor = vec4(vec3(1.0, 0.93, 0.86), a);
+                    }`
+            }));
             cloud.position.set(cx, cy, cz);
-            cloud.scale.set(sx, sy, 1);
+            cloud.lookAt(0, cy, 0);
             scene.add(cloud);
         }
         return Promise.resolve();
@@ -1186,6 +1235,8 @@
             }
             await new Promise(resolve => setTimeout(resolve, 30));
             const texture = makeTexture();
+            marsDem = await loadMarsDem();
+            await loadHirisePatch();
             buildTerrain(texture);
             await new Promise(resolve => setTimeout(resolve, 20));
             const rockModels = (await Promise.all([loadRockModel('models/bennu.glb'), loadRockModel('models/itokawa.glb')])).filter(Boolean);

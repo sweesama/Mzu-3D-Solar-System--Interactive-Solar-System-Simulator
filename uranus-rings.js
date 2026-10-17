@@ -41,18 +41,31 @@
     // the planet's equatorial plane, so band density is radial: each band is a
     // ring of radius r around (RING_CX, RING_CZ), not a straight stripe.
     const RING_CX = -2000, RING_CZ = -2100;   // matches the globe position in uranus.js
+    // Real ring radii from published Uranus ring tables (km from the planet's centre; Uranus's
+    // equatorial radius is 25,559 km). Positions are scaled so Epsilon stays at 2670 units, the
+    // spot the expedition's station 02 is built around. Optical depths (tau) come from the same
+    // tables; density d = 0.12 + 0.25 * tau. Widths are enlarged to a visible minimum.
+    const KM_TO_UNITS = 2670 / 51149;
+    const RING_TABLE = [
+        { name: 'zeta', km: 39600, widthKm: 3500, tau: 0.1 },
+        { name: '6', km: 41837, widthKm: 2, tau: 0.3 },
+        { name: '5', km: 42235, widthKm: 2, tau: 0.5 },
+        { name: '4', km: 42571, widthKm: 2.5, tau: 0.3 },
+        { name: 'alpha', km: 44718, widthKm: 8, tau: 0.4 },
+        { name: 'beta', km: 45661, widthKm: 8, tau: 0.3 },
+        { name: 'eta', km: 47176, widthKm: 1.6, tau: 0.4 },
+        { name: 'gamma', km: 47626, widthKm: 2.5, tau: 0.3 },
+        { name: 'delta', km: 48303, widthKm: 5, tau: 0.5 },
+        { name: 'lambda', km: 50024, widthKm: 2, tau: 0.1 },
+        { name: 'epsilon', km: 51149, widthKm: 58, tau: 1.4 }
+    ];
+    const bands = RING_TABLE.map(b => ({
+        r: b.km * KM_TO_UNITS,
+        w: Math.max(2.5, b.widthKm * KM_TO_UNITS * 0.6),
+        d: Math.min(0.75, 0.12 + 0.25 * b.tau)
+    }));
     function ringDensity(x, z) {
         const dist = Math.hypot(x - RING_CX, z - RING_CZ);
-        const bands = [
-            { r: 2400, w: 55, d: 0.10 },  // ζ — diffuse inner haze
-            { r: 2470, w: 14, d: 0.30 },  // inner narrow rings merged
-            { r: 2540, w: 16, d: 0.42 },  // α
-            { r: 2600, w: 12, d: 0.38 },  // η
-            { r: 2670, w: 30, d: 0.62 },  // ε — the brightest band; station 02 sits inside
-            { r: 2780, w: 14, d: 0.34 },  // δ
-            { r: 2960, w: 18, d: 0.40 },  // shepherd-moonlet band
-            { r: 3100, w: 14, d: 0.32 },  // outer thread
-        ];
         for (const b of bands) {
             const t = Math.abs(dist - b.r) / b.w;
             if (t < 1) {

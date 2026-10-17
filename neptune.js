@@ -105,7 +105,7 @@
     const stations = expedition.stations;
     let discoveryUI = null, featuredRock = null;
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
-    let skyPivot = null, neptuneMesh = null, starField = null, ambientLight = null, thrustActive = false, iceField = [], deckSheet = null, puffGroup = null, composer = null, fxaaPass = null, cinePass = null, sunMesh = null, shaftPass = null, moonlet = null, tiltMarker = null, stormVortex = null, pingTimer = 2;
+    let skyPivot = null, neptuneMesh = null, starField = null, ambientLight = null, thrustActive = false, iceField = [], deckSheet = null, composer = null, fxaaPass = null, cinePass = null, sunMesh = null, shaftPass = null, moonlet = null, tiltMarker = null, stormVortex = null, pingTimer = 2;
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
     const position = { x: stations[0].x, z: stations[0].z };
     const touchDevice = matchMedia('(pointer: coarse)').matches;
@@ -358,40 +358,6 @@
         tiltMarker.userData.tipped = tipped;
         scene.add(tiltMarker);
     }
-    function puffTexture() {
-        const canvas = document.createElement('canvas');
-        canvas.width = canvas.height = 128;
-        const ctx = canvas.getContext('2d');
-        for (let i = 0; i < 22; i++) {
-            const a = rand() * Math.PI * 2, r = rand() * 36;
-            const x = 64 + Math.cos(a) * r, y = 64 + Math.sin(a) * r;
-            const s = 16 + rand() * 30;
-            const g = ctx.createRadialGradient(x, y, 0, x, y, s);
-            g.addColorStop(0, `rgba(210,225,245,${0.05 + rand() * 0.08})`);
-            g.addColorStop(1, 'rgba(0,0,0,0)');
-            ctx.fillStyle = g;
-            ctx.fillRect(x - s, y - s, s * 2, s * 2);
-        }
-        return new THREE.CanvasTexture(canvas);
-    }
-    // Sparse methane haze wisps drifting near the deck — depth, not weather.
-    function buildPuffs() {
-        const tex = puffTexture();
-        puffGroup = new THREE.Group();
-        for (let i = 0; i < 90; i++) {
-            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-                map: tex, color: 0xaec4dd, transparent: true, opacity: 0.06 + rand() * 0.08, depthWrite: false
-            }));
-            const w = 90 + rand() * 220;
-            sprite.scale.set(w, w * (0.06 + rand() * 0.08), 1);
-            const angle = rand() * Math.PI * 2, r = 30 + Math.sqrt(rand()) * 380;
-            sprite.position.set(Math.cos(angle) * r, (rand() - 0.5) * 14 - 2, Math.sin(angle) * r);
-            sprite.userData.phase = rand() * Math.PI * 2;
-            puffGroup.add(sprite);
-        }
-        puffGroup.renderOrder = 1;
-        scene.add(puffGroup);
-    }
     function buildSky() {
         // Gradient sky dome: the methane haze glows paler toward the horizon and matches the
         // fog colour there, so the far cloud deck melts into the sky instead of ending in a hard line.
@@ -457,30 +423,15 @@
         // around. From inside the storm layer it reads as a dark vastness ahead.
         const vortexPos = new THREE.Vector3(NeptuneStorm.VORTEX_X, 2, NeptuneStorm.VORTEX_Z);
         {
-            const vc = document.createElement('canvas');
-            vc.width = vc.height = 512;
-            const vctx = vc.getContext('2d');
-            const vgrad = vctx.createRadialGradient(256, 256, 16, 256, 256, 256);
-            vgrad.addColorStop(0, 'rgba(5,10,20,0.98)');
-            vgrad.addColorStop(0.5, 'rgba(10,22,38,0.9)');
-            vgrad.addColorStop(0.8, 'rgba(24,44,74,0.5)');
-            vgrad.addColorStop(1, 'rgba(24,44,74,0)');
-            vctx.fillStyle = vgrad;
-            vctx.fillRect(0, 0, 512, 512);
-            vctx.strokeStyle = 'rgba(150,185,220,0.32)';
-            for (let i = 0; i < 30; i++) {
-                const r0 = 90 + NeptuneStorm.random() * 150;
-                const a0 = NeptuneStorm.random() * Math.PI * 2;
-                vctx.beginPath();
-                vctx.arc(256, 256, r0, a0, a0 + 0.6 + NeptuneStorm.random() * 1.0);
-                vctx.lineWidth = 1.5 + NeptuneStorm.random() * 3.5;
-                vctx.stroke();
-            }
-            const vortexTex = new THREE.CanvasTexture(vc);
-            vortexTex.encoding = THREE.sRGBEncoding;
+            // The Great Dark Spot: a native shader anticyclone (dark core, soft navy rim, banded spiral arms).
+            const vortexMaterial = new THREE.ShaderMaterial({
+                transparent: true, depthWrite: false, fog: false,
+                vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+                fragmentShader: 'varying vec2 vUv; void main(){ vec2 p = (vUv - 0.5) * 2.0; float r = length(p); float a = atan(p.y, p.x); float arms = sin(4.0 * a - log(r + 0.05) * 11.0); float streak = smoothstep(0.55, 0.95, arms * 0.5 + 0.5) * (1.0 - smoothstep(0.7, 1.0, r)); vec3 core = vec3(0.02, 0.04, 0.08); vec3 rim = vec3(0.1, 0.17, 0.29); vec3 col = mix(core, rim, smoothstep(0.0, 0.8, r)); col += vec3(0.35, 0.5, 0.65) * streak * 0.25; float alpha = (1.0 - smoothstep(0.85, 1.0, r)) * 0.95; gl_FragColor = vec4(col, alpha); }'
+            });
             stormVortex = new THREE.Mesh(
                 new THREE.CircleGeometry(NeptuneStorm.VORTEX_R, 72),
-                new THREE.MeshBasicMaterial({ map: vortexTex, transparent: true, depthWrite: false, fog: false })
+                vortexMaterial
             );
             stormVortex.rotation.x = -Math.PI / 2;
             stormVortex.position.copy(vortexPos);
@@ -825,11 +776,6 @@
                 voyager.rotation.y = yaw + 0.5;
                 voyager.rotation.z = 0.08 + Math.sin(now * 0.0003) * 0.03;
             }
-            if (puffGroup) {
-                for (const puff of puffGroup.children) {
-                    puff.position.x += Math.sin(now * 0.00008 + puff.userData.phase) * dt * 1.4;
-                }
-            }
             if (moonlet) { moonlet.rotation.y += dt * 0.12; moonlet.rotation.x += dt * 0.03; }
             if (tiltMarker && tiltMarker.userData.tipped) tiltMarker.userData.tipped.rotation.y += dt * 0.25;
             if (starField) starField.rotation.y += dt * 0.0015;
@@ -1022,7 +968,6 @@
             buildDeckSheet();
             buildIceField();
             buildSpecks();
-            buildPuffs();
             buildMoonlet();
             buildTiltMarker();
             buildProbe();

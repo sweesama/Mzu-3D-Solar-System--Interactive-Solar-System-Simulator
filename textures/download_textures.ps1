@@ -53,7 +53,9 @@ $textures = @(
     # —— 海王星卫星 ——
     @{ Name = "moon_triton.jpg";   Url = "$ALBERS_BASE/neptune/triton/triton_rgb_cyl_www.jpg";    Desc = "海卫一 Triton (逆行)" }
     # —— 冥卫 ——
-    @{ Name = "moon_charon.jpg";   Url = "$ALBERS_BASE/pluto/charon/charon_rgb_cyl.jpg";          Desc = "冥卫一 Charon" }
+    @{ Name = "moon_charon.jpg";   Url = "$ALBERS_BASE/pluto/charon/charon_rgb_cyl.jpg";          Desc = "冥ca卫一 Charon" }
+    # 冥王星：源文件只有 8K PNG（约 90 MB），已缩小为 textures/pluto_rgb_cyl_2k.jpg（294 KB）。
+    # 来源：$ALBERS_BASE/pluto/pluto_rgb_cyl_8k.png
     # —— 火星卫星（来自 Grant Hutchison/Cornell，基于 NASA 公开域素材）——
     @{ Name = "moon_phobos.jpg";   Url = "https://www.classe.cornell.edu/~seb/celestia/hutchison/phobos2k.jpg"; Desc = "火卫一 Phobos" }
     @{ Name = "moon_deimos.jpg";   Url = "https://www.classe.cornell.edu/~seb/celestia/hutchison/deimos2k.jpg"; Desc = "火卫二 Deimos" }

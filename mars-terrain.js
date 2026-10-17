@@ -42,8 +42,23 @@
         const t = Math.max(0, Math.min(1, (value - edge0) / (edge1 - edge0)));
         return t * t * (3 - 2 * t);
     }
+    // Real HiRISE ground detail (1 km window, 2 m samples, centimetres). Added on top of the hand-placed
+    // terrain so stations, route and mesas stay where they are. Without setDetail() it adds nothing.
+    const DETAIL_HALF = 500, DETAIL_STEP = 2, DETAIL_SIZE = 500;
+    let detail = null;
+    function setDetail(data) { detail = data; }
+    function detailAt(x, z) {
+        if (!detail || Math.abs(x) >= DETAIL_HALF || Math.abs(z) >= DETAIL_HALF) return 0;
+        const c = Math.max(0, Math.min(DETAIL_SIZE - 1.001, (x + DETAIL_HALF) / DETAIL_STEP - 0.5));
+        const r = Math.max(0, Math.min(DETAIL_SIZE - 1.001, (z + DETAIL_HALF) / DETAIL_STEP - 0.5));
+        const c0 = Math.floor(c), r0 = Math.floor(r), fc = c - c0, fr = r - r0;
+        const at = (rr, cc) => detail[rr * DETAIL_SIZE + cc];
+        const top = at(r0, c0) * (1 - fc) + at(r0, c0 + 1) * fc;
+        const bottom = at(r0 + 1, c0) * (1 - fc) + at(r0 + 1, c0 + 1) * fc;
+        return (top * (1 - fr) + bottom * fr) / 100;
+    }
     function height(x, z) {
-        let h = (noise(x * 0.008 + 3, z * 0.008 + 9) - 0.5) * 14;
+        let h = detailAt(x, z) + (noise(x * 0.008 + 3, z * 0.008 + 9) - 0.5) * 14;
         h += (noise(x * 0.034 + 1, z * 0.034 + 2) - 0.5) * 2.6;
         h += (noise(x * 0.13 + 7, z * 0.13 + 4) - 0.5) * 0.6;
         h += (noise(x * 0.45 + 11, z * 0.45 + 6) - 0.5) * 0.15;
@@ -163,6 +178,6 @@
         }
         return body;
     }
-    root.MarsTerrain = Object.freeze({ WALK_RADIUS, GRAVITY, EARTH_GRAVITY, EYE_HEIGHT, WALK_SPEED, FAST_SPEED, JUMP_SPEED, craters, random, noise, height, createSurface, sampleSurface, move, createWalker, updateWalker });
+    root.MarsTerrain = Object.freeze({ WALK_RADIUS, GRAVITY, EARTH_GRAVITY, EYE_HEIGHT, WALK_SPEED, FAST_SPEED, JUMP_SPEED, craters, random, noise, height, setDetail, createSurface, sampleSurface, move, createWalker, updateWalker });
     if (typeof module !== 'undefined' && module.exports) module.exports = root.MarsTerrain;
 }(typeof globalThis !== 'undefined' ? globalThis : this));

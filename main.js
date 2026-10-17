@@ -89,7 +89,8 @@
             Haumea: { orbitDays: 103410, spinHours: 3.915 },
             Moon: { orbitDays: 27.322 }, Phobos: { orbitDays: 0.31891 }, Deimos: { orbitDays: 1.26244 },
             Io: { orbitDays: 1.769 }, Europa: { orbitDays: 3.551 }, Ganymede: { orbitDays: 7.155 }, Callisto: { orbitDays: 16.689 },
-            Mimas: { orbitDays: 0.942 }, Titan: { orbitDays: 15.945 }, Rhea: { orbitDays: 4.518 },
+            Mimas: { orbitDays: 0.942, spinHours: 22.6 }, Titan: { orbitDays: 15.945, spinHours: 382.7 }, Rhea: { orbitDays: 4.518, spinHours: 108.4 },
+            Enceladus: { orbitDays: 1.370, spinHours: 32.9 }, Tethys: { orbitDays: 1.888, spinHours: 45.3 }, Dione: { orbitDays: 2.737, spinHours: 65.7 }, Iapetus: { orbitDays: 79.32, spinHours: 1903.9 },
             Miranda: { orbitDays: 1.413 }, Ariel: { orbitDays: 2.52 }, Umbriel: { orbitDays: 4.144 }, Titania: { orbitDays: 8.706 }, Oberon: { orbitDays: 13.463 },
             Triton: { orbitDays: 5.877 }, Nereid: { orbitDays: 360.13, spinHours: 11.594 },
             Charon: { orbitDays: 6.387 }, Styx: { orbitDays: 20.16 }, Nix: { orbitDays: 24.85 }, Kerberos: { orbitDays: 32.17 }, Hydra: { orbitDays: 38.2 },
@@ -276,6 +277,10 @@
             'Mimas':    'textures/moon_mimas.webp',
             'Titan':    'textures/moon_titan.jpg',
             'Rhea':     'textures/moon_rhea.webp',
+            'Enceladus': 'textures/moon_enceladus.jpg',
+            'Tethys':   'textures/moon_tethys.jpg',
+            'Dione':    'textures/moon_dione.jpg',
+            'Iapetus':  'textures/moon_iapetus.jpg',
             // 天王星卫星：
             'Miranda':  'textures/moon_miranda.jpg',
             'Ariel':    'textures/moon_ariel.jpg',
@@ -286,6 +291,8 @@
             'Triton':   'textures/moon_triton.jpg',
             // 冥卫：
             'Charon':   'textures/moon_charon.jpg',
+            // 冥王星（Steve Albers 基于 New Horizons 数据的地图，8K 缩小为 2K）：
+            'Pluto':    'textures/pluto_rgb_cyl_2k.jpg',
             // 火星卫星（来自 Grant Hutchison/Cornell，基于 NASA 公开域素材）：
             'Phobos':   'textures/moon_phobos.jpg',
             'Deimos':   'textures/moon_deimos.jpg'
@@ -352,9 +359,12 @@
                 speed: 0.0097, rotationSpeed: 0.040, axialTilt: 0.4660, materialProps: { roughness: 0.75, metalness: 0.05 }, isSaturn: true, hasRings: true, ringType: "saturn",
                 moons: [
                     { name: 'Mimas', displayName: 'Mimas', type: "Moon", e: 0.0196, radius: 0.1, radiusMetric: 198.2, orbitRadius: 6, orbitSemiMajorAxisAU: 0.001240, speed: 0.07, color: 0xbbbbbb, materialProps: { roughness: 0.85, metalness: 0.05 }, isMimas: true, rotationSpeed: 0.008 },
-                    { name: 'Titan', displayName: 'Titan', type: "Moon", e: 0.0288, radius: 0.7, radiusMetric: 2574.7, orbitRadius: 7.5, orbitSemiMajorAxisAU: 0.008168, speed: 0.055, color: 0xffa500, materialProps: { roughness: 0.6, metalness: 0.1 }, isTitan: true, hasAtmosphere: true, atmosphereColor:0xffc04d, atmosphereScale: 1.05, rotationSpeed: 0.003 },
-                    { name: 'Rhea', displayName: 'Rhea', type: "Moon", e: 0.001, radius: 0.25, radiusMetric: 763.8, orbitRadius: 9.5, orbitSemiMajorAxisAU: 0.003523, speed: 0.05, color: 0xb0b0b0, materialProps: { roughness: 0.8, metalness: 0.05 }, isRhea: true, rotationSpeed: 0.005 },
-                    // Dione and Tethys omitted for brevity but should be added with metric data if desired
+                    { name: 'Titan', displayName: 'Titan', type: "Moon", e: 0.0288, radius: 0.7, radiusMetric: 2574.7, orbitRadius: 11.5, orbitSemiMajorAxisAU: 0.008168, speed: 0.017, color: 0xffa500, materialProps: { roughness: 0.6, metalness: 0.1 }, isTitan: true, hasAtmosphere: true, atmosphereColor:0xffc04d, atmosphereScale: 1.05, rotationSpeed: 0.003 },
+                    { name: 'Rhea', displayName: 'Rhea', type: "Moon", e: 0.001, radius: 0.25, radiusMetric: 763.8, orbitRadius: 9.5, orbitSemiMajorAxisAU: 0.003523, speed: 0.032, color: 0xb0b0b0, materialProps: { roughness: 0.8, metalness: 0.05 }, isRhea: true, rotationSpeed: 0.005 },
+                    { name: 'Enceladus', displayName: 'Enceladus', type: "Moon", e: 0.0047, radius: 0.11, radiusMetric: 252.1, orbitRadius: 6.6, orbitSemiMajorAxisAU: 0.001590, speed: 0.058, color: 0xe8f0f5, materialProps: { roughness: 0.6, metalness: 0.05 }, rotationSpeed: 0.007 },
+                    { name: 'Tethys', displayName: 'Tethys', type: "Moon", e: 0.0001, radius: 0.18, radiusMetric: 531.1, orbitRadius: 8.0, orbitSemiMajorAxisAU: 0.001968, speed: 0.049, color: 0xd0d0d0, materialProps: { roughness: 0.8, metalness: 0.05 }, rotationSpeed: 0.006 },
+                    { name: 'Dione', displayName: 'Dione', type: "Moon", e: 0.0022, radius: 0.19, radiusMetric: 561.4, orbitRadius: 8.6, orbitSemiMajorAxisAU: 0.002519, speed: 0.041, color: 0xc8c8c8, materialProps: { roughness: 0.8, metalness: 0.05 }, rotationSpeed: 0.005 },
+                    { name: 'Iapetus', displayName: 'Iapetus', type: "Moon", e: 0.0283, radius: 0.23, radiusMetric: 734.5, orbitRadius: 14.5, orbitSemiMajorAxisAU: 0.023743, speed: 0.0076, color: 0x7a6e60, materialProps: { roughness: 0.85, metalness: 0.05 }, rotationSpeed: 0.002 },
                 ]
             },
             { name: 'Uranus', displayName: 'Uranus', type: "Planet", e: 0.0457, color: 0xafdde9,
@@ -373,7 +383,7 @@
                 speed: 0.0054, rotationSpeed: 0.026, axialTilt: 0.4945, materialProps: { roughness: 0.65, metalness: 0.1 }, isNeptune: true, hasRings: true, ringType: "neptune",
                 moons: [
                     { name: 'Triton', displayName: 'Triton', type: "Moon", e: 0.000016, radius: 0.21, radiusMetric: 1353.4, orbitRadius: 4.2, orbitSemiMajorAxisAU: 0.002371, speed: -0.025, color: 0xb8c6db, materialProps: { roughness: 0.6, metalness: 0.15 }, isTriton: true, hasAtmosphere: true, atmosphereColor: 0xc8d6e8, atmosphereScale: 1.02, rotationSpeed: -0.008 },
-                    { name: 'Nereid', displayName: 'Nereid', type: "Moon", e: 0.7512, radius: 0.08, radiusMetric: 170.0, orbitRadius: 12.5, orbitSemiMajorAxisAU: 0.036087, speed: 0.003, color: 0x8a9bb0, materialProps: { roughness: 0.9, metalness: 0.05 }, isNereid: true, rotationSpeed: 0.002 }
+                    { name: 'Nereid', displayName: 'Nereid', type: "Moon", e: 0.7512, radius: 0.08, radiusMetric: 170.0, orbitRadius: 12.5, orbitSemiMajorAxisAU: 0.036087, speed: 0.003, color: 0x8a9bb0, materialProps: { roughness: 0.9, metalness: 0.05 }, isNereid: true, isTinyMoon: true, rotationSpeed: 0.002 }
                 ]
             },
             // Dwarf Planet System
@@ -382,10 +392,10 @@
                 speed: 0.0047, rotationSpeed: 0.015, axialTilt: 3.1289, materialProps: { roughness: 0.85, metalness: 0.05 }, isPluto: true,
                 moons: [
                     { name: 'Charon', displayName: 'Charon', type: "Moon", e: 0.0002, radius: 0.09, radiusMetric: 606.0, orbitRadius: 1.0, orbitSemiMajorAxisAU: 0.000196, speed: 0.112, color: 0x8b7d6b, materialProps: { roughness: 0.85, metalness: 0.05 }, isCharon: true, rotationSpeed: 0.015 },
-                    { name: 'Styx', displayName: 'Styx', type: "Moon", e: 0.0001, radius: 0.02, radiusMetric: 16.0, orbitRadius: 1.8, orbitSemiMajorAxisAU: 0.000324, speed: 0.085, color: 0x6b5d4b, materialProps: { roughness: 0.9, metalness: 0.0 }, rotationSpeed: 0.01 },
-                    { name: 'Nix', displayName: 'Nix', type: "Moon", e: 0.0001, radius: 0.025, radiusMetric: 49.8, orbitRadius: 2.2, orbitSemiMajorAxisAU: 0.000396, speed: 0.072, color: 0x7b6d5b, materialProps: { roughness: 0.9, metalness: 0.0 }, rotationSpeed: 0.01 },
-                    { name: 'Kerberos', displayName: 'Kerberos', type: "Moon", e: 0.0001, radius: 0.015, radiusMetric: 19.0, orbitRadius: 2.6, orbitSemiMajorAxisAU: 0.000468, speed: 0.062, color: 0x5b4d3b, materialProps: { roughness: 0.9, metalness: 0.0 }, rotationSpeed: 0.01 },
-                    { name: 'Hydra', displayName: 'Hydra', type: "Moon", e: 0.0001, radius: 0.03, radiusMetric: 61.0, orbitRadius: 3.0, orbitSemiMajorAxisAU: 0.000540, speed: 0.055, color: 0x7b6d5b, materialProps: { roughness: 0.9, metalness: 0.0 }, rotationSpeed: 0.01 }
+                    { name: 'Styx', displayName: 'Styx', type: "Moon", e: 0.0001, radius: 0.02, radiusMetric: 16.0, orbitRadius: 1.8, orbitSemiMajorAxisAU: 0.000324, speed: 0.085, color: 0x6b5d4b, materialProps: { roughness: 0.9, metalness: 0.0 }, isTinyMoon: true, rotationSpeed: 0.01 },
+                    { name: 'Nix', displayName: 'Nix', type: "Moon", e: 0.0001, radius: 0.025, radiusMetric: 49.8, orbitRadius: 2.2, orbitSemiMajorAxisAU: 0.000396, speed: 0.072, color: 0x7b6d5b, materialProps: { roughness: 0.9, metalness: 0.0 }, isTinyMoon: true, rotationSpeed: 0.01 },
+                    { name: 'Kerberos', displayName: 'Kerberos', type: "Moon", e: 0.0001, radius: 0.015, radiusMetric: 19.0, orbitRadius: 2.6, orbitSemiMajorAxisAU: 0.000468, speed: 0.062, color: 0x5b4d3b, materialProps: { roughness: 0.9, metalness: 0.0 }, isTinyMoon: true, rotationSpeed: 0.01 },
+                    { name: 'Hydra', displayName: 'Hydra', type: "Moon", e: 0.0001, radius: 0.03, radiusMetric: 61.0, orbitRadius: 3.0, orbitSemiMajorAxisAU: 0.000540, speed: 0.055, color: 0x7b6d5b, materialProps: { roughness: 0.9, metalness: 0.0 }, isTinyMoon: true, rotationSpeed: 0.01 }
                 ]
             },
             { name: 'Ceres', displayName: 'Ceres', type: "Dwarf Planet", e: 0.0760, color: 0x8b7355,
@@ -2408,6 +2418,10 @@ self.onmessage = function(e) {
                 planetMaterial = new THREE.MeshStandardMaterial({ map: texture, ...planetData.materialProps });
             } else if (planetData.isHaumea) { /* ... NO CHANGE IN TEXTURE LOGIC ... */
                 texture = createProceduralTexture(128, 64, (ctx, w, h) => { /* Haumea */ ctx.fillStyle = '#8b7b6b'; ctx.fillRect(0,0,w,h); ctx.globalAlpha = 0.4; for(let i=0; i<85; i++) { ctx.fillStyle = (Math.random() > 0.55) ? 'rgba(130,110,90,0.4)' : 'rgba(80,60,40,0.3)'; ctx.fillRect(Math.random()*w, Math.random()*h, 1, 1); } ctx.globalAlpha = 1.0; ctx.fillStyle = 'rgba(120,100,80,0.6)'; for(let i=0; i<9; i++) { ctx.beginPath(); const cx = Math.random()*w; const cy = Math.random()*h; const rx = Math.random()*w*0.13 + w*0.04; const ry = Math.random()*h*0.11 + h*0.04; ctx.ellipse(cx,cy,rx,ry, Math.random()*Math.PI, 0,2*Math.PI); ctx.fill(); } ctx.fillStyle = 'rgba(140,120,100,0.5)'; ctx.beginPath(); ctx.arc(w*0.65, h*0.35, w*0.05, 0, Math.PI*2); ctx.fill(); });
+                planetMaterial = new THREE.MeshStandardMaterial({ map: texture, ...planetData.materialProps });
+            } else if (planetData.isTinyMoon || planetData.isNereid) { /* No survey map exists for these Hubble-only bodies, so they get a cratered surface in their own colour */
+                const base = '#' + planetData.color.toString(16).padStart(6, '0');
+                texture = createProceduralTexture(256, 128, (ctx, w, h) => { ctx.fillStyle = base; ctx.fillRect(0, 0, w, h); for (let i = 0; i < 70; i++) { const cx = Math.random() * w, cy = Math.random() * h, r = 2 + Math.random() * 12; ctx.fillStyle = 'rgba(0,0,0,0.25)'; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.beginPath(); ctx.arc(cx + r * 0.25, cy + r * 0.25, r * 0.8, 0, Math.PI * 2); ctx.fill(); } });
                 planetMaterial = new THREE.MeshStandardMaterial({ map: texture, ...planetData.materialProps });
             }
             else { /* ... NO CHANGE ... */
