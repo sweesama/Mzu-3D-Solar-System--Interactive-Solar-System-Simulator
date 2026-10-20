@@ -4,8 +4,8 @@
 
 ## Start here
 
-- [Interactive explorer](https://www.3dsolarsystem.net/): Rotate, zoom, select objects, follow a planet tour, switch between artistic and real orbital speeds, and share a focused view.
-- [How to explore space in 3D](https://www.3dsolarsystem.net/space-explorer-guide.html): step-by-step guide to the controls, scale and speed menus, tour, expeditions and embedding.
+- [3D solar system simulator](https://www.3dsolarsystem.net/): Rotate, zoom and select the Sun, eight planets, moons and dwarf planets; follow a planet tour; switch artistic or real scale and speed; share, save or embed a view. Not a live ephemeris.
+- [Explore space online in 3D](https://www.3dsolarsystem.net/space-explorer-guide.html): step-by-step guide to the controls, scale and speed menus, tour, expeditions and embedding.
 - [Planet sizes and distances compared](https://www.3dsolarsystem.net/planet-sizes-and-distances.html): NASA diameters, distances, periods and a 1-metre-Sun scale model.
 
 ## Planet pages (3D view + facts + FAQ with NASA sources)
@@ -40,5 +40,7 @@ This is an artistic educational visualization, not a live ephemeris or professio
 - Focus links using `?focus=Earth` (replace Earth with another supported object)
 - Embeddable view using `?embed=1`
 - Downloadable canvas snapshot
-- Basic radius, semi-major-axis, and eccentricity information for selectable objects
+- Basic radius, semi-major-axis, and eccentricity information for selectable planets, moons and dwarf planets (Pluto, Ceres, Eris, Makemake, Haumea)
+- A visual asteroid belt, a Kuiper belt, rings on Jupiter, Saturn, Uranus and Neptune, a Halley-type example comet and a long-period example comet. Not a live catalog. High and Balanced quality also load shape models of Bennu and Itokawa; Low does not.
+- Optional background music and an orbit-glow toggle. Quality is Auto, High, Balanced or Low.
 - Facts follow the NASA Planetary Fact Sheet (https://nssdc.gsfc.nasa.gov/planetary/factsheet/) and NASA Science planet pages
