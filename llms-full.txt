@@ -35,6 +35,8 @@ The scene is not a real-time model of the current Solar System. It does not calc
 - Use Share view to copy or send the current focus URL.
 - Use Save image to download the rendered canvas as a PNG.
 - Use Copy embed to copy a responsive iframe snippet. `?embed=1` hides the main interface for embedding.
+- The orbital scene includes the Sun, eight planets, many moons, and the dwarf planets Pluto, Ceres, Eris, Makemake and Haumea. A visual asteroid belt and a Kuiper belt are scenery, not a named catalog. Jupiter, Saturn, Uranus and Neptune have rings. A Halley-type comet and a long-period comet are examples, not live positions. High and Balanced quality load shape models of Bennu and Itokawa; Low skips them.
+- Scale is Artistic, Real distances, Real sizes or True scale. Speed is Artistic or real orbital and rotation periods at 1 hour, 1 day, 1 week, 1 month or 1 year per second, with spins faster than 2 turns per second capped. Music and orbit glow are optional toggles. Press G to hide the guide.
 
 ## Moon surface expedition
 
