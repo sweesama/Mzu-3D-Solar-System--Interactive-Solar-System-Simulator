@@ -4,7 +4,7 @@
 
 ## Start here
 
-- [3D solar system simulator](https://www.3dsolarsystem.net/): Rotate, zoom and select the Sun, eight planets, moons and dwarf planets; follow a planet tour; switch artistic or real scale and speed; share, save or embed a view. Not a live ephemeris.
+- [Solar system 3D simulator](https://www.3dsolarsystem.net/): Rotate, zoom and select the Sun, eight planets, moons and dwarf planets; follow a planet tour; switch artistic or real scale and speed; share, save or embed a view. Not a live ephemeris.
 - [Explore space online in 3D](https://www.3dsolarsystem.net/space-explorer-guide.html): step-by-step guide to the controls, scale and speed menus, tour, expeditions and embedding.
 - [Planet sizes and distances compared](https://www.3dsolarsystem.net/planet-sizes-and-distances.html): NASA diameters, distances, periods and a 1-metre-Sun scale model.
 
