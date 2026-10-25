@@ -105,7 +105,7 @@
     const stations = expedition.stations;
     let discoveryUI = null, featuredRock = null;
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
-    let skyPivot = null, saturnMesh = null, starField = null, ambientLight = null, thrustActive = false, iceField = [], ringSheet = null, puffGroup = null, composer = null, fxaaPass = null, cinePass = null, sunMesh = null, shaftPass = null, moonlet = null, propeller = null, pingTimer = 2;
+    let skyPivot = null, saturnMesh = null, starField = null, ambientLight = null, thrustActive = false, iceField = [], ringSheet = null, composer = null, fxaaPass = null, cinePass = null, sunMesh = null, shaftPass = null, moonlet = null, propeller = null, pingTimer = 2;
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
     const position = { x: stations[0].x, z: stations[0].z };
     const touchDevice = matchMedia('(pointer: coarse)').matches;
@@ -355,40 +355,6 @@
         propeller.position.set(150, 2.2, -180);
         propeller.renderOrder = 2;
         scene.add(propeller);
-    }
-    function puffTexture() {
-        const canvas = document.createElement('canvas');
-        canvas.width = canvas.height = 128;
-        const ctx = canvas.getContext('2d');
-        for (let i = 0; i < 22; i++) {
-            const a = rand() * Math.PI * 2, r = rand() * 36;
-            const x = 64 + Math.cos(a) * r, y = 64 + Math.sin(a) * r;
-            const s = 16 + rand() * 30;
-            const g = ctx.createRadialGradient(x, y, 0, x, y, s);
-            g.addColorStop(0, `rgba(210,225,245,${0.05 + rand() * 0.08})`);
-            g.addColorStop(1, 'rgba(0,0,0,0)');
-            ctx.fillStyle = g;
-            ctx.fillRect(x - s, y - s, s * 2, s * 2);
-        }
-        return new THREE.CanvasTexture(canvas);
-    }
-    // Sparse icy haze wisps hovering near the plane — depth, not weather.
-    function buildPuffs() {
-        const tex = puffTexture();
-        puffGroup = new THREE.Group();
-        for (let i = 0; i < 90; i++) {
-            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-                map: tex, color: 0xaec4dd, transparent: true, opacity: 0.06 + rand() * 0.08, depthWrite: false
-            }));
-            const w = 90 + rand() * 220;
-            sprite.scale.set(w, w * (0.06 + rand() * 0.08), 1);
-            const angle = rand() * Math.PI * 2, r = 30 + Math.sqrt(rand()) * 380;
-            sprite.position.set(Math.cos(angle) * r, (rand() - 0.5) * 14 - 2, Math.sin(angle) * r);
-            sprite.userData.phase = rand() * Math.PI * 2;
-            puffGroup.add(sprite);
-        }
-        puffGroup.renderOrder = 1;
-        scene.add(puffGroup);
     }
     function buildSky() {
         // Starfield dome
@@ -851,11 +817,6 @@
                 cassini.rotation.y = yaw + 0.5;
                 cassini.rotation.z = 0.08 + Math.sin(now * 0.0003) * 0.03;
             }
-            if (puffGroup) {
-                for (const puff of puffGroup.children) {
-                    puff.position.x += Math.sin(now * 0.00008 + puff.userData.phase) * dt * 1.4;
-                }
-            }
             if (moonlet) { moonlet.rotation.y += dt * 0.12; moonlet.rotation.x += dt * 0.03; }
             if (propeller) propeller.rotation.z += dt * 0.05;
             if (starField) starField.rotation.y += dt * 0.0015;
@@ -1047,7 +1008,6 @@
             buildRingSheet();
             buildIceField();
             buildSpecks();
-            buildPuffs();
             buildMoonlet();
             buildPropeller();
             buildProbe();

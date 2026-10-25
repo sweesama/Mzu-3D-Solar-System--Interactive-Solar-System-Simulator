@@ -223,6 +223,8 @@
         map.repeat.set(repeats, repeats);
         map.needsUpdate = true;
         const material = new THREE.MeshStandardMaterial({ map, bumpMap: map, bumpScale: 0.055, roughness: 1, metalness: 0, vertexColors: true });
+        // Photo-scanned regolith (colour, normal, roughness) replaces the generated noise texture
+        if (window.ExpeditionGround) ExpeditionGround.upgrade(material, repeats, 0xc9bfb1, Math.min(8, renderer.capabilities.getMaxAnisotropy()));
         material.onBeforeCompile = shader => {
             shader.vertexShader = 'varying vec3 vGroundPosition;\n' + shader.vertexShader;
             shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvGroundPosition = position;');
@@ -586,20 +588,12 @@
         scene.add(astronaut);
     }
     function buildFootprints() {
-        const canvas = document.createElement('canvas');
-        canvas.width = 64; canvas.height = 96;
-        const context = canvas.getContext('2d');
-        context.translate(32, 48);
-        context.fillStyle = 'rgba(56,34,22,0.55)';
-        context.beginPath(); context.ellipse(0, 0, 13, 22, 0, 0, Math.PI * 2); context.fill();
-        context.fillStyle = 'rgba(36,21,14,0.8)';
-        for (let i = 0; i < 8; i++) context.fillRect(-11, -20 + i * 5, 22, 2.6);
-        context.fillStyle = 'rgba(32,19,13,0.85)';
-        context.fillRect(-10, 15, 20, 8);
-        const texture = new THREE.CanvasTexture(canvas);
+        // Real Apollo 11 bootprint (NASA AS11-40-5878, public domain), cropped to a soft-edged decal
+        const texture = new THREE.TextureLoader().load('textures/footprint_apollo.png');
+        texture.encoding = THREE.sRGBEncoding;
         const geometry = new THREE.PlaneGeometry(0.24, 0.42);
         geometry.rotateX(-Math.PI / 2);
-        const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthWrite: false, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
+        const material = new THREE.MeshBasicMaterial({ map: texture, color: 0xe0d8cc, transparent: true, depthWrite: false, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
         footprints = new THREE.InstancedMesh(geometry, material, 240);
         footprints.frustumCulled = false;
         const hidden = new THREE.Matrix4().makeScale(0, 0, 0);
@@ -1030,7 +1024,7 @@
             const texture = makeTexture();
             buildTerrain(texture);
             await new Promise(resolve => setTimeout(resolve, 20));
-            const rockModels = (await Promise.all([loadRockModel('models/bennu.glb'), loadRockModel('models/itokawa.glb')])).filter(Boolean);
+            const rockModels = (await Promise.all([loadRockModel('models/rocks/moon_rock_01.gltf'), loadRockModel('models/rocks/moon_rock_03.gltf')])).filter(Boolean);
             buildRocks(texture, rockModels);
             buildAstronaut(texture);
             buildFootprints();

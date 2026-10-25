@@ -315,3 +315,11 @@ Checked each expedition's first-glance scene against known physics and removed p
 - `models/nix_shape.json` is Nix's shape model from Porter et al., figshare 12779948, licence CC BY 4.0 (https://figshare.com/articles/online_resource/Shape_Model_of_Nix/12779948). Decimated from 80,000 to 4,052 triangles by `build_hydra_shape.cjs <stl> nix`. Nix uses its Celestia map on this shape.
 - Hi'iaka is drawn as a triaxial ellipsoid with axes 240 x 180 x 143 km (Ortiz et al., stellar occultations, 2025, Nature Communications; https://www.nature.com/articles/s41467-025-65749-1). Its colour follows the reported visible albedo of 0.76. Namaka has no measured shape or map; it stays a sphere with its designed colour.
 - Untextured moons (Hiaka, Namaka, Styx, Kerberos, Hydra) now use their designed colour instead of the default white.
+
+## Photo-scanned ground, rocks and bootprints (walking expeditions)
+
+- **Ground:** `expedition-ground.js` puts a photo-scanned soil material on the Moon, Mars, Venus and Mercury ground (colour, normal and roughness maps). Source: ambientCG "Ground054", CC0. The colour map is desaturated (`textures/regolith_*.jpg`, about 720 KB total) and each world tints it.
+- **Rocks:** boulders use Poly Haven's photo-scanned "Moon Rock 01" and "Moon Rock 03" models (CC0, `models/rocks/`, about 2.7 MB with textures) instead of the Bennu/Itokawa asteroid models. Venus now uses the scanned material too, which fixed its rocks rendering black.
+- **Bootprints:** the footprint decal is the real Apollo 11 bootprint photo (NASA AS11-40-5878, public domain), cleaned of reseau crosses, rotated upright and given a soft alpha edge (`textures/footprint_apollo.png`, 43 KB). Each world tints it.
+- **Saturn and Uranus:** the remaining cloud-puff sprites were removed, matching Jupiter and Neptune.
+- **Not done:** the Venus science station is still built from primitives. A free Venera 12-14 lander model exists on Sketchfab (tashtego), but it needs a manual, logged-in download.
