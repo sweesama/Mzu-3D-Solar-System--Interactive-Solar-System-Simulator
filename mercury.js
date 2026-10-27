@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
     'use strict';
     const $ = id => document.getElementById(id);
     const parameters = new URLSearchParams(location.search);
@@ -475,32 +475,12 @@
         scene.add(gravel);
     }
     function buildSky() {
-        const skyMaterial = new THREE.ShaderMaterial({
-            side: THREE.BackSide, depthWrite: false, depthTest: false,
-            uniforms: { base: { value: new THREE.Color(0x020203) } },
-            vertexShader: 'varying vec3 vP; void main(){vP=position; vec4 mv=modelViewMatrix*vec4(position,1.0); gl_Position=projectionMatrix*mv; gl_Position.z=gl_Position.w;}',
-            fragmentShader: 'uniform vec3 base; varying vec3 vP; void main(){gl_FragColor=vec4(base,1.0);}'
-        });
-        const sky = new THREE.Mesh(new THREE.SphereGeometry(6800, 32, 24), skyMaterial);
-        sky.frustumCulled = false;
-        sky.renderOrder = -1;
-        scene.add(sky);
-        const starRand = MercuryTerrain.random(9137);
-        const starPositions = new Float32Array(1400 * 3);
-        const starColors = new Float32Array(1400 * 3);
-        for (let i = 0; i < 1400; i++) {
-            const theta = starRand() * Math.PI * 2, y = 0.04 + starRand() * 0.96;
-            const r = Math.sqrt(Math.max(0, 1 - y * y));
-            starPositions.set([Math.cos(theta) * r * 6400, y * 6400, Math.sin(theta) * r * 6400], i * 3);
-            const bright = 0.35 + starRand() * 0.65, warm = starRand();
-            starColors.set([bright, bright * (0.88 + warm * 0.12), bright * (0.78 + (1 - warm) * 0.22)], i * 3);
-        }
-        const starGeometry = new THREE.BufferGeometry();
-        starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-        starGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
-        const stars = new THREE.Points(starGeometry, new THREE.PointsMaterial({ size: 2.6, map: dustFx.texture(), vertexColors: true, sizeAttenuation: false, depthWrite: false, transparent: true, opacity: 0.9 }));
-        stars.frustumCulled = false;
-        scene.add(stars);
+        // Real star catalogue + procedural Milky Way (sky-galaxy.js), the same sky as the home page.
+        // Its band sphere covers the whole sky, so no separate black sky sphere is needed.
+        if (window.SkyGalaxy) scene.add(SkyGalaxy.create({
+            radius: 6500, renderer, pixelRatio: renderer.getPixelRatio(), faintStars: quality === 'low' ? 30000 : 70000, starGain: 1.6,
+            bakeSize: quality === 'low' ? 1024 : 2048, centerToward: new THREE.Vector3(0.6, 0.55, -0.6)
+        }));
         skyPivot = new THREE.Group();
         scene.add(skyPivot);
         // 太阳亮度超过 1，泛光通道会让它自然晕开，不再需要光斑贴图

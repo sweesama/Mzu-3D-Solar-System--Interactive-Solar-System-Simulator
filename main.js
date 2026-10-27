@@ -302,7 +302,6 @@
 
         // 背景与特殊贴图（不属于行星本体）
         const EXTRA_TEXTURES = {
-            milkyWay:    'textures/2k_stars_milky_way.jpg',  // 银河背景球
             saturnRing:  'textures/2k_saturn_ring_alpha.png', // 土星环（含 alpha）
             earthClouds: 'textures/2k_earth_clouds.jpg',      // 地球云层（独立透明球）
             earthNight:  'textures/2k_earth_nightmap.jpg'    // 地球夜晚城市灯光
@@ -552,17 +551,9 @@ self.onmessage = function(e) {
             await yieldThread();
             createKuiperBelt();
 
-            updateProgress("Generating Starfield...", 80);
+            updateProgress("Generating Milky Way...", 80);
             await yieldThread();
             createStarfield();
-
-            updateProgress("Loading Milky Way...", 82);
-            await yieldThread();
-            createMilkyWayBackground();
-
-            updateProgress("Generating Nebulae...", 85);
-            await yieldThread();
-            createDistantNebulae();
 
             updateProgress("Creating Comets...", 90);
             await yieldThread();
@@ -781,13 +772,11 @@ self.onmessage = function(e) {
         const _eclipseWorldScale = new THREE.Vector3();
         // 每帧：星空与银河背景跟随镜头（相当于无限远）；靠近很小的天体时把近裁剪面调小，
         // 否则真实大小模式下镜头还没贴近行星，行星就被裁掉了；离某颗行星很近时隐藏它的标记
-        let starfieldObject = null, milkyWayObject = null;
+        let starfieldObject = null;
         const _helperTarget = new THREE.Vector3();
         function updateScaleViewHelpers() {
             if (!starfieldObject) starfieldObject = scene.getObjectByName('starfield');
-            if (!milkyWayObject) milkyWayObject = scene.getObjectByName('milkyWayBackground');
             if (starfieldObject) starfieldObject.position.copy(camera.position);
-            if (milkyWayObject) milkyWayObject.position.copy(camera.position);
 
             const focusDistance = camera.position.distanceTo(controls.target);
             const desiredNear = isRealSize() ? THREE.MathUtils.clamp(focusDistance * 0.01, 1e-5, 0.1) : 0.1;
@@ -3493,153 +3482,13 @@ self.onmessage = function(e) {
         }
 
   
-        function createStarfield() { /* ... NO CHANGE ... */
-            const starQty = renderProfile.stars;
-            const starGeometry = new THREE.BufferGeometry();
-            const positions = new Float32Array(starQty * 3);
-            const colors = new Float32Array(starQty * 3);
-            const sizes = new Float32Array(starQty);
-
-            for (let i = 0; i < starQty; i++) {
-                const r = THREE.MathUtils.randFloat(900, 3000);
-                const theta = Math.random() * Math.PI * 2;
-                const phi = Math.acos((Math.random() * 2) - 1);
-                const i3 = i * 3;
-                positions[i3]     = r * Math.sin(phi) * Math.cos(theta);
-                positions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-                positions[i3 + 2] = r * Math.cos(phi);
-
-                const baseColor = new THREE.Color(0xffffff);
-                const randomColorFactor = Math.random();
-                if (randomColorFactor < 0.4) {
-                    baseColor.lerp(new THREE.Color(0x9ab0ff), Math.random() * 0.7 + 0.1);
-                } else if (randomColorFactor < 0.75) {
-                     baseColor.lerp(new THREE.Color(0xffe8c0), Math.random() * 0.7 + 0.1);
-                }
-                colors[i3] = baseColor.r;
-                colors[i3 + 1] = baseColor.g;
-                colors[i3 + 2] = baseColor.b;
-
-                if (Math.random() < 0.03) {
-                    sizes[i] = Math.random() * 1.2 + 1.0;
-                } else if (Math.random() < 0.2) {
-                     sizes[i] = Math.random() * 0.5 + 0.5;
-                }
-                else {
-                    sizes[i] = Math.random() * 0.3 + 0.2;
-                }
-            }
-            starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            starGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-            starGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-
-            // 自定义星点着色器：PointsMaterial 没有贴图时每颗星都画成正方形，而且会忽略上面算好的 size。
-            // 这里按 size 属性决定大小（有上下限，靠近时不会变成大方块），用 gl_PointCoord 画成柔和圆点，
-            // 并给每颗星一个随机相位做轻微闪烁。
-            starTwinkleUniforms = { uTime: { value: 0 }, uPixelRatio: { value: renderer.getPixelRatio() } };
-            const starMaterial = new THREE.ShaderMaterial({
-                uniforms: starTwinkleUniforms,
-                vertexShader: `
-                    attribute float size;
-                    uniform float uTime;
-                    uniform float uPixelRatio;
-                    varying vec3 vStarColor;
-                    varying float vTwinkle;
-                    void main() {
-                        vStarColor = color;
-                        float phase = fract(sin(dot(position.xz, vec2(12.9898, 78.233))) * 43758.5453) * 6.2831;
-                        vTwinkle = 0.8 + 0.2 * sin(uTime * (0.5 + phase * 0.25) + phase);
-                        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-                        gl_PointSize = clamp(size * 1200.0 / -mvPosition.z, 1.3, 6.0) * uPixelRatio;
-                        gl_Position = projectionMatrix * mvPosition;
-                    }`,
-                fragmentShader: `
-                    varying vec3 vStarColor;
-                    varying float vTwinkle;
-                    void main() {
-                        float d = length(gl_PointCoord - 0.5) * 2.0;
-                        if (d > 1.0) discard;
-                        float glow = 1.0 - d;
-                        glow = glow * glow * (0.6 + 0.4 * glow);
-                        gl_FragColor = vec4(vStarColor * vTwinkle, glow);
-                        #include <encodings_fragment>
-                    }`,
-                transparent: true,
-                blending: THREE.AdditiveBlending,
-                vertexColors: true,
-                depthWrite: false
-            });
-            const stars = new THREE.Points(starGeometry, starMaterial);
-            stars.name = "starfield"; // 每帧跟随镜头，星空永远在"无限远"，真实距离模式下也不会和外行星混在一起
-            scene.add(stars);
-        }
-
-        // 银河背景球：把 2k_stars_milky_way.jpg 贴在一个超大球的内壁
-        // BackSide 让我们从内部看到贴图，camera.far=7000 所以半径 4500 安全在视锥范围内
-        function createMilkyWayBackground() {
-            const loader = new THREE.TextureLoader();
-            const tex = loader.load(EXTRA_TEXTURES.milkyWay,
-                undefined, undefined,
-                (err) => { console.warn(`银河背景贴图加载失败: ${EXTRA_TEXTURES.milkyWay}`, err); }
-            );
-            tex.encoding = THREE.sRGBEncoding;
-            const geo = new THREE.SphereGeometry(4500, 64, 64);
-            const mat = new THREE.MeshBasicMaterial({
-                map: tex,
-                side: THREE.BackSide,   // 从内部看
-                depthWrite: false,       // 不写深度，保证不挡其它物体
-                transparent: true,
-                opacity: 0.55           // 半透明，让程序化星空粒子和星云能透出来叠加
-            });
-            const milkyWay = new THREE.Mesh(geo, mat);
-            milkyWay.name = "milkyWayBackground";
-            milkyWay.renderOrder = -2; // 确保最先渲染（最远背景）
-            scene.add(milkyWay);
-        }
-
-        function createDistantNebulae() { /* ... NO CHANGE ... */
-            const nebulaGeometry = new THREE.SphereGeometry(3500, 64, 64);
-
-            const nebulaTexture = createProceduralTexture(1024, 512, (ctx, w, h) => {
-                ctx.fillStyle = '#000000';
-                ctx.fillRect(0,0,w,h);
-                for(let i=0; i < 100; i++) {
-                    const centerX = Math.random() * w;
-                    const centerY = Math.random() * h;
-                    const radiusX = Math.random() * w * 0.4 + w * 0.15;
-                    const radiusY = Math.random() * h * 0.4 + h * 0.15;
-                    const rotation = Math.random() * Math.PI;
-
-                    const r = Math.floor(Math.random() * 40 + 10);
-                    const g = Math.floor(Math.random() * 40 + 15);
-                    const b = Math.floor(Math.random() * 60 + 30);
-                    const alpha = Math.random() * 0.025 + 0.005;
-
-                    ctx.save();
-                    ctx.translate(centerX, centerY);
-                    ctx.rotate(rotation);
-                    const gradient = ctx.createRadialGradient(0,0,0, 0,0, Math.max(radiusX, radiusY));
-                    gradient.addColorStop(0, `rgba(${r},${g},${b},${alpha})`);
-                    gradient.addColorStop(0.7, `rgba(${r*0.8},${g*0.8},${b*0.8},${alpha*0.5})`);
-                    gradient.addColorStop(1, `rgba(${r*0.5},${g*0.5},${b*0.5},0)`);
-                    ctx.fillStyle = gradient;
-                    ctx.beginPath();
-                    ctx.ellipse(0,0, radiusX, radiusY, 0, 0, 2*Math.PI);
-                    ctx.fill();
-                    ctx.restore();
-                }
-            });
-
-            const nebulaMaterial = new THREE.MeshBasicMaterial({
-                map: nebulaTexture,
-                side: THREE.BackSide,
-                transparent: true,
-                opacity: 0.6,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false
-            });
-            const nebulaMesh = new THREE.Mesh(nebulaGeometry, nebulaMaterial);
-            scene.add(nebulaMesh);
+        // 星空与银河：真实星表的亮星 + 按银河结构分布的暗星 + 按真实银道坐标计算的银河光带（见 sky-galaxy.js）。
+        // 整组每帧跟随镜头（名字仍叫 starfield），相当于在无限远处；暗星数量按画质档位调整。
+        function createStarfield() {
+            const sky = SkyGalaxy.create({ radius: 6000, faintStars: Math.round(renderProfile.stars * 2.5), pixelRatio: renderer.getPixelRatio(), renderer, bakeSize: activeQuality === 'low' ? 1024 : activeQuality === 'balanced' ? 1536 : 2048 });
+            sky.name = "starfield";
+            starTwinkleUniforms = sky.userData.setPixelRatio;
+            scene.add(sky);
         }
 
         function createKuiperBelt() {
@@ -4222,10 +4071,7 @@ self.onmessage = function(e) {
             controls.update();
             updateScaleViewHelpers();
             updateEclipseShadows();
-            if (starTwinkleUniforms) {
-                starTwinkleUniforms.uTime.value = elapsedTime;
-                starTwinkleUniforms.uPixelRatio.value = renderer.getPixelRatio();
-            }
+            if (starTwinkleUniforms) starTwinkleUniforms(renderer.getPixelRatio());
             renderer.render(scene, camera);
  
         }

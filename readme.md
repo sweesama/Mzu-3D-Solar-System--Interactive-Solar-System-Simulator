@@ -82,7 +82,7 @@ Never hand-edit `mercury.html` … `neptune.html`: change `index.html` or the da
   - *True scale*: both together. Moon orbits also switch to their real distances here (the Moon at 60 Earth radii).
 - `applyScaleMode()` rescales orbit radii, orbit lines (scaled about the focus), body meshes (rings, clouds and atmospheres scale with their planet), the Sun and the Kuiper belt. Asteroids and comets keep their artistic size, or they would be invisible.
 - When any real mode is on, each planet gets a fixed-size screen marker with its name (`*_marker` sprites). Clicking a marker focuses that planet, and the marker hides once you are within about 40 radii of the planet.
-- The starfield and Milky Way sphere follow the camera, so they stay "at infinity" even with outer planets 1,200+ units away. In real-size modes the camera near plane shrinks with focus distance so tiny planets are not clipped.
+- The sky (real star catalogue + generated Milky Way, see "Real star sky and generated Milky Way" below) follows the camera, so they stay "at infinity" even with outer planets 1,200+ units away. In real-size modes the camera near plane shrinks with focus distance so tiny planets are not clipped.
 - Camera flights (`flyCameraToObject`, shared by clicks and the guided tour) interpolate toward the target's *live* position every frame instead of a predicted end point. At true scale the camera stops only thousandths of a unit from a planet, so any prediction error would otherwise strand it far away. Flight distance is always 2.5× the body's current world radius.
 
 ## Rendering notes (main explorer)
@@ -323,3 +323,14 @@ Checked each expedition's first-glance scene against known physics and removed p
 - **Bootprints:** the footprint decal is the real Apollo 11 bootprint photo (NASA AS11-40-5878, public domain), cleaned of reseau crosses, rotated upright and given a soft alpha edge (`textures/footprint_apollo.png`, 43 KB). Each world tints it.
 - **Saturn and Uranus:** the remaining cloud-puff sprites were removed, matching Jupiter and Neptune.
 - **Not done:** the Venus science station is still built from primitives. A free Venera 12-14 lander model exists on Sketchfab (tashtego), but it needs a manual, logged-in download.
+
+## Real star sky and generated Milky Way (home page, Moon, Mercury)
+
+`sky-galaxy.js` (`SkyGalaxy.create(options)`) replaces the old Milky Way photo (`2k_stars_milky_way.jpg`, no longer loaded), the random starfield and the canvas "nebula" sphere.
+
+- **Bright stars are real.** `textures/bsc5_stars.bin` (73 KB) holds all 9,096 stars of the Yale Bright Star Catalogue (BSC5, public domain, http://tdc-www.harvard.edu/catalogs/bsc5.html): J2000 position, magnitude and a colour temperature from the spectral type. Rebuild with `node build_star_catalog.cjs <BSC5 file>`. Constellations appear in their true places; size and brightness follow magnitude.
+- **Scene frame.** XZ is the ecliptic plane, +Y the ecliptic north pole, ecliptic longitude 0 along +X (the same direction the planets orbit in `main.js`). Checked: Deneb comes out at l = 84.3°, b = +2.0°; Sirius at l = 227.2°, b = -8.9°; Antares at l = 351.9°, b = +15.1°.
+- **Milky Way band.** A shader works in true galactic coordinates: thin disc, thick disc and a yellowish bulge, plus named features at their real positions — Scutum, Sagittarius and Cygnus star clouds, the Great Rift, Coalsack, Pipe and Rho Ophiuchi dark clouds, red emission nebulae (Carina, Lagoon, North America, Orion, Barnard's Loop), the Magellanic Clouds and M31. A soft exposure curve stops it clipping and dithering removes banding. Fainter stars (tens of thousands, below naked-eye limit) are spread with the same density model.
+- **Performance.** When a renderer is passed, the band is rendered once at start-up into a half-float cube map (2048 px per face; 1536 on Balanced, 1024 on Low) and each frame only samples it. It is still generated in code, not an image file.
+- **Expeditions.** Moon and Mercury use `centerToward` to turn the galactic centre to the upper right of the starting view, away from the Sun. Mercury's separate black sky sphere was removed; the band now shows there.
+- **Limits.** The band is a model, not a survey map: the dust lanes and star clouds follow published positions, but their fine shapes come from noise.
