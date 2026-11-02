@@ -10,7 +10,8 @@ The scene is not a real-time model of the current Solar System. It does not calc
 
 ## Public pages
 
-- Home explorer: https://www.3dsolarsystem.net/
+- Home explorer (Solar System Simulator): https://www.3dsolarsystem.net/
+- Gravity Sandbox: https://www.3dsolarsystem.net/gravity-sandbox.html
 - Mercury: https://www.3dsolarsystem.net/mercury.html
 - Venus: https://www.3dsolarsystem.net/venus.html
 - Venus expedition: https://www.3dsolarsystem.net/venus-expedition.html
@@ -93,6 +94,10 @@ https://www.3dsolarsystem.net/neptune-expedition.html reuses the cruise engine i
 The scene renders a translucent deep-blue deck with pale cirrus streak bands, an instanced field of methane-ice crystals recycling endlessly around the probe, a slowly-turning dark vortex disc on the deck, a white Scooter-style racing cloud marking the wind shear line, a small spinning-disc marker demonstrating the vortex, captured moon Triton hanging in the haze, and NASA's real Voyager 2 model — the only spacecraft ever to visit Neptune — holding formation off the port bow. Audio is a cabin hum under a restless wind howl, radio hiss, and ice grains ticking off the hull inside the lanes. Five discoveries (storm vista, cirrus crystal specimen, the storm wall, the shear line, the vortex spinner) record via E or a touch-friendly button. All content is artistic reconstruction informed by Voyager 2's 1989 flyby, not survey data.
 
 Discovery progress is stored locally in the visitor's browser when storage is available. No account or AI API access is required. The initial interface is English, with an optional Chinese interface.
+
+## Gravity Sandbox
+
+https://www.3dsolarsystem.net/gravity-sandbox.html is a separate 2D canvas toy. Click and drag to launch a planet: the press sets the position and the drag is the velocity in pixels per second (the arrow is one second of travel). Pause, reset and trails are on the page. The Sun starts at the center with play-mass 20,000 and the view stays centered on it; the Sun still moves when planets pull on it. Each body is a point mass. Acceleration uses a Plummer-softened inverse-square law, G·M·r / (r² + ε²)^(3/2), with G = 100 in pixel-and-second units and ε = 8 pixels. Those constants are not SI values. Integration is velocity Verlet with a fixed step of 1/120 second. Drawn sizes are not collision radii; bodies can pass through each other. Up to 40 planets. No score, account, download or sign-up. It is not an ephemeris and not the 3D explorer.
 
 ## Data shown
 
