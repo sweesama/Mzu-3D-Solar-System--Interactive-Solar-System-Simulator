@@ -1,6 +1,6 @@
 {
-  "name": "Mzu 3D Solar System",
-  "short_name": "Mzu Solar",
+  "name": "3D Solar System",
+  "short_name": "3D Solar",
   "description": "An interactive 3D visualization for exploring the Solar System.",
   "start_url": "./",
   "scope": "./",
