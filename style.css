@@ -186,6 +186,7 @@ canvas {
 .tour-card p:last-child { margin-bottom: 0 !important; color: #dbe5ff; font-size: 14px; }
 
 .planet-navigation { padding-top: 13px; border-top: 1px solid var(--line); }
+.sandbox-nav-label { margin-top: 12px; }
 .nav-label { display: block; margin-bottom: 8px; color: var(--muted); font-size: 13px; font-weight: 650; }
 .planet-links { display: flex; flex-wrap: wrap; gap: 7px; }
 .planet-links a {

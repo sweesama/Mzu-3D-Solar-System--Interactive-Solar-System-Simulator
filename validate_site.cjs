@@ -601,6 +601,66 @@ for (const scenario of qualityScenarios) {
   }
 }
 
+const gravity = loadBrowserModule('gravity-sandbox.js', 'GravitySandbox');
+assert.equal(gravity.G, 100);
+assert.equal(gravity.SUN_MASS, 20000);
+assert.equal(gravity.SOFTENING, 8);
+assert.equal(gravity.DT, 1 / 120);
+const orbitRadius = 150;
+const orbitMass = 1;
+const relativeSpeed = Math.sqrt(gravity.G * (gravity.SUN_MASS + orbitMass) / orbitRadius);
+const orbitBodies = [
+  { x: 0, y: 0, vx: 0, vy: -relativeSpeed * orbitMass / (gravity.SUN_MASS + orbitMass), m: gravity.SUN_MASS },
+  { x: orbitRadius, y: 0, vx: 0, vy: relativeSpeed * gravity.SUN_MASS / (gravity.SUN_MASS + orbitMass), m: orbitMass }
+];
+for (let i = 0; i < 2400; i++) gravity.step(orbitBodies, gravity.DT);
+const orbited = Math.hypot(orbitBodies[1].x - orbitBodies[0].x, orbitBodies[1].y - orbitBodies[0].y);
+assert.ok(Math.abs(orbited - orbitRadius) / orbitRadius < 0.02, 'a circular two-body orbit should stay near its radius');
+const pull = gravity.accelerations([{ x: 0, y: 0, vx: 0, vy: 0, m: 1 }, { x: 100, y: 0, vx: 0, vy: 0, m: 1000 }]);
+assert.ok(pull.ax[0] > 0 && Math.abs(pull.ay[0]) < 1e-9, 'gravity must point toward the other mass');
+const farPull = gravity.accelerations([{ x: 0, y: 0, vx: 0, vy: 0, m: 1 }, { x: 200, y: 0, vx: 0, vy: 0, m: 1000 }]);
+const pullRatio = pull.ax[0] / farPull.ax[0];
+assert.ok(pullRatio > 3.5 && pullRatio < 4.5, 'softened gravity should stay near inverse-square at these distances');
+const overlap = gravity.accelerations([{ x: 0, y: 0, vx: 0, vy: 0, m: 10 }, { x: 0.01, y: 0, vx: 0, vy: 0, m: 10 }]);
+assert.ok(Number.isFinite(overlap.ax[0]) && Number.isFinite(overlap.ay[0]), 'softening must keep a near-overlap finite');
+const demo = gravity.createDemo();
+assert.equal(demo.length, 4);
+assert.equal(demo[0].m, gravity.SUN_MASS);
+assert.ok(demo.every(body => [body.x, body.y, body.vx, body.vy, body.m].every(Number.isFinite)));
+
+const sandboxHtml = fs.readFileSync(path.join(root, 'gravity-sandbox.html'), 'utf8');
+const sandboxTitle = capture(sandboxHtml, /<title>([\s\S]*?)<\/title>/i, 'title', 'gravity-sandbox.html');
+const sandboxDescription = capture(sandboxHtml, /<meta name="description" content="([^"]+)">/i, 'description', 'gravity-sandbox.html');
+const sandboxCanonical = capture(sandboxHtml, /<link rel="canonical" href="([^"]+)">/i, 'canonical', 'gravity-sandbox.html');
+if (sandboxTitle.length > 60) errors.push(`gravity-sandbox.html: title length is ${sandboxTitle.length}`);
+if (sandboxDescription.length < 90 || sandboxDescription.length > 180) errors.push(`gravity-sandbox.html: description length is ${sandboxDescription.length}`);
+if (sandboxCanonical !== 'https://www.3dsolarsystem.net/gravity-sandbox.html') errors.push('gravity-sandbox.html: canonical host mismatch');
+if (capture(sandboxHtml, /<meta property="og:url" content="([^"]+)">/i, 'og:url', 'gravity-sandbox.html') !== sandboxCanonical) {
+  errors.push('gravity-sandbox.html: og:url does not match canonical');
+}
+if (!sandboxHtml.includes("gtag('config', 'G-783407FTTB')")) errors.push('gravity-sandbox.html: missing site analytics tag');
+if (!sandboxHtml.includes('gravity-sandbox.js') || !sandboxHtml.includes('gravity-sandbox-ui.js')) errors.push('gravity-sandbox.html: sandbox scripts missing');
+if (!sandboxHtml.includes('id="faq-structured-data"') || !sandboxHtml.includes('"@type": "FAQPage"')) errors.push('gravity-sandbox.html: missing FAQPage structured data');
+for (const [, id, body] of sandboxHtml.matchAll(/<script id="([^"]+)" type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+  try { JSON.parse(body); } catch (error) { errors.push(`gravity-sandbox.html: invalid JSON-LD in #${id} (${error.message})`); }
+}
+if (!/href="\.\/"[^>]*>Solar System Simulator</.test(sandboxHtml) && !/Solar System Simulator</.test(sandboxHtml)) errors.push('gravity-sandbox.html: missing link back to the simulator');
+assert.match(sandboxHtml, new RegExp(`G is ${gravity.G} in pixel-and-second units`));
+assert.match(sandboxHtml, new RegExp(`softening length is ${gravity.SOFTENING} pixels`));
+assert.match(sandboxHtml, /steps of 1\/120 second/);
+assert.match(sandboxHtml, /mass of 20,000/);
+if (titles.has(sandboxTitle)) errors.push(`gravity-sandbox.html: duplicate title: ${sandboxTitle}`);
+titles.add(sandboxTitle);
+canonicals.add(sandboxCanonical);
+
+const homeHtml = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const homeTitle = capture(homeHtml, /<title>([\s\S]*?)<\/title>/i, 'title', 'index.html');
+if (!homeTitle.includes('Solar System Simulator')) errors.push('index.html: title must contain "Solar System Simulator"');
+if (homeTitle.length > 60) errors.push(`index.html: title length is ${homeTitle.length}`);
+if (!/<h1[^>]*>Solar System Simulator<\/h1>/.test(homeHtml)) errors.push('index.html: H1 must be the phrase "Solar System Simulator"');
+if (!/href="gravity-sandbox\.html"/.test(homeHtml)) errors.push('index.html: missing Gravity Sandbox link');
+if (!/no download and no sign-up/i.test(homeHtml)) errors.push('index.html: missing free online statement');
+
 const sitemap = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
 for (const canonical of canonicals) {
   if (!sitemap.includes(`<loc>${canonical}</loc>`)) errors.push(`sitemap.xml: missing ${canonical}`);
