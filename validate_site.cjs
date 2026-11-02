@@ -465,6 +465,57 @@ assert.match(moonHtml, /id="sound-button"/);
 assert.match(moonHtml, /id="gravity-value"/);
 assert.match(fs.readFileSync(path.join(root, 'index.html'), 'utf8'), /href="moon\.html"/);
 
+const siteAnalytics = loadBrowserModule('analytics.js', 'SiteAnalytics');
+assert.equal(siteAnalytics.MEASUREMENT_ID, 'G-783407FTTB');
+for (const host of ['localhost', '127.0.0.1', '::1', '[::1]', '0.0.0.0', 'dev.local', 'my.machine.local']) {
+  assert.equal(siteAnalytics.shouldLoad({ protocol: 'http:', hostname: host }), false, host);
+}
+assert.equal(siteAnalytics.shouldLoad({ protocol: 'file:', hostname: '' }), false);
+assert.equal(siteAnalytics.shouldLoad({ protocol: 'FILE:', hostname: 'www.3dsolarsystem.net' }), false);
+for (const host of ['www.3dsolarsystem.net', '3dsolarsystem.net', 'mzu-git-preview.vercel.app']) {
+  assert.equal(siteAnalytics.shouldLoad({ protocol: 'https:', hostname: host }), true, host);
+  const page = {
+    location: { protocol: 'https:', hostname: host },
+    scripts: [],
+    document: {
+      createElement() { return {}; },
+      head: { appendChild(node) { page.scripts.push(node); } }
+    }
+  };
+  assert.equal(siteAnalytics.install(page), true);
+  assert.equal(page.scripts.length, 1);
+  assert.equal(page.scripts[0].async, true);
+  assert.equal(page.scripts[0].src, 'https://www.googletagmanager.com/gtag/js?id=G-783407FTTB');
+  assert.equal(page.dataLayer[1][0], 'config');
+  assert.equal(page.dataLayer[1][1], 'G-783407FTTB');
+  assert.equal(page.dataLayer[1].length, 2);
+}
+for (const host of ['localhost', '127.0.0.1', '::1', '0.0.0.0', 'studio.local']) {
+  const page = {
+    location: { protocol: 'http:', hostname: host },
+    scripts: [],
+    document: {
+      createElement() { throw new Error('local analytics must not create a script'); },
+      head: { appendChild() { throw new Error('local analytics must not insert a script'); } }
+    }
+  };
+  assert.equal(siteAnalytics.install(page), false);
+  assert.equal(page.gtag, undefined);
+}
+const filePage = {
+  location: { protocol: 'file:', hostname: '' },
+  document: {
+    createElement() { throw new Error('file analytics must not create a script'); },
+    head: { appendChild() { throw new Error('file analytics must not insert a script'); } }
+  }
+};
+assert.equal(siteAnalytics.install(filePage), false);
+for (const file of ['embed.html', 'space-explorer-guide.html', 'planet-sizes-and-distances.html']) {
+  const html = fs.readFileSync(path.join(root, file), 'utf8');
+  if (!html.includes('<script src="analytics.js"></script>')) errors.push(`${file}: missing site analytics tag`);
+  if (html.includes('googletagmanager.com/gtag')) errors.push(`${file}: direct gtag load bypasses the local-host guard`);
+}
+
 function capture(html, expression, label, file) {
   const match = html.match(expression);
   if (!match) {
@@ -501,7 +552,8 @@ for (const page of pages) {
   }
   if (/favicon|android-chrome/i.test(image)) errors.push(`${file}: sharing image must be a scene screenshot, not the logo`);
   if (capture(html, /<meta name="twitter:card" content="([^"]+)">/i, 'Twitter card', file) !== 'summary_large_image') errors.push(`${file}: Twitter card must be summary_large_image`);
-  if (!html.includes("gtag('config', 'G-783407FTTB')")) errors.push(`${file}: missing site analytics tag`);
+  if (!html.includes('<script src="analytics.js"></script>')) errors.push(`${file}: missing site analytics tag`);
+  if (html.includes('googletagmanager.com/gtag')) errors.push(`${file}: direct gtag load bypasses the local-host guard`);
   if (page === 'moon' && !/Moon/i.test(heading)) errors.push(`${file}: heading must identify the Moon expedition`);
   if (page === 'mars-expedition' && !/Mars/i.test(heading)) errors.push(`${file}: heading must identify the Mars expedition`);
   if (page === 'venus-expedition' && !/Venus/i.test(heading)) errors.push(`${file}: heading must identify the Venus expedition`);
