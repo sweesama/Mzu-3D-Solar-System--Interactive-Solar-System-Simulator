@@ -60,7 +60,7 @@ const planets = [
     description: '3D view of Uranus: rotate and zoom a free interactive Uranus model in your browser, then learn why this ice giant spins tipped on its side.',
     intro: 'Uranus is an ice giant with a rotation axis tilted roughly sideways relative to its orbit. Methane in its atmosphere contributes to its blue-green appearance.',
     detail: 'Use the 3D scene to focus on Uranus and compare its distant orbit and selected moons with the inner Solar System.',
-    facts: ['Axial tilt: about 98°', 'Year: about 84 Earth years', 'Visited once: Voyager 2, 1986'],
+    facts: ['Axial tilt: about 97.8° (NASA Planetary Fact Sheet)', 'Year: about 84 Earth years', 'Visited once: Voyager 2, 1986'],
     expedition: { href: 'uranus-expedition.html', label: 'Fly through Uranus’s rings', text: 'Drift between narrow, charcoal-dark rings beside Voyager 2.' }
   },
   {
@@ -68,7 +68,7 @@ const planets = [
     description: '3D view of Neptune: rotate and zoom a free interactive Neptune model in your browser, then learn about the distant blue ice giant and its strong winds.',
     intro: 'Neptune is the farthest major planet from the Sun. It is a cold ice giant with active weather and some of the fastest winds measured in the Solar System.',
     detail: 'Focus the scene on Neptune, inspect its available reference data, and compare its orbit with the seven other major planets.',
-    facts: ['Winds: up to about 2,000 km/h', 'Year: about 165 Earth years', 'Visited once: Voyager 2, 1989'],
+    facts: ['Winds: up to about 2,000 km/h', 'Year: about 165 Earth years (163.7 tropical years)', 'Visited once: Voyager 2, 1989'],
     expedition: { href: 'neptune-expedition.html', label: 'Fly into Neptune’s storms', text: 'Fly the storm layer toward the Great Dark Spot beside Voyager 2.' }
   }
 ];
@@ -129,28 +129,29 @@ const articles = {
   Jupiter: {
     about: [
       'Jupiter is the largest planet in the Solar System — more than twice as massive as all the other planets combined and about 11 times Earth’s diameter. It is a gas giant made mostly of hydrogen and helium, with no solid surface. Its colourful stripes are cloud bands stretched by fast rotation: a day on Jupiter lasts under 10 hours, the shortest of any planet.',
-      'The Great Red Spot is a storm larger than Earth that has been observed for well over 150 years. Jupiter has more than 90 known moons, including the four large Galilean moons discovered in 1610: volcanic Io, ice-covered Europa, Ganymede — the largest moon in the Solar System — and Callisto. NASA’s Juno spacecraft has orbited Jupiter since 2016.'
+      'The Great Red Spot is a storm larger than Earth that has been observed for well over 150 years. Jupiter has 115 IAU-recognized moons as of 2026 (NASA Science), including the four large Galilean moons discovered in 1610: volcanic Io, ice-covered Europa, Ganymede — the largest moon in the Solar System — and Callisto. NASA’s Juno spacecraft has orbited Jupiter since 2016.'
     ],
     faq: [
       ['Can you stand on Jupiter?', 'No. Jupiter has no solid surface; its hydrogen and helium atmosphere simply gets denser and hotter with depth.'],
       ['How big is Jupiter compared with Earth?', 'Jupiter is about 11 times wider than Earth, and more than 1,300 Earths could fit inside it.'],
+      ['How many moons does Jupiter have?', '115 IAU-recognized moons as of 2026 (NASA Science). The count changes as new moons are confirmed. The four largest, found by Galileo in 1610, are Io, Europa, Ganymede and Callisto.'],
       ['What is the Great Red Spot?', 'A giant, long-lived storm spinning in Jupiter’s southern hemisphere. It is wider than Earth and has been watched for well over 150 years, although it has been slowly shrinking.']
     ]
   },
   Saturn: {
     about: [
       'Saturn is the sixth planet from the Sun and the second largest, a gas giant about nine times wider than Earth. It is famous for its rings, made mostly of water-ice pieces ranging from tiny grains to boulders several metres across. The main rings span roughly 270,000 km yet are often only tens of metres thick.',
-      'Saturn is the least dense planet — on average less dense than water. A day lasts about 10.7 hours and a year about 29.4 Earth years. Saturn has well over 100 known moons; the largest, Titan, is bigger than the planet Mercury and has a thick nitrogen atmosphere with lakes of liquid methane. NASA’s Cassini spacecraft studied Saturn from orbit from 2004 to 2017.'
+      'Saturn is the least dense planet — on average less dense than water. A day lasts about 10.7 hours and a year about 29.4 Earth years. Saturn has 293 confirmed moons as of August 2026 (NASA Science); the count keeps rising as new small moons are confirmed. The largest, Titan, is bigger than the planet Mercury and has a thick nitrogen atmosphere with lakes of liquid methane. NASA’s Cassini spacecraft studied Saturn from orbit from 2004 to 2017.'
     ],
     faq: [
       ['What are Saturn’s rings made of?', 'Mostly chunks of water ice, from dust-sized grains to boulders several metres across, with small amounts of rock and dust.'],
       ['Would Saturn float in water?', 'In principle, yes: its average density is lower than water’s. Of course, there is no ocean anywhere near big enough to try it.'],
-      ['How many moons does Saturn have?', 'Well over 100 confirmed moons, and the count keeps rising as new small moons are discovered. Titan is by far the largest.']
+      ['How many moons does Saturn have?', '293 confirmed moons as of August 2026 (NASA Science). The count keeps rising as new small moons are confirmed. Titan is by far the largest.']
     ]
   },
   Uranus: {
     about: [
-      'Uranus is the seventh planet from the Sun, an ice giant about four times wider than Earth. Its axis is tilted about 98°, so it rolls around the Sun on its side; over its 84-year orbit, each pole gets around 42 years of continuous sunlight followed by 42 years of darkness. Methane in its upper atmosphere absorbs red light, giving Uranus its pale blue-green colour.',
+      'Uranus is the seventh planet from the Sun, an ice giant about four times wider than Earth. Its axis is tilted about 97.8°, so it rolls around the Sun on its side; over its 84-year orbit, each pole gets around 42 years of continuous sunlight followed by 42 years of darkness. Methane in its upper atmosphere absorbs red light, giving Uranus its pale blue-green colour.',
       'Beneath the clouds, much of the planet is thought to be a hot, dense fluid of water, methane and ammonia ices. Uranus has 13 known rings — narrow and dark — and more than two dozen moons named after characters from Shakespeare and Alexander Pope, such as Titania, Oberon and Miranda. It was the first planet discovered with a telescope, by William Herschel in 1781, and Voyager 2 is the only spacecraft to have visited, flying past in January 1986.'
     ],
     faq: [
@@ -162,15 +163,26 @@ const articles = {
   Neptune: {
     about: [
       'Neptune is the eighth and farthest planet from the Sun, about 4.5 billion km away (30 AU), where sunlight is roughly 900 times fainter than on Earth. It is an ice giant slightly smaller than Uranus but more massive, and it has the fastest winds measured on any planet — up to about 2,000 km/h.',
-      'Neptune takes about 165 Earth years to orbit the Sun, so it completed its first full orbit since discovery only in 2011. It was the first planet found by mathematical prediction rather than by searching the sky. Its largest moon, Triton, orbits backwards and has nitrogen geysers; it was probably captured from the Kuiper Belt. Voyager 2 flew past in August 1989 and photographed the Great Dark Spot, a storm about as wide as Earth.'
+      'Neptune takes about 165 Earth years (163.7 tropical years on the NASA Planetary Fact Sheet) to orbit the Sun, so it completed its first full orbit since discovery only in 2011. It was the first planet found by mathematical prediction rather than by searching the sky. Its largest moon, Triton, orbits backwards and has nitrogen geysers; it was probably captured from the Kuiper Belt. Voyager 2 flew past in August 1989 and photographed the Great Dark Spot, a storm about as wide as Earth.'
     ],
     faq: [
       ['How was Neptune discovered?', 'Astronomers noticed that Uranus was being tugged off its predicted path. Urbain Le Verrier calculated where an unseen planet should be, and Johann Galle found Neptune close to that position in 1846.'],
       ['Why is Neptune so windy?', 'It is not fully understood. Neptune radiates more heat than it receives from the Sun, and with no solid surface to create friction, its winds can reach about 2,000 km/h.'],
-      ['How long is a year on Neptune?', 'About 165 Earth years.']
+      ['How long is a year on Neptune?', 'About 165 Earth years (163.7 tropical years on the NASA Planetary Fact Sheet).']
     ]
   }
 };
+
+function sourceHtml(planet) {
+  const links = [
+    [`https://science.nasa.gov/${planet.name.toLowerCase()}/`, `NASA Science — ${planet.name}`]
+  ];
+  if (planet.name === 'Jupiter') links.push(['https://science.nasa.gov/jupiter/moons/', 'NASA Science — Jupiter moons']);
+  if (planet.name === 'Saturn') links.push(['https://science.nasa.gov/saturn/moons/', 'NASA Science — Saturn moons']);
+  if (planet.name === 'Uranus') links.push(['https://nssdc.gsfc.nasa.gov/planetary/factsheet/uranusfact.html', 'NASA Uranus Fact Sheet']);
+  links.push(['https://nssdc.gsfc.nasa.gov/planetary/factsheet/', 'NASA Planetary Fact Sheet']);
+  return links.map(([href, label]) => `<a href="${href}" rel="noopener" target="_blank">${label}</a>`).join(' · ');
+}
 
 function buildArticle(planet) {
   const data = articles[planet.name];
@@ -180,7 +192,7 @@ function buildArticle(planet) {
 ${data.about.map(p => `            <p>${escapeHtml(p)}</p>`).join('\n')}
             <h2>${planet.name}: frequently asked questions</h2>
 ${data.faq.map(([q, a]) => `            <h3>${escapeHtml(q)}</h3>\n            <p>${escapeHtml(a)}</p>`).join('\n')}
-            <p class="planet-sources">Sources: <a href="https://science.nasa.gov/${planet.name.toLowerCase()}/" rel="noopener" target="_blank">NASA Science — ${planet.name}</a> · <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/" rel="noopener" target="_blank">NASA Planetary Fact Sheet</a>.</p>
+            <p class="planet-sources">Sources: ${sourceHtml(planet)}.</p>
         </section>
         <!-- PLANET-ARTICLE:END -->`;
 }
@@ -205,7 +217,7 @@ function buildStructuredData(planet, url, image) {
     image,
     isPartOf: {
       '@type': 'WebApplication',
-      name: 'Mzu 3D Solar System',
+      name: '3D Solar System',
       url: SITE
     },
     about: {
@@ -220,7 +232,7 @@ for (const planet of planets) {
   const slug = planet.name.toLowerCase();
   const canonical = `${SITE}${slug}.html`;
   const image = `${SITE}og/${slug}.jpg`;
-  const imageAlt = `${planet.name} in the Mzu 3D Solar System`;
+  const imageAlt = `${planet.name} in the 3D Solar System`;
   const title = `${planet.name} 3D View: Rotate an Interactive 3D Model & Facts`;
   let html = source;
 

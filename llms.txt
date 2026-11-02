@@ -1,4 +1,4 @@
-# Mzu 3D Solar System
+# 3D Solar System
 
 > A free, browser-based 3D Solar System explorer with first-person expeditions to eight worlds. No download, account, or AI service is needed.
 
@@ -15,10 +15,10 @@
 - [Venus](https://www.3dsolarsystem.net/venus.html): hottest planet (~465 °C); spins backwards; a day is longer than its year.
 - [Earth](https://www.3dsolarsystem.net/earth.html): 23.4° tilt and seasons; the Moon at 384,400 km.
 - [Mars](https://www.3dsolarsystem.net/mars.html): red iron-oxide dust, thin CO₂ air, Olympus Mons, 687-day year.
-- [Jupiter](https://www.3dsolarsystem.net/jupiter.html): largest planet, no solid surface, Great Red Spot, Galilean moons.
-- [Saturn](https://www.3dsolarsystem.net/saturn.html): icy rings ~270,000 km across, density below water, Titan.
-- [Uranus](https://www.3dsolarsystem.net/uranus.html): ~98° axial tilt, 84-year orbit, methane blue-green colour.
-- [Neptune](https://www.3dsolarsystem.net/neptune.html): winds up to ~2,000 km/h, 165-year orbit, found by mathematical prediction.
+- [Jupiter](https://www.3dsolarsystem.net/jupiter.html): largest planet, no solid surface, Great Red Spot, 115 IAU-recognized moons as of 2026.
+- [Saturn](https://www.3dsolarsystem.net/saturn.html): icy rings ~270,000 km across, density below water, 293 confirmed moons as of August 2026, Titan.
+- [Uranus](https://www.3dsolarsystem.net/uranus.html): ~97.8° axial tilt (NASA Planetary Fact Sheet), 84-year orbit, methane blue-green colour.
+- [Neptune](https://www.3dsolarsystem.net/neptune.html): winds up to ~2,000 km/h, about 165-year orbit (163.7 tropical years), found by mathematical prediction.
 
 ## First-person expeditions (each page ends with a crawlable article: facts, discoveries, controls, science notes)
 

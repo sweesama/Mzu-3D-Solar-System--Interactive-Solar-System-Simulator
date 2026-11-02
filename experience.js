@@ -145,7 +145,7 @@ async function copyText(value) {
 async function shareCurrentView() {
     const focusName = window.CURRENT_FOCUS || window.INITIAL_PLANET || 'the Solar System';
     const shareData = {
-        title: `${focusName} — Mzu 3D Solar System`,
+        title: `${focusName} — 3D Solar System`,
         text: `Explore ${focusName} in this interactive 3D Solar System visualization.`,
         url: window.location.href
     };

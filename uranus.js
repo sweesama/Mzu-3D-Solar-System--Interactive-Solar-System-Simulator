@@ -16,7 +16,7 @@
             guideIntro: 'This is a small, freely explorable stretch of Uranus’s ring plane, not a whole-system simulation. The five observation points are different views of the same flight; three lie inside or beside the narrow dark bands.', controlsTitle: 'Moving around',
             gravityCompare: 'Compare Earth gravity · G', gravityMercury: 'Back to Uranus gravity · G', gravityHint: 'Same probe, different pull. Uranus’s gravity is 8.87 m/s² — press G and the ring’s gentle tug barely changes under Earth’s near-identical pull.', soundOn: 'Probe sounds: On', soundOff: 'Probe sounds: Off', soundHint: 'A quiet cabin hum, faint radio hiss, and the rare tick of ring grains off the hull. M toggles.', gravityMercuryTag: 'Uranus gravity — 8.87 m/s².', gravityEarth: 'Earth gravity — 9.8 m/s². Nearly identical — that is the surprise.', mercuryTag: 'URANUS', earthTag: 'EARTH',
             controlsText: 'You are a probe cruising the ring plane — there is no ground and no falling. The probe cruises forward on its own; W A S D or the arrow keys drift you sideways and speed you up, Shift is faster still. Space rises, C sinks below the sheet. Drag to look. Touchscreens have direction and Burn buttons. G compares Earth gravity; M toggles sound. H hides notes; P opens photo mode; Esc closes it.',
-            scienceTitle: 'Science meets imagination', scienceText: 'Uranus rolls around the Sun on its side — its axis tilted about 98°, so its thin rings stand nearly vertical against its orbit. The thirteen rings are narrow and almost black as charcoal. Only one spacecraft has ever visited: Voyager 2, in 1986. The band layout, moonlet, and tilt marker are artistic reconstructions.',
+            scienceTitle: 'Science meets imagination', scienceText: 'Uranus rolls around the Sun on its side — its axis tilted about 97.8°, so its thin rings stand nearly vertical against its orbit. The thirteen rings are narrow and almost black as charcoal. Only one spacecraft has ever visited: Voyager 2, in 1986. The band layout, moonlet, and tilt marker are artistic reconstructions.',
             soundText: 'The flight is far gentler than a real ring-plane crossing — Voyager 2 swept past at about 15 km per second. Press G to compare Earth gravity; Uranus pulls almost identically to home. Listen for rare grains ticking off the hull inside the bands.',
             assetText: 'Voyager 2 is a real NASA 3D model — the only probe ever to visit Uranus. The planet uses a real texture; the ring sheet, particle field, and starfield are generated locally.',
             skyEyebrow: 'IN URANUS’S SKY', sunName: 'The Sun', earthName: 'Earth', venusName: 'Uranus',
@@ -30,7 +30,7 @@
                 ['Charcoal around you', 'The particles tumbling past are nearly black — Uranus’s ring material reflects only a few percent of the light that hits it.'],
                 ['The dark gaps', 'Between the rings lie wide emptiness — not perfectly empty, but swept thin by the little moons patrolling the lanes.'],
                 ['A shepherd moonlet', 'A small irregular moon riding a gap — moons like Cordelia and Ophelia hold the ε ring’s edges in place.'],
-                ['A tipped world model', 'A small marker globe shows the famous 98° tilt — the planet’s own rings standing vertical.'],
+                ['A tipped world model', 'A small marker globe shows the famous 97.8° tilt — the planet’s own rings standing vertical.'],
                 ['Voyager on the wing', 'NASA’s real Voyager model flies alongside — the only spacecraft ever to see this view, on 24 January 1986.']
             ],
             error: 'The 3D scene could not start. Try reloading in a browser with WebGL enabled.', lost: 'The graphics connection was interrupted. Reload this page to resume.', boundary: 'You have reached the edge of this flight lane. Try another observation point.', saved: 'Photograph saved.', saveFailed: 'This browser could not save the photograph.', fullscreenFailed: 'Full screen is not available in this browser.', textureFailed: 'A texture was unavailable; a simpler material is shown instead.', adjusted: 'Render resolution reduced to keep exploring smoothly.',
@@ -39,7 +39,7 @@
                 ['A ring charcoal lump', 'This tumbling fragment is almost black — Uranus’s ring particles reflect just a few percent of sunlight. Rotate it in the specimen viewer.', 'PARTICLE', 'Dark ring material'],
                 ['The dark gap', 'Inside a gap between the narrow rings — wide, quiet space swept clean by unseen shepherd moons.', 'STRUCTURE', 'Inter-ring gap'],
                 ['The shepherd moonlet', 'A small irregular moon embedded near a ring edge — its gravity corrals drifting particles into thin sharp bands.', 'MOON', 'Shepherd moonlet'],
-                ['The 98° tilt', 'A marker globe demonstrates Uranus’s famous lean — pole toward the Sun, rings standing nearly vertical through its orbit.', 'ORIENTATION', 'Axial tilt']
+                ['The 97.8° tilt', 'A marker globe demonstrates Uranus’s famous lean — pole toward the Sun, rings standing nearly vertical through its orbit.', 'ORIENTATION', 'Axial tilt']
             ]
         },
         zh: {
@@ -52,7 +52,7 @@
             guideIntro: '这是一段可以自由漫游的天王星环平面切片，而非完整的环系统模拟。五个观察点位于同一段航程的不同位置；其中三处就在狭窄暗环的内部或边缘。', controlsTitle: '如何移动',
             gravityCompare: '对比地球引力 · G', gravityMercury: '恢复天王星引力 · G', gravityHint: '同一台探测器，不同的引力。天王星引力 8.87 m/s²——按 G 对比地球，你会发现两者几乎一模一样。', soundOn: '探测器声音：开', soundOff: '探测器声音：关', soundHint: '安静的舱内低鸣、微弱的射电嘶声，以及环颗粒偶尔敲击舱体的轻响。M 切换。', gravityMercuryTag: '天王星引力 — 8.87 m/s²。', gravityEarth: '地球引力 — 9.8 m/s²。几乎一样——这正是让人意外的地方。', mercuryTag: '天王星', earthTag: '地球',
             controlsText: '你是一台巡航在环平面上的探测器——没有地面，也不会坠落。探测器会自行向前巡航；W A S D 或方向键控制侧向漂移和加减速，Shift 更快。空格上升，C 下沉到环面之下。拖动画面观察。触屏有方向按钮和推进键。G 对比地球引力，M 开关声音。H 隐藏手记，P 进入摄影，Esc 退出摄影。',
-            scienceTitle: '科学与想象的交界', scienceText: '天王星躺着绕太阳公转——自转轴倾角约 98°，所以它薄薄的环系在轨道面上几乎竖立。十三条环带狭窄、黑得像木炭。至今只有一艘飞船造访过：1986 年的旅行者 2 号。环带布局、小卫星和倾角标记都是艺术重建。',
+            scienceTitle: '科学与想象的交界', scienceText: '天王星躺着绕太阳公转——自转轴倾角约 97.8°，所以它薄薄的环系在轨道面上几乎竖立。十三条环带狭窄、黑得像木炭。至今只有一艘飞船造访过：1986 年的旅行者 2 号。环带布局、小卫星和倾角标记都是艺术重建。',
             soundText: '飞行比真实的环平面穿越平缓得多——旅行者 2 号以每秒约 15 公里的速度掠过。按 G 对比地球引力；天王星引力几乎和地球完全相同。进入环带时，留意颗粒敲击舱体的轻响。',
             assetText: '旅行者 2 号是 NASA 的真实 3D 模型——唯一到访过天王星的探测器。行星使用真实贴图；环面、粒子场和星空由浏览器本地生成。',
             skyEyebrow: '天王星天空中', sunName: '太阳', earthName: '地球', venusName: '天王星',
@@ -66,7 +66,7 @@
                 ['身边的炭块', '翻滚掠过的颗粒几乎是纯黑的——天王星的环物质只反射几个百分点的阳光。'],
                 ['黑暗的间隙', '环与环之间是宽阔的空白——并非绝对空无一物，只是被巡逻的小卫星扫得极薄。'],
                 ['牧羊小卫星', '骑在环缝中的一颗不规则小卫星——像天卫六、天卫七这样的卫星把 ε 环的边缘约束在原位。'],
-                ['侧躺模型标记', '一颗小小的示范球展示著名的 98° 倾角——行星自己的环竖立起来。'],
+                ['侧躺模型标记', '一颗小小的示范球展示著名的 97.8° 倾角——行星自己的环竖立起来。'],
                 ['同行的旅行者号', 'NASA 真实的旅行者号模型与你编队——1986 年 1 月 24 日，唯一见过这番景象的探测器。']
             ],
             error: '三维场景未能启动，请在支持 WebGL 的浏览器中重新加载。', lost: '图形连接中断，请重新加载页面继续。', boundary: '已到达本次飞行航道的边缘，可以前往另一个观察点。', saved: '照片已保存。', saveFailed: '当前浏览器无法保存照片。', fullscreenFailed: '当前浏览器无法进入全屏。', textureFailed: '纹理暂时不可用，已显示简化材质。', adjusted: '已适当降低渲染分辨率，让探索更流畅。',
@@ -75,7 +75,7 @@
                 ['一块环炭', '这块翻滚的碎片几乎是纯黑的——天王星的环颗粒只反射几个百分点的阳光。在查看器中旋转它。', '环颗粒', '暗色环物质'],
                 ['黑暗的间隙', '在狭窄环带之间的缝隙里——被看不见的牧羊卫星扫干净的宽阔安静空间。', '环结构', '环间隙'],
                 ['牧羊小卫星', '嵌在环边附近的一颗不规则小卫星——它的引力把漂移的颗粒约束成又细又锋利的环带。', '卫星', '牧羊小卫星'],
-                ['98° 倾角', '一颗标记小球演示天王星著名的侧躺——极点对着太阳，环系在轨道面上几乎竖立。', '姿态', '自转轴倾角']
+                ['97.8° 倾角', '一颗标记小球演示天王星著名的侧躺——极点对着太阳，环系在轨道面上几乎竖立。', '姿态', '自转轴倾角']
             ]
         }
     };
@@ -84,13 +84,13 @@
             fieldRoute: 'YOUR FLIGHT ROUTE', allFound: 'All five discoveries are in your journal. Stay a little longer.', discover: 'Discover · E', review: 'Read again · E', chooseStop: 'Next stop', rotateRock: 'Drag or use arrow keys to rotate', continueRoute: 'Continue exploring', takePhoto: 'Frame a photograph', discoveryDisclaimer: 'This is an imagined site, not a surveyed ring section or an identified ring particle.',
             savedHere: 'Journal saved on this device.', visitOnly: 'Journal kept for this visit only.', follow: 'Follow the amber guide dots', closeEnough: 'You are here. Press E or Discover.', landFirst: 'Match the ring layer before recording.', approach: 'Drift closer to this discovery.', recorded: 'DISCOVERY RECORDED', journal: 'FROM YOUR FIELD JOURNAL', away: 'm to the stop', ready: 'Ready to discover', quick: 'Quick travel — discovery not automatic', unavailable: 'The 3D specimen viewer is unavailable.', routeHelp: 'Follow the amber guide dots and distance arrow. Drift to a stop and press E or Discover to add it to your journal. The numbered buttons offer quick travel, not automatic discoveries. Guide dots are interface aids, not structures in the rings. H hides or restores the route card.',
             teasers: ['Take in the thin dark threads from above — bands, gaps, and the tipped giant beyond.', 'A charcoal-dark fragment drifts inside the ε ring — approach it and turn it in the specimen viewer.', 'Cruise into the wide dark gap between the narrow bands.', 'Ride the lanes north-east to where a small moon shepherds the ring edge.', 'Drift east to find a marker globe showing the famous sideways tilt.'],
-            details: ['Uranus’s rings were discovered from Earth in 1977 when they blinked out a star behind them — all thirteen are narrow and dark. From here the brightest, the ε ring, is a faint thread against the turquoise glow. The layout is artistic, informed by real ring structure.', 'Uranus’s ring particles are among the darkest material in the Solar System — charcoal-grey, reflecting only a few percent of sunlight. Why they are so dark is still debated; radiation-darkened methane ice is one suspect.', 'The gaps between Uranus’s rings are wide and nearly empty — small moons like Cordelia and Ophelia patrol the lanes and keep the bands confined. Voyager 2’s camera saw fine dust lanes threading some gaps.', 'Cordelia and Ophelia — two small moons discovered by Voyager 2 — shepherd the ε ring from inside and out. This moonlet is an artistic stand-in; the real ones are tens of kilometres of dark rock and ice.', 'Uranus spins on its side — an axis tilted about 98°, probably knocked over by a giant impact long ago. Its rings and moons ride around the tipped equator, so the whole system rolls around the Sun like a wheel.']
+            details: ['Uranus’s rings were discovered from Earth in 1977 when they blinked out a star behind them — all thirteen are narrow and dark. From here the brightest, the ε ring, is a faint thread against the turquoise glow. The layout is artistic, informed by real ring structure.', 'Uranus’s ring particles are among the darkest material in the Solar System — charcoal-grey, reflecting only a few percent of sunlight. Why they are so dark is still debated; radiation-darkened methane ice is one suspect.', 'The gaps between Uranus’s rings are wide and nearly empty — small moons like Cordelia and Ophelia patrol the lanes and keep the bands confined. Voyager 2’s camera saw fine dust lanes threading some gaps.', 'Cordelia and Ophelia — two small moons discovered by Voyager 2 — shepherd the ε ring from inside and out. This moonlet is an artistic stand-in; the real ones are tens of kilometres of dark rock and ice.', 'Uranus spins on its side — an axis tilted about 97.8°, probably knocked over by a giant impact long ago. Its rings and moons ride around the tipped equator, so the whole system rolls around the Sun like a wheel.']
         },
         zh: {
             fieldRoute: '你的飞行路线', allFound: '五个发现都已记入手记。不妨再多停留一会儿。', discover: '记录发现 · E', review: '重读手记 · E', chooseStop: '换一站', rotateRock: '拖动或使用方向键旋转碎片', continueRoute: '继续探索', takePhoto: '构图拍照', discoveryDisclaimer: '这是虚构场景，并非真实环带测绘，也不是已鉴定的环颗粒样本。',
             savedHere: '手记已保存在此设备。', visitOnly: '手记仅在本次浏览中保留。', follow: '沿淡金色引导点漂移', closeEnough: '已抵达，按 E 或点击记录发现。', landFirst: '请对齐这一环层再记录发现。', approach: '请漂近这个发现点。', recorded: '新的发现已记录', journal: '你的探索手记', away: '米到达此站', ready: '可以记录发现', quick: '快捷移动，不会自动完成发现', unavailable: '三维查看器暂时不可用。', routeHelp: '跟随淡金色引导点和距离箭头，漂近后按 E 或点击记录发现。底部编号可以快捷移动，但不会自动完成发现。引导点只是界面辅助，并非环中的真实结构。H 可隐藏或恢复路线卡片。',
             teasers: ['从高处俯瞰又细又暗的环带——细线、缝隙，以及远处躺倒的巨行星。', 'ε 环里漂着一块炭黑色碎片——靠近它，在查看器中转动观察。', '驶进窄环之间宽阔的黑暗间隙。', '沿环道向东北，找到那颗约束环边缘的小卫星。', '向东漂移，找到展示著名侧躺姿态的标记小球。'],
-            details: ['天王星的环是 1977 年从地球上发现的——它们挡住了后面一颗恒星的光。十三条环带全都又窄又暗。从这里看，最亮的 ε 环也只是青绿色光晕中的一根细线。环带布局是艺术再现，参考了真实环结构。', '天王星的环颗粒是太阳系中最暗的物质之一——炭灰色，只反射几个百分点的阳光。为什么这么黑仍有争议；被辐射晒黑的甲烷冰是主要嫌疑之一。', '天王星环之间的间隙宽阔且接近真空——天卫六、天卫七这样的小卫星巡逻其间，把环带约束在原位。旅行者 2 号的相机还拍到一些缝隙里穿行的细尘道。', '天卫六和天卫七——旅行者 2 号发现的两颗小卫星——一内一外看守着 ε 环。这颗小卫星是艺术替身；真身是几十公里宽的暗色岩石与冰。', '天王星侧躺着自转——倾角约 98°，很可能在很久以前被一次巨大撞击撞倒。它的环和卫星都绕着躺倒的赤道运行，整个系统像轮子一样滚着绕太阳转。']
+            details: ['天王星的环是 1977 年从地球上发现的——它们挡住了后面一颗恒星的光。十三条环带全都又窄又暗。从这里看，最亮的 ε 环也只是青绿色光晕中的一根细线。环带布局是艺术再现，参考了真实环结构。', '天王星的环颗粒是太阳系中最暗的物质之一——炭灰色，只反射几个百分点的阳光。为什么这么黑仍有争议；被辐射晒黑的甲烷冰是主要嫌疑之一。', '天王星环之间的间隙宽阔且接近真空——天卫六、天卫七这样的小卫星巡逻其间，把环带约束在原位。旅行者 2 号的相机还拍到一些缝隙里穿行的细尘道。', '天卫六和天卫七——旅行者 2 号发现的两颗小卫星——一内一外看守着 ε 环。这颗小卫星是艺术替身；真身是几十公里宽的暗色岩石与冰。', '天王星侧躺着自转——倾角约 97.8°，很可能在很久以前被一次巨大撞击撞倒。它的环和卫星都绕着躺倒的赤道运行，整个系统像轮子一样滚着绕太阳转。']
         }
     };
     let language = parameters.get('lang') === 'zh' ? 'zh' : 'en';
@@ -327,7 +327,7 @@
         scene.add(moonlet);
     }
     // The tilt marker — a little turquoise globe spinning on its side with a
-    // vertical ring, demonstrating Uranus's famous 98° lean.
+    // vertical ring, demonstrating Uranus's famous 97.8° lean.
     function buildTiltMarker() {
         tiltMarker = new THREE.Group();
         const globe = new THREE.Mesh(
