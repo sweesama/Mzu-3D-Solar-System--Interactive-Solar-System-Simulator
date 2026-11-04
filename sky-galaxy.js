@@ -40,6 +40,9 @@
     const bandVertex = 'varying vec3 vDir; void main(){ vDir = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }';
     const bandFragment = `
         uniform float uIntensity; uniform float uFade; uniform vec3 uGx; uniform vec3 uGy; uniform vec3 uGz; varying vec3 vDir;
+        #ifdef DATA
+        uniform sampler2D uDust; uniform sampler2D uStars;
+        #endif
         ${NOISE}
         // 银道坐标 (l, b)，单位：度；l 在 -180..180，0 为银心
         float blob(vec2 p, vec2 c, vec2 r){ vec2 d = p - c; d.x = mod(d.x + 180.0, 360.0) - 180.0; d.x *= cos(radians(p.y)); d /= r; return exp(-dot(d, d)); }
@@ -61,6 +64,20 @@
             float n3 = fbm(g * 34.0 + 7.3);                           // 细小的星云颗粒
             float n4 = vnoise(g * 90.0) * 0.6 + vnoise(g * 190.0) * 0.4; // 更细的颗粒：模拟无数分辨不出的暗星
 
+            #ifdef DATA
+            // 真实数据：亮度 = Gaia DR3 实测恒星光（已经是被尘埃挡过之后的样子）；
+            // 再用 SFD 尘埃图里"比 Gaia 天区更细"的那部分起伏，刻出清晰的暗带边缘
+            vec2 uv = vec2(fract(L / 360.0 + 1.0), (B + 90.0) / 180.0);
+            float E = pow(10.0, texture2D(uDust, uv).r * 4.5 - 2.5);
+            vec3 s = texture2D(uStars, uv).rgb;
+            float Fb = pow(10.0, s.r * 4.5 - 5.0), Ff = pow(10.0, s.g * 4.5 - 5.0), Eb = pow(10.0, s.b * 4.5 - 2.5);
+            // 7–13 等亮星（Fb）每个天区只有几十颗，统计起伏大、会变成斑点，这里不用；它们已由星表点亮
+            float detail = clamp(exp(-0.65 * (log(1.0 + 1.55 * E) - log(1.0 + 1.55 * Eb))), 0.35, 1.5);
+            float light = pow(Ff / 0.02, 1.15) * detail;
+            float trans = clamp(detail, 0.0, 1.0);
+            vec3 tint = mix(vec3(0.80, 0.85, 1.0), vec3(1.0, 0.88, 0.70), inner) * mix(vec3(1.0), vec3(1.0, 0.86, 0.72), smoothstep(0.2, 3.0, Eb));
+            vec3 col = tint * light * mix(0.8, 1.2, n3) * mix(0.85, 1.15, n4);
+            #else
             // 恒星光：薄盘 + 厚盘 + 核球（核球是银心附近一大团偏黄的老年恒星，上下各延伸十几度）
             float h = 3.0 + 3.0 * inner;
             float disk = (0.28 + 0.72 * exp(-L * L / 3900.0)) * (0.66 * exp(-B * B / (h * h)) + 0.34 * exp(-abs(B) / 9.0));
@@ -93,6 +110,7 @@
             vec3 diskColor = mix(vec3(0.76, 0.82, 1.0), vec3(1.0, 0.92, 0.80), inner);
             vec3 col = (diskColor * (disk + clouds) * mottling + vec3(1.0, 0.84, 0.64) * bulge * 2.2 * grain) * trans;
             col *= mix(vec3(1.0, 0.82, 0.66), vec3(1.0), trans);     // 尘埃边缘的光略微变红（星际红化）
+            #endif
 
             // 红色发射星云（氢 α）
             float ha = 0.90 * blob(p, vec2(-72.4, -0.6), vec2(1.3, 1.0))      // 船底座大星云
@@ -107,10 +125,12 @@
                      + 0.30 * blob(p, vec2(-80.5, -31.7), vec2(0.45, 0.45));  // 大麦哲伦云里的蜘蛛星云
             col += vec3(1.0, 0.28, 0.32) * ha * mix(0.5, 1.3, n2) * mix(0.5, 1.0, trans);
 
-            // 河外星系：大、小麦哲伦云和仙女座星系
+            // 河外星系：仙女座星系太小，Gaia 天区分辨不出，始终用模型；大、小麦哲伦云在数据模式下直接来自 Gaia
+            col += vec3(0.86, 0.88, 1.0) * 0.10 * blob(p, vec2(121.2, -21.6), vec2(1.6, 0.6));
+            #ifndef DATA
             col += vec3(0.86, 0.88, 1.0) * (0.20 * blob(p, vec2(-79.5, -32.9), vec2(4.8, 3.6)) * mix(0.4, 1.5, n3) + 0.22 * blob(p, vec2(-79.0, -33.6), vec2(2.8, 0.8)) * mix(0.6, 1.3, n3)
-                                         + 0.12 * blob(p, vec2(-57.2, -44.3), vec2(2.4, 1.5)) * mix(0.5, 1.4, n3)
-                                         + 0.10 * blob(p, vec2(121.2, -21.6), vec2(1.6, 0.6)));
+                                         + 0.12 * blob(p, vec2(-57.2, -44.3), vec2(2.4, 1.5)) * mix(0.5, 1.4, n3));
+            #endif
 
             // 柔和的曝光曲线：亮处渐渐饱和，不会像直接放大那样过曝成一片白
             col = 1.0 - exp(-col * uIntensity);
@@ -126,21 +146,23 @@
         uniform samplerCube uCube; uniform float uFade; varying vec3 vDir;
         float dither(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453) - 0.5; }
         void main(){
-            gl_FragColor = vec4(textureCube(uCube, normalize(vDir)).rgb, 1.0);
+            gl_FragColor = sRGBToLinear(vec4(textureCube(uCube, normalize(vDir)).rgb, 1.0));  // 贴图里存的是 sRGB
             #include <encodings_fragment>
             gl_FragColor.rgb = max(gl_FragColor.rgb + dither(gl_FragCoord.xy) / 255.0, 0.0) * uFade;
         }`;
 
     // 把银河光带在启动时渲染一次到立方体贴图（半精度浮点，避免色带），之后每帧只读贴图。
     // 仍然是代码实时生成的，不是图片文件；只是不必每一帧都重新计算几十次噪声。
-    function bakeBand(renderer, uniforms, size) {
+    function bakeBand(renderer, uniforms, size, defines) {
+        // 8 位 sRGB 存储（暗部精度和屏幕一样），不生成多级纹理：贴图像素比屏幕像素大，用不到。
+        // 每面 1536 像素约占 57 MB 显存；之前的半精度浮点 + 多级纹理在 2048 时要 268 MB，手机吃不消。
         const target = new THREE.WebGLCubeRenderTarget(size, {
-            type: THREE.HalfFloatType, format: THREE.RGBAFormat, generateMipmaps: true,
-            minFilter: THREE.LinearMipmapLinearFilter, magFilter: THREE.LinearFilter
+            type: THREE.UnsignedByteType, format: THREE.RGBAFormat, encoding: THREE.sRGBEncoding,
+            generateMipmaps: false, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter
         });
         const material = new THREE.ShaderMaterial({
             vertexShader: bandVertex, fragmentShader: bandFragment, side: THREE.BackSide,
-            depthWrite: false, depthTest: false, defines: { BAKE: '' }, uniforms: Object.assign({ uFade: { value: 1 } }, uniforms)
+            depthWrite: false, depthTest: false, defines: Object.assign({ BAKE: '' }, defines), uniforms: Object.assign({ uFade: { value: 1 } }, uniforms)
         });
         const bakeScene = new THREE.Scene();
         const sphere = new THREE.Mesh(new THREE.SphereGeometry(10, 128, 96), material);
@@ -148,7 +170,7 @@
         new THREE.CubeCamera(0.1, 100, target).update(renderer, bakeScene);
         sphere.geometry.dispose();
         material.dispose();
-        return target.texture;
+        return target;
     }
 
     const starVertex = `
@@ -218,7 +240,9 @@
      * @param {number} [options.pixelRatio=1]     渲染像素比，保证高分屏上星点大小一致
      * @param {string} [options.catalogUrl]       亮星星表二进制文件地址
      * @param {THREE.WebGLRenderer} [options.renderer] 传入后，银河光带会在启动时烘焙成立方体贴图（推荐，省性能）
-     * @param {number} [options.bakeSize=2048]    烘焙贴图每个面的边长（像素）
+     * @param {number} [options.bakeSize=1024]    烘焙贴图每个面的边长（像素）
+     * @param {boolean} [options.dataMaps=true]   是否加载真实观测数据图（textures/galaxy_dust.png、galaxy_stars.png）
+     * @param {string} [options.dataPath='textures/'] 数据图所在目录
      * @param {THREE.Vector3} [options.centerToward] 可选：让银心朝向这个方向（用于行星表面的本地天空）
      * @param {boolean} [options.additive=false]  叠加在页面已有的天空颜色上（火星、外行星页面），而不是替换成黑色太空
      * @returns {THREE.Group} group.userData.setPixelRatio(pr) 更新星点大小；group.userData.setFade(0..1) 淡入淡出（如火星夜空）
@@ -233,9 +257,10 @@
         if (o.centerToward) group.quaternion.setFromUnitVectors(GAL_X, o.centerToward.clone().normalize());
 
         const bandUniforms = { uIntensity: { value: 0.13 * (o.intensity === undefined ? 1 : o.intensity) }, uGx: { value: GAL_X }, uGy: { value: GAL_Y }, uGz: { value: GAL_Z } };
+        const bakeSize = o.bakeSize || 1024;
         let cube = null;
         if (o.renderer) {
-            try { cube = bakeBand(o.renderer, bandUniforms, o.bakeSize || 2048); }
+            try { cube = bakeBand(o.renderer, bandUniforms, bakeSize); }
             catch (err) { console.warn('银河烘焙失败，改为逐帧计算：', err); }
         }
         const additive = !!o.additive;
@@ -244,12 +269,39 @@
             vertexShader: bandVertex, fragmentShader: cube ? cubeFragment : bandFragment, side: THREE.BackSide,
             depthWrite: false, depthTest: additive, fog: false,
             transparent: additive, blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending,
-            uniforms: cube ? { uCube: { value: cube }, uFade: fade } : Object.assign({ uFade: fade }, bandUniforms)
+            uniforms: cube ? { uCube: { value: cube.texture }, uFade: fade } : Object.assign({ uFade: fade }, bandUniforms)
         }));
         band.name = 'milkyWayBand';
         band.renderOrder = -10;                      // 最先画，后面的一切都盖在它上面
         band.frustumCulled = false;
         group.add(band);
+
+        // 真实观测数据（Gaia 恒星光 + SFD 尘埃，见 build_galaxy_maps.cjs）：加载完成后重新烘焙一次，
+        // 把上面的模型银河换成数据银河；加载失败就继续用模型。
+        if (o.dataMaps !== false) {
+            const base = o.dataPath || 'textures/';
+            const loader = new THREE.TextureLoader();
+            const load = (name) => new Promise((resolve, reject) => loader.load(base + name, (t) => {
+                t.generateMipmaps = false; t.minFilter = THREE.LinearFilter; t.magFilter = THREE.LinearFilter;
+                t.wrapS = THREE.RepeatWrapping; t.wrapT = THREE.ClampToEdgeWrapping;   // 银经方向首尾相接
+                resolve(t);
+            }, undefined, reject));
+            Promise.all([load('galaxy_dust.png'), load('galaxy_stars.png')]).then(([dustTex, starTex]) => {
+                const dataUniforms = Object.assign({ uDust: { value: dustTex }, uStars: { value: starTex } }, bandUniforms);
+                if (cube) {
+                    const next = bakeBand(o.renderer, dataUniforms, bakeSize, { DATA: '' });
+                    band.material.uniforms.uCube.value = next.texture;
+                    cube.dispose();
+                    cube = next;
+                    dustTex.dispose(); starTex.dispose();     // 烘焙完就不再需要原始数据图
+                } else {
+                    Object.assign(band.material.uniforms, dataUniforms);
+                    band.material.defines = { DATA: '' };
+                    band.material.needsUpdate = true;
+                }
+                group.userData.dataLoaded = true;
+            }).catch((err) => console.warn('银河观测数据加载失败，继续使用模型：', err));
+        }
 
         const uniforms = { uPixelRatio: { value: o.pixelRatio || 1 }, uGain: { value: o.starGain === undefined ? 1 : o.starGain }, uFade: fade };
         group.userData.setPixelRatio = (pr) => { uniforms.uPixelRatio.value = pr; };

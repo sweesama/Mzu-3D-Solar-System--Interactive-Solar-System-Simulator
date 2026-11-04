@@ -3485,7 +3485,7 @@ self.onmessage = function(e) {
         // 星空与银河：真实星表的亮星 + 按银河结构分布的暗星 + 按真实银道坐标计算的银河光带（见 sky-galaxy.js）。
         // 整组每帧跟随镜头（名字仍叫 starfield），相当于在无限远处；暗星数量按画质档位调整。
         function createStarfield() {
-            const sky = SkyGalaxy.create({ radius: 6000, faintStars: Math.round(renderProfile.stars * 2.5), pixelRatio: renderer.getPixelRatio(), renderer, bakeSize: activeQuality === 'low' ? 1024 : activeQuality === 'balanced' ? 1536 : 2048 });
+            const sky = SkyGalaxy.create({ radius: 6000, faintStars: Math.round(renderProfile.stars * 2.5), pixelRatio: renderer.getPixelRatio(), renderer, bakeSize: activeQuality === 'low' ? 768 : activeQuality === 'balanced' ? 1024 : 1536 });
             sky.name = "starfield";
             starTwinkleUniforms = sky.userData.setPixelRatio;
             scene.add(sky);

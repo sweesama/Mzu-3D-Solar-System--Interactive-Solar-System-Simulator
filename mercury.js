@@ -479,7 +479,7 @@
         // Its band sphere covers the whole sky, so no separate black sky sphere is needed.
         if (window.SkyGalaxy) scene.add(SkyGalaxy.create({
             radius: 6500, renderer, pixelRatio: renderer.getPixelRatio(), faintStars: quality === 'low' ? 30000 : 70000, starGain: 1.6,
-            bakeSize: quality === 'low' ? 1024 : 2048, centerToward: new THREE.Vector3(0.6, 0.55, -0.6)
+            bakeSize: quality === 'low' ? 768 : 1536, centerToward: new THREE.Vector3(0.6, 0.55, -0.6)
         }));
         skyPivot = new THREE.Group();
         scene.add(skyPivot);

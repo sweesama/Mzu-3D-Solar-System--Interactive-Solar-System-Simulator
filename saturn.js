@@ -361,7 +361,7 @@
         // added on top of the page's own sky colour. starField keeps its slow drift in animate().
         starField = SkyGalaxy.create({
             radius: 6000, renderer, pixelRatio: renderer.getPixelRatio(), additive: true, intensity: 1, starGain: 1.4,
-            faintStars: quality === 'low' ? 30000 : 70000, bakeSize: quality === 'low' ? 1024 : 2048
+            faintStars: quality === 'low' ? 30000 : 70000, bakeSize: quality === 'low' ? 768 : 1536
         });
         scene.add(starField);
         skyPivot = new THREE.Group();

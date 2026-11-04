@@ -474,7 +474,7 @@
         // The galactic centre is turned to the upper right of the starting view, away from the Sun.
         if (window.SkyGalaxy) scene.add(SkyGalaxy.create({
             radius: 6500, renderer, pixelRatio: renderer.getPixelRatio(), faintStars: quality === 'low' ? 30000 : 70000, starGain: 1.6,
-            bakeSize: quality === 'low' ? 1024 : 2048, centerToward: new THREE.Vector3(0.6, 0.55, -0.6)
+            bakeSize: quality === 'low' ? 768 : 1536, centerToward: new THREE.Vector3(0.6, 0.55, -0.6)
         }));
         const earthMaterial = new THREE.MeshStandardMaterial({ color: 0x7fafd0, roughness: 0.95 });
         const earth = new THREE.Mesh(new THREE.SphereGeometry(36, 64, 48), earthMaterial);

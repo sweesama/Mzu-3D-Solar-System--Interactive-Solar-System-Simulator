@@ -604,7 +604,7 @@
         if (window.SkyGalaxy) {
             nightStars = SkyGalaxy.create({
                 radius: 6500, renderer, pixelRatio: renderer.getPixelRatio(), additive: true, starGain: 1.6,
-                faintStars: quality === 'low' ? 30000 : 70000, bakeSize: quality === 'low' ? 1024 : 2048,
+                faintStars: quality === 'low' ? 30000 : 70000, bakeSize: quality === 'low' ? 768 : 1536,
                 centerToward: new THREE.Vector3(0.5, 0.7, -0.5)
             });
             nightStars.userData.setFade(0);
