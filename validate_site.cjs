@@ -710,7 +710,12 @@ const homeHtml = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const homeTitle = capture(homeHtml, /<title>([\s\S]*?)<\/title>/i, 'title', 'index.html');
 if (!homeTitle.includes('Solar System Simulator')) errors.push('index.html: title must contain "Solar System Simulator"');
 if (homeTitle.length > 60) errors.push(`index.html: title length is ${homeTitle.length}`);
-if (!/<h1[^>]*>Solar System Simulator<\/h1>/.test(homeHtml)) errors.push('index.html: H1 must be the phrase "Solar System Simulator"');
+if (!/<h1[^>]*>Solar System Simulator: Interactive 3D Model<\/h1>/.test(homeHtml)) errors.push('index.html: H1 must be "Solar System Simulator: Interactive 3D Model"');
+if (!/3D solar system/i.test(homeHtml)) errors.push('index.html: keep a visible "3D solar system" phrase');
+if (/you can set (any|a) (calendar )?date/i.test(homeHtml)) errors.push('index.html: do not claim a calendar-date jump');
+if (!/cannot set a calendar date/i.test(homeHtml)) errors.push('index.html: state that a calendar date cannot be set');
+if (!homeHtml.includes('What is a solar system simulator?')) errors.push('index.html: missing simulator FAQ');
+if (!homeHtml.includes('Can I see planet positions on a specific date?')) errors.push('index.html: missing date FAQ');
 if (!/href="gravity-sandbox\.html"/.test(homeHtml)) errors.push('index.html: missing Gravity Sandbox link');
 if (!/no download and no sign-up/i.test(homeHtml)) errors.push('index.html: missing free online statement');
 

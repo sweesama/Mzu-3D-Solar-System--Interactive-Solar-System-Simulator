@@ -6,7 +6,7 @@
 
 ## What it is not
 
-The scene is not a real-time model of the current Solar System. It does not calculate positions for a selected date and must not be used for observation planning or scientific research. Visual radii, orbit distances, and animation rates are deliberately compressed. Some textures and surface treatments are artistic or procedural.
+The scene is not a real-time model of the current Solar System. It does not calculate positions for a selected date and must not be used for observation planning or scientific research. The Speed control only changes how fast the orbits run. Visual radii, orbit distances, and animation rates are deliberately compressed. Some textures and surface treatments are artistic or procedural.
 
 ## Public pages
 

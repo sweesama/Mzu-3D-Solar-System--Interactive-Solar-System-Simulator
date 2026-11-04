@@ -4152,26 +4152,35 @@ self.onmessage = function(e) {
         // 速度下拉框：艺术化速度 / 真实速度（多种时间倍率），并把选择记在本机
         function initializeTimeScaleControl() {
             const select = document.getElementById('time-select');
-            const status = document.getElementById('time-status');
+            const mirror = document.getElementById('time-jump-select');
+            const statuses = [document.getElementById('time-status'), document.getElementById('time-jump-status')].filter(Boolean);
             if (!select) return;
             const describe = () => {
-                if (realDaysPerSecond <= 0) { status.textContent = 'Compressed for viewing'; return; }
-                const yearSeconds = 365.256 / realDaysPerSecond;
-                const fmt = s => s < 90 ? `${Math.round(s)} s` : s < 5400 ? `${Math.round(s / 60)} min` : `${(s / 3600).toFixed(1)} h`;
-                status.textContent = `Real ratios · Earth year ≈ ${fmt(yearSeconds)}`;
+                let text = 'Compressed for viewing';
+                if (realDaysPerSecond > 0) {
+                    const yearSeconds = 365.256 / realDaysPerSecond;
+                    const fmt = s => s < 90 ? `${Math.round(s)} s` : s < 5400 ? `${Math.round(s / 60)} min` : `${(s / 3600).toFixed(1)} h`;
+                    text = `Real ratios · Earth year ≈ ${fmt(yearSeconds)}`;
+                }
+                statuses.forEach(el => { el.textContent = text; });
             };
             const apply = value => {
-                realDaysPerSecond = value === 'artistic' ? 0 : Math.max(0, parseFloat(value) || 0);
+                const next = Array.from(select.options).some(option => option.value === value) ? value : 'artistic';
+                realDaysPerSecond = next === 'artistic' ? 0 : Math.max(0, parseFloat(next) || 0);
+                select.value = next;
+                if (mirror) mirror.value = next;
                 describe();
+                return next;
             };
             let saved = null;
             try { saved = localStorage.getItem(TIME_SCALE_STORAGE_KEY); } catch (error) { saved = null; }
-            if (saved && Array.from(select.options).some(option => option.value === saved)) select.value = saved;
-            apply(select.value);
-            select.addEventListener('change', () => {
-                apply(select.value);
-                try { localStorage.setItem(TIME_SCALE_STORAGE_KEY, select.value); } catch (error) { /* 无痕模式下不保存 */ }
-            });
+            apply(saved || select.value);
+            const onChange = event => {
+                const next = apply(event.target.value);
+                try { localStorage.setItem(TIME_SCALE_STORAGE_KEY, next); } catch (error) { /* 无痕模式下不保存 */ }
+            };
+            select.addEventListener('change', onChange);
+            if (mirror) mirror.addEventListener('change', onChange);
         }
 
         function initializeMusicButton() {

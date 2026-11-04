@@ -111,12 +111,38 @@ canvas {
     backdrop-filter: blur(18px);
 }
 #experience-panel h1 {
-    max-width: 13ch;
+    max-width: 18ch;
     margin: 3px 34px 10px 0;
-    font-size: clamp(27px, 4vw, 38px);
-    line-height: 1.04;
+    font-size: clamp(24px, 3.4vw, 34px);
+    line-height: 1.05;
     letter-spacing: -0.035em;
 }
+.time-jump {
+    margin: 0 0 12px;
+    padding: 12px;
+    border: 1px solid rgba(255, 202, 75, 0.45);
+    border-radius: 12px;
+    background: rgba(255, 202, 75, 0.08);
+}
+.time-jump h2 {
+    margin: 0 0 6px;
+    color: #ffe08a;
+    font-size: 16px;
+}
+.time-jump p {
+    margin: 10px 0 0;
+    color: #e4e8f1;
+    font-size: 13.5px;
+    line-height: 1.5;
+}
+.time-jump .quality-control {
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+    background: rgba(3, 5, 10, 0.55);
+}
+.time-jump .quality-control select { width: 100%; min-width: 0; }
+.time-jump .quality-control small { white-space: normal; }
 #experience-panel h2 { margin: 2px 0 5px; font-size: 20px; }
 #experience-panel p { margin: 0 0 12px; }
 .experience-copy > p:not(.eyebrow):not(.model-note) { color: #e4e8f1; }
@@ -229,8 +255,14 @@ kbd {
     right: 14px;
     z-index: 1000;
     display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
     align-items: stretch;
     gap: 8px;
+    max-width: calc(100vw - 28px);
+}
+@media (max-width: 1200px) and (min-width: 721px) {
+    #scene-controls { max-width: calc(100vw - 450px); }
 }
 .control-btn { min-width: 112px; padding: 7px 11px; background: rgba(3, 5, 10, 0.8); font-size: 13px; }
 .quality-control {
@@ -353,7 +385,7 @@ body.embed-mode #embed-badge { display: block; }
         padding: 18px;
         border-radius: 14px;
     }
-    #experience-panel h1 { font-size: 29px; }
+    #experience-panel h1 { font-size: 26px; }
     #scene-controls {
         top: auto;
         right: 8px;
