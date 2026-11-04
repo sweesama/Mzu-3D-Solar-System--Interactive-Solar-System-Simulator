@@ -151,7 +151,7 @@ const articles = {
   },
   Uranus: {
     about: [
-      'Uranus is the seventh planet from the Sun, an ice giant about four times wider than Earth. Its axis is tilted about 97.8°, so it rolls around the Sun on its side; over its 84-year orbit, each pole gets around 42 years of continuous sunlight followed by 42 years of darkness. Methane in its upper atmosphere absorbs red light, giving Uranus its pale blue-green colour.',
+      'Uranus is the seventh planet from the Sun, an ice giant about four times wider than Earth. Its axis is tilted about 97.8° (NASA Planetary Fact Sheet), so it rolls around the Sun on its side; over its 84-year orbit, each pole gets around 42 years of continuous sunlight followed by 42 years of darkness. Methane in its upper atmosphere absorbs red light, giving Uranus its pale blue-green colour.',
       'Beneath the clouds, much of the planet is thought to be a hot, dense fluid of water, methane and ammonia ices. Uranus has 13 known rings — narrow and dark — and more than two dozen moons named after characters from Shakespeare and Alexander Pope, such as Titania, Oberon and Miranda. It was the first planet discovered with a telescope, by William Herschel in 1781, and Voyager 2 is the only spacecraft to have visited, flying past in January 1986.'
     ],
     faq: [
@@ -184,14 +184,27 @@ function sourceHtml(planet) {
   return links.map(([href, label]) => `<a href="${href}" rel="noopener" target="_blank">${label}</a>`).join(' · ');
 }
 
+const homeAnchors = {
+  Mercury: 'solar system simulator',
+  Venus: 'interactive solar system',
+  Earth: 'interactive 3D solar system',
+  Mars: '3D solar system',
+  Jupiter: 'free solar system simulator',
+  Saturn: 'interactive solar system model',
+  Uranus: '3D solar system simulator',
+  Neptune: 'full 3D solar system'
+};
+
 function buildArticle(planet) {
   const data = articles[planet.name];
+  const homeAnchor = homeAnchors[planet.name] || 'solar system simulator';
   return `<!-- PLANET-ARTICLE:START -->
         <section class="planet-article" aria-labelledby="about-title">
             <h2 id="about-title">About ${planet.name}</h2>
 ${data.about.map(p => `            <p>${escapeHtml(p)}</p>`).join('\n')}
             <h2>${planet.name}: frequently asked questions</h2>
 ${data.faq.map(([q, a]) => `            <h3>${escapeHtml(q)}</h3>\n            <p>${escapeHtml(a)}</p>`).join('\n')}
+            <p>Open the <a href="./">${homeAnchor}</a> to see ${planet.name} beside the other planets.</p>
             <p class="planet-sources">Sources: ${sourceHtml(planet)}.</p>
         </section>
         <!-- PLANET-ARTICLE:END -->`;

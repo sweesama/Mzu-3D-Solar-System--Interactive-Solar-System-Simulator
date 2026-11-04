@@ -4,7 +4,7 @@
 
 ## Start here
 
-- [Solar System Simulator](https://www.3dsolarsystem.net/): Free online 3D model. No download or sign-up. Rotate, zoom and select the Sun, eight planets, moons and dwarf planets; follow a planet tour; switch artistic or real scale and speed; share, save or embed a view. Not a live ephemeris. A current browser with WebGL is required.
+- [Solar System Simulator: Interactive 3D Model](https://www.3dsolarsystem.net/): Free interactive 3D solar system in the browser. No download or sign-up. Rotate, zoom and select the Sun, eight planets, moons and dwarf planets; follow a planet tour; switch artistic or real scale; speed orbits from one hour to one year of motion per second. It cannot jump to a calendar date and is not a live ephemeris. A current browser with WebGL is required.
 - [Gravity Sandbox](https://www.3dsolarsystem.net/gravity-sandbox.html): Free 2D toy in the browser. Click and drag to launch planets around a Sun. Point masses, softened Newtonian gravity (G = 100 in pixel-and-second units, softening length 8 pixels), velocity Verlet at 1/120 second. The Sun's play mass is 20,000, not a solar mass. Not the real Solar System and not an ephemeris. No download or sign-up. WebGL is not required on this page.
 - [Explore space online in 3D](https://www.3dsolarsystem.net/space-explorer-guide.html): step-by-step guide to the controls, scale and speed menus, tour, expeditions and embedding.
 - [Planet sizes and distances compared](https://www.3dsolarsystem.net/planet-sizes-and-distances.html): NASA diameters, distances, periods and a 1-metre-Sun scale model.
