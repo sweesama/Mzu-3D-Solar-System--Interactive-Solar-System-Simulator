@@ -130,7 +130,14 @@
         marsHemisphere.intensity = 0.42 * (1 - k) + 0.28 * k;
         sunlight.intensity = 2.15 * (1 - k);
         if (sunMesh) sunMesh.visible = k < 0.5;
-        if (nightStars) { nightStars.material.opacity = 0.95 * k; nightStars.visible = k > 0.01; }
+        if (nightStars) nightStars.userData.setFade(k);
+        // Dust devils are driven by daytime solar heating of the ground, so they die away at night
+        // (the funnel shader is unlit and would otherwise glow in the dark).
+        if (dustDevil) {
+            dustDevil.userData.outer.material.uniforms.uStrength.value = 0.9 * (1 - k);
+            dustDevil.userData.inner.material.uniforms.uStrength.value = 0.7 * (1 - k);
+            dustDevil.visible = k < 0.99;
+        }
     }
     const skyBodies = [], skyRay = new THREE.Raycaster(), skyPointer = new THREE.Vector2();
     const isDialogOpen = () => $('guide-dialog').open || $('discovery-dialog').open || $('moonlet-dialog').open;
@@ -592,24 +599,17 @@
         marsSkyMaterial = skyMaterial;
         // Stars: invisible by day (the dusty sky scatters their light), visible at night when the
         // thin Martian air is clear. updateNight() fades them in with the night-sky button.
-        let starSeed = 4721;
-        const starRand = () => (starSeed = (starSeed * 16807) % 2147483647) / 2147483647;
-        const starPositions = new Float32Array(1800 * 3);
-        const starColors = new Float32Array(1800 * 3);
-        for (let i = 0; i < 1800; i++) {
-            const theta = starRand() * Math.PI * 2, y = 0.03 + starRand() * 0.97;
-            const r = Math.sqrt(Math.max(0, 1 - y * y));
-            starPositions.set([Math.cos(theta) * r * 6400, y * 6400, Math.sin(theta) * r * 6400], i * 3);
-            const bright = 0.3 + Math.pow(starRand(), 2.2) * 0.9, warm = starRand();
-            starColors.set([bright, bright * (0.9 + warm * 0.1), bright * (0.85 + (1 - warm) * 0.15)], i * 3);
+        // The night sky is the shared real star catalogue + Milky Way (sky-galaxy.js), added on top of
+        // the sky colour so it fades in smoothly; the galactic centre is placed high in the sky.
+        if (window.SkyGalaxy) {
+            nightStars = SkyGalaxy.create({
+                radius: 6500, renderer, pixelRatio: renderer.getPixelRatio(), additive: true, starGain: 1.6,
+                faintStars: quality === 'low' ? 30000 : 70000, bakeSize: quality === 'low' ? 1024 : 2048,
+                centerToward: new THREE.Vector3(0.5, 0.7, -0.5)
+            });
+            nightStars.userData.setFade(0);
+            scene.add(nightStars);
         }
-        const starGeometry = new THREE.BufferGeometry();
-        starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-        starGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
-        nightStars = new THREE.Points(starGeometry, new THREE.PointsMaterial({ size: 2.6, map: dustFx.texture(), vertexColors: true, sizeAttenuation: false, depthWrite: false, transparent: true, opacity: 0, fog: false }));
-        nightStars.frustumCulled = false;
-        nightStars.visible = false;
-        scene.add(nightStars);
         scene.fog = new THREE.Fog(new THREE.Color(0xb88a66).convertSRGBToLinear(), 420, 4400);
         // 太阳亮度超过 1，泛光通道会让它自然晕开，不再需要光斑贴图
         const sun = new THREE.Mesh(new THREE.SphereGeometry(6.4, 32, 24), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xfff3dd).multiplyScalar(4), fog: false }));

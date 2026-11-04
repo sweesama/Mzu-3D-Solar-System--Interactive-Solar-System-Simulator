@@ -39,7 +39,7 @@
 
     const bandVertex = 'varying vec3 vDir; void main(){ vDir = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }';
     const bandFragment = `
-        uniform float uIntensity; uniform vec3 uGx; uniform vec3 uGy; uniform vec3 uGz; varying vec3 vDir;
+        uniform float uIntensity; uniform float uFade; uniform vec3 uGx; uniform vec3 uGy; uniform vec3 uGz; varying vec3 vDir;
         ${NOISE}
         // 银道坐标 (l, b)，单位：度；l 在 -180..180，0 为银心
         float blob(vec2 p, vec2 c, vec2 r){ vec2 d = p - c; d.x = mod(d.x + 180.0, 360.0) - 180.0; d.x *= cos(radians(p.y)); d /= r; return exp(-dot(d, d)); }
@@ -114,7 +114,7 @@
 
             // 柔和的曝光曲线：亮处渐渐饱和，不会像直接放大那样过曝成一片白
             col = 1.0 - exp(-col * uIntensity);
-            gl_FragColor = vec4(col, 1.0);
+            gl_FragColor = vec4(col * uFade, 1.0);
             #include <encodings_fragment>
             #ifndef BAKE
             gl_FragColor.rgb += dither(gl_FragCoord.xy) / 255.0;    // 抖动：消除暗部渐变的色带
@@ -123,12 +123,12 @@
 
     // 显示烘焙好的立方体贴图：每个像素只采样一次，开销极小
     const cubeFragment = `
-        uniform samplerCube uCube; varying vec3 vDir;
+        uniform samplerCube uCube; uniform float uFade; varying vec3 vDir;
         float dither(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453) - 0.5; }
         void main(){
             gl_FragColor = vec4(textureCube(uCube, normalize(vDir)).rgb, 1.0);
             #include <encodings_fragment>
-            gl_FragColor.rgb += dither(gl_FragCoord.xy) / 255.0;
+            gl_FragColor.rgb = max(gl_FragColor.rgb + dither(gl_FragCoord.xy) / 255.0, 0.0) * uFade;
         }`;
 
     // 把银河光带在启动时渲染一次到立方体贴图（半精度浮点，避免色带），之后每帧只读贴图。
@@ -140,7 +140,7 @@
         });
         const material = new THREE.ShaderMaterial({
             vertexShader: bandVertex, fragmentShader: bandFragment, side: THREE.BackSide,
-            depthWrite: false, depthTest: false, defines: { BAKE: '' }, uniforms
+            depthWrite: false, depthTest: false, defines: { BAKE: '' }, uniforms: Object.assign({ uFade: { value: 1 } }, uniforms)
         });
         const bakeScene = new THREE.Scene();
         const sphere = new THREE.Mesh(new THREE.SphereGeometry(10, 128, 96), material);
@@ -152,11 +152,11 @@
     }
 
     const starVertex = `
-        attribute float aMag; attribute vec3 aColor; uniform float uPixelRatio; uniform float uGain;
+        attribute float aMag; attribute vec3 aColor; uniform float uPixelRatio; uniform float uGain; uniform float uFade;
         varying vec3 vColor;
         void main(){
             float flux = pow(10.0, -0.4 * (aMag - 4.0));                   // 星等 → 亮度（4 等星为 1）
-            vColor = aColor * pow(clamp(flux, 0.015, 1.0), 0.7) * uGain;
+            vColor = aColor * pow(clamp(flux, 0.015, 1.0), 0.7) * uGain * uFade;
             gl_PointSize = clamp(1.5 + (4.5 - aMag) * 0.85, 1.5, 6.8) * uPixelRatio;  // 越亮的星光斑越大
             gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }`;
@@ -191,7 +191,7 @@
         return (disk + bulge * 1.5) * Math.exp(-lane * 1.3);
     }
 
-    function makeStarPoints(positions, mags, colors, uniforms) {
+    function makeStarPoints(positions, mags, colors, uniforms, additive) {
         const geometry = new THREE.BufferGeometry();
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
         geometry.setAttribute('aMag', new THREE.Float32BufferAttribute(mags, 1));
@@ -200,7 +200,8 @@
             vertexShader: starVertex, fragmentShader: starFragment, uniforms,
             // 不透明队列 + 关闭深度测试 + 叠加混合：星星在行星之前画好，行星再盖上去；
             // 这样即使真实大小模式把近裁剪面调到极小、远处深度精度失效，星星也不会闪烁或消失
-            transparent: false, depthTest: false, depthWrite: false, blending: THREE.AdditiveBlending, fog: false
+            // additive 模式（叠加在页面原有的天空上）：改为透明队列 + 深度测试，被地面和近处物体正常遮挡
+            transparent: !!additive, depthTest: !!additive, depthWrite: false, blending: THREE.AdditiveBlending, fog: false
         }));
         points.frustumCulled = false;
         points.renderOrder = -9;
@@ -219,7 +220,8 @@
      * @param {THREE.WebGLRenderer} [options.renderer] 传入后，银河光带会在启动时烘焙成立方体贴图（推荐，省性能）
      * @param {number} [options.bakeSize=2048]    烘焙贴图每个面的边长（像素）
      * @param {THREE.Vector3} [options.centerToward] 可选：让银心朝向这个方向（用于行星表面的本地天空）
-     * @returns {THREE.Group} group.userData.setPixelRatio(pr) 可在窗口变化时更新星点大小
+     * @param {boolean} [options.additive=false]  叠加在页面已有的天空颜色上（火星、外行星页面），而不是替换成黑色太空
+     * @returns {THREE.Group} group.userData.setPixelRatio(pr) 更新星点大小；group.userData.setFade(0..1) 淡入淡出（如火星夜空）
      */
     function create(options) {
         const o = options || {};
@@ -236,18 +238,22 @@
             try { cube = bakeBand(o.renderer, bandUniforms, o.bakeSize || 2048); }
             catch (err) { console.warn('银河烘焙失败，改为逐帧计算：', err); }
         }
+        const additive = !!o.additive;
+        const fade = { value: 1 };
         const band = new THREE.Mesh(new THREE.SphereGeometry(radius, 96, 64), new THREE.ShaderMaterial({
             vertexShader: bandVertex, fragmentShader: cube ? cubeFragment : bandFragment, side: THREE.BackSide,
-            depthWrite: false, depthTest: false, fog: false,
-            uniforms: cube ? { uCube: { value: cube } } : bandUniforms
+            depthWrite: false, depthTest: additive, fog: false,
+            transparent: additive, blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending,
+            uniforms: cube ? { uCube: { value: cube }, uFade: fade } : Object.assign({ uFade: fade }, bandUniforms)
         }));
         band.name = 'milkyWayBand';
         band.renderOrder = -10;                      // 最先画，后面的一切都盖在它上面
         band.frustumCulled = false;
         group.add(band);
 
-        const uniforms = { uPixelRatio: { value: o.pixelRatio || 1 }, uGain: { value: o.starGain === undefined ? 1 : o.starGain } };
+        const uniforms = { uPixelRatio: { value: o.pixelRatio || 1 }, uGain: { value: o.starGain === undefined ? 1 : o.starGain }, uFade: fade };
         group.userData.setPixelRatio = (pr) => { uniforms.uPixelRatio.value = pr; };
+        group.userData.setFade = (k) => { fade.value = k; group.visible = k > 0.005; };
         const starRadius = radius * 0.97;
         const color = new THREE.Color(), dir = new THREE.Vector3();
 
@@ -266,7 +272,7 @@
             fp.push(dir.x * starRadius, dir.y * starRadius, dir.z * starRadius);
             fc.push(color.r, color.g, color.b);
         }
-        group.add(makeStarPoints(fp, fm, fc, uniforms));
+        group.add(makeStarPoints(fp, fm, fc, uniforms, additive));
 
         // 亮星：真实星表
         const addCatalog = (buffer) => {
@@ -281,7 +287,7 @@
                 temperatureColor(2000 * Math.pow(20, view.getUint8(i * 8 + 6) / 255), color);
                 col.set([color.r, color.g, color.b], i * 3);
             }
-            const stars = makeStarPoints(pos, mag, col, uniforms);
+            const stars = makeStarPoints(pos, mag, col, uniforms, additive);
             stars.name = 'brightStarCatalog';
             group.add(stars);
         };

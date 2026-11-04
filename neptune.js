@@ -370,27 +370,12 @@
         skyDome.renderOrder = -1;
         skyDome.frustumCulled = false;
         scene.add(skyDome);
-        // Starfield dome
-        const starCount = 2600;
-        const positions = new Float32Array(starCount * 3);
-        const colors = new Float32Array(starCount * 3);
-        for (let i = 0; i < starCount; i++) {
-            const a = rand() * Math.PI * 2, e = Math.asin(rand() * 2 - 1);
-            const r = 6000;
-            positions[i * 3] = Math.cos(e) * Math.cos(a) * r;
-            positions[i * 3 + 1] = Math.sin(e) * r;
-            positions[i * 3 + 2] = Math.cos(e) * Math.sin(a) * r;
-            const b = 0.55 + rand() * 0.45, warm = rand();
-            colors[i * 3] = b * (0.85 + warm * 0.15); colors[i * 3 + 1] = b * 0.9; colors[i * 3 + 2] = b;
-        }
-        const starGeo = new THREE.BufferGeometry();
-        starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        starGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        starField = new THREE.Points(starGeo, new THREE.PointsMaterial({
-            size: 2.2, vertexColors: true, sizeAttenuation: false, transparent: true, opacity: 0.9,
-            map: dotTexture(), depthWrite: false, blending: THREE.AdditiveBlending, fog: false
-        }));
-        starField.frustumCulled = false;
+        // Real star catalogue + generated Milky Way (sky-galaxy.js), the same sky as the home page,
+        // added on top of the page's own sky colour. starField keeps its slow drift in animate().
+        starField = SkyGalaxy.create({
+            radius: 6000, renderer, pixelRatio: renderer.getPixelRatio(), additive: true, intensity: 0.55, starGain: 1.0,
+            faintStars: quality === 'low' ? 30000 : 70000, bakeSize: quality === 'low' ? 1024 : 2048
+        });
         scene.add(starField);
         skyPivot = new THREE.Group();
         scene.add(skyPivot);
