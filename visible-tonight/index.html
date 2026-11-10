@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Planets Visible Tonight | 3D Solar System</title>
+    <meta name="description" content="Which naked-eye planets are in the evening sky, the morning sky, or lost in the Sun’s glare right now. An approximate elongation, computed in your browser.">
+    <meta name="author" content="3D Solar System">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="theme-color" content="#05070d">
+    <link rel="canonical" href="https://www.3dsolarsystem.net/visible-tonight/">
+    <meta property="og:title" content="Planets Visible Tonight">
+    <meta property="og:description" content="Which naked-eye planets are in the evening sky, the morning sky, or lost in the Sun’s glare right now. An approximate elongation, computed in your browser.">
+    <meta property="og:image" content="https://www.3dsolarsystem.net/og/home.jpg">
+    <meta property="og:url" content="https://www.3dsolarsystem.net/visible-tonight/">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="3D Solar System">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Planets Visible Tonight">
+    <meta name="twitter:description" content="Which naked-eye planets are in the evening sky, the morning sky, or lost in the Sun’s glare right now. An approximate elongation, computed in your browser.">
+    <meta name="twitter:image" content="https://www.3dsolarsystem.net/og/home.jpg">
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Which planets are visible tonight?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mercury, Venus, Mars, Jupiter and Saturn, when they are far enough from the Sun. Each row says evening sky, morning sky, or lost in the Sun’s glare."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does this use my location?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Evening or morning comes from the planet’s ecliptic elongation from the Sun, which is nearly the same worldwide. How high it climbs, and the exact rise and set times, depend on your latitude and longitude. The hour figure treats the sky as turning 15° per hour and ignores the tilt of the ecliptic. The page shows UTC and your device’s time zone. That zone is not a GPS fix."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "When is a planet lost in the Sun’s glare?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "When it is under 15° from the Sun. That is a naked-eye rule of thumb, not a calculated brightness."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is elongation?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The angle at Earth between the Sun and the planet. Zero degrees means the planet is in the Sun’s direction. 180° means it is opposite the Sun and up all night."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I see Uranus or Neptune without a telescope?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Uranus is at the limit of naked-eye vision and usually needs a dark sky. Neptune is too faint for the naked eye and needs binoculars or a telescope. This page does not treat either as a naked-eye target, and it does not compute a magnitude for tonight."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is this the same as the 3D model?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The 3D solar system does not start from a live ephemeris. This page is a separate approximate calculation of elongation, not a telescope chart."
+      }
+    }
+  ]
+}
+    </script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "3D Solar System", "item": "https://www.3dsolarsystem.net/" },
+    { "@type": "ListItem", "position": 2, "name": "Visible tonight", "item": "https://www.3dsolarsystem.net/visible-tonight/" }
+  ]
+}
+    </script>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="/article.css">
+    <script src="/analytics.js"></script>
+</head>
+<body data-sky="visible">
+    <header class="site-header">
+        <a class="brand" href="/">3D Solar System</a>
+        <a href="/">Open the 3D explorer</a>
+        <a href="/space-explorer-guide.html">Guide</a>
+        <a href="/distance/">Distances now</a>
+        <a href="/visible-tonight/" aria-current="page">Visible tonight</a>
+        <a href="/moon-phase/">Moon phase</a>
+        <a href="/gas-giants/">Gas giants</a>
+        <a href="/size-comparison/">Size comparison</a>
+    </header>
+    <main>
+        <p class="eyebrow">Tonight · approximate elongation</p>
+        <h1>Planets visible tonight</h1>
+        <p class="lead">For this moment, each naked-eye planet is in the evening sky, the morning sky, or lost in the Sun’s glare. The split is the angle between the planet and the Sun, computed in your browser. It is not a chart for a telescope.</p>
+        <p><a class="cta" href="/">Open the 3D explorer</a><a class="cta secondary" href="/distance/">How far away they are</a></p>
+        <p id="sky-clock" class="note">Computing elongations from your device’s clock…</p>
+        <div id="visible-list"></div>
+        <h2>Uranus and Neptune</h2>
+        <p>These two are listed so you can see which side of the Sun they are on. They are not part of the naked-eye set above.</p>
+        <div id="faint-list"></div>
+        <noscript><p>This guide needs JavaScript. The elongation is calculated in your browser.</p></noscript>
+
+        <h2>How to read it</h2>
+        <p>A planet east of the Sun sets after the Sun, so it is an evening object. A planet west of the Sun rises before the Sun, so it is a morning object. Under 15° of elongation it is called lost in the Sun’s glare. Past 90° it is up for much of the night, not only in twilight. The “hours” note is elongation divided by 15, the rough spin of the sky. Your latitude and the tilt of the ecliptic move the real rise and set. This page does not ask for your location.</p>
+        <p>Positions use the same JPL approximate Keplerian elements as the <a href="/distance/">distance page</a> (Standish and Williams, 3000 BC–3000 AD). The 3D model’s orbits are a different, artistic starting point. Open a world directly: <a href="/mercury.html">Mercury</a>, <a href="/venus.html">Venus</a>, <a href="/mars.html">Mars</a>, <a href="/jupiter.html">Jupiter</a>, <a href="/saturn.html">Saturn</a>, <a href="/uranus.html">Uranus</a>, <a href="/neptune.html">Neptune</a>. The <a href="/moon-phase/">Moon’s phase</a> is on its own page.</p>
+
+        <h2>Frequently asked questions</h2>
+        <h3>Which planets are visible tonight?</h3>
+        <p>Mercury, Venus, Mars, Jupiter and Saturn, when they are far enough from the Sun. Each row says evening sky, morning sky, or lost in the Sun’s glare.</p>
+        <h3>Does this use my location?</h3>
+        <p>No. Evening or morning comes from the planet’s ecliptic elongation from the Sun, which is nearly the same worldwide. How high it climbs, and the exact rise and set times, depend on your latitude and longitude. The hour figure treats the sky as turning 15° per hour and ignores the tilt of the ecliptic. The page shows UTC and your device’s time zone. That zone is not a GPS fix.</p>
+        <h3>When is a planet lost in the Sun’s glare?</h3>
+        <p>When it is under 15° from the Sun. That is a naked-eye rule of thumb, not a calculated brightness.</p>
+        <h3>What is elongation?</h3>
+        <p>The angle at Earth between the Sun and the planet. Zero degrees means the planet is in the Sun’s direction. 180° means it is opposite the Sun and up all night.</p>
+        <h3>Can I see Uranus or Neptune without a telescope?</h3>
+        <p>Uranus is at the limit of naked-eye vision and usually needs a dark sky. Neptune is too faint for the naked eye and needs binoculars or a telescope. This page does not treat either as a naked-eye target, and it does not compute a magnitude for tonight.</p>
+        <h3>Is this the same as the 3D model?</h3>
+        <p>No. The <a href="/">3D solar system</a> does not start from a live ephemeris. This page is a separate approximate calculation of elongation, not a telescope chart.</p>
+        <p class="sources">Method: geocentric elongation from <a href="https://ssd.jpl.nasa.gov/planets/approx_pos.html" rel="noopener" target="_blank">JPL’s approximate planetary elements</a> (3000 BC–3000 AD). Not a Horizons ephemeris.</p>
+    </main>
+    <footer class="site-footer">
+        <p>Explore a planet: <a href="/mercury.html">Mercury</a> · <a href="/venus.html">Venus</a> · <a href="/earth.html">Earth</a> · <a href="/mars.html">Mars</a> · <a href="/jupiter.html">Jupiter</a> · <a href="/saturn.html">Saturn</a> · <a href="/uranus.html">Uranus</a> · <a href="/neptune.html">Neptune</a></p>
+        <p>Sky and compare: <a href="/distance/">Distances now</a> · <a href="/visible-tonight/">Visible tonight</a> · <a href="/moon-phase/">Moon phase</a> · <a href="/gas-giants/">Gas giants</a> · <a href="/size-comparison/">Size comparison</a></p>
+        <p><a href="/planet-sizes-and-distances.html">Sizes &amp; distances</a> · <a href="/">Solar System Simulator</a></p>
+        <p>Live figures are computed in your browser. They are approximate, not a telescope ephemeris. The 3D model is a separate artistic view.</p>
+    </footer>
+    <script src="/sky-ephemeris.js"></script>
+    <script src="/sky-pages.js"></script>
+</body>
+</html>

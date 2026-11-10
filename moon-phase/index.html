@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Moon Phase Tonight | 3D Solar System</title>
+    <meta name="description" content="Current moon phase, illumination, age, distance and the next new, quarter and full moons. Computed in your browser from a published lunar series.">
+    <meta name="author" content="3D Solar System">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="theme-color" content="#05070d">
+    <link rel="canonical" href="https://www.3dsolarsystem.net/moon-phase/">
+    <meta property="og:title" content="Moon Phase Tonight">
+    <meta property="og:description" content="Current moon phase, illumination, age, distance and the next new, quarter and full moons. Computed in your browser from a published lunar series.">
+    <meta property="og:image" content="https://www.3dsolarsystem.net/og/home.jpg">
+    <meta property="og:url" content="https://www.3dsolarsystem.net/moon-phase/">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="3D Solar System">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Moon Phase Tonight">
+    <meta name="twitter:description" content="Current moon phase, illumination, age, distance and the next new, quarter and full moons. Computed in your browser from a published lunar series.">
+    <meta name="twitter:image" content="https://www.3dsolarsystem.net/og/home.jpg">
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the Moon’s phase right now?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The name, lit fraction, age since the last new moon, and distance are computed in your browser for the time shown at the top of the page."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How is the lit fraction calculated?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "From the angle at the Moon between the Sun and Earth. The Moon’s place comes from Jean Meeus, Astronomical Algorithms, chapter 47, and the Sun’s longitude from chapter 25, so both are in the equinox-of-date frame. The lit fraction is (1 + cos i) / 2, where i is that phase angle."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the age of the Moon?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The time since the previous new moon in this model, when the Moon’s ecliptic longitude last matched the Sun’s."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "When is the next full moon?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The calendar lists the next new moon, first quarter, full moon and last quarter in UTC. Against published almanac times, these instants usually fall within a few minutes. They are not an official almanac."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does the picture match the southern hemisphere?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The drawing lights the right side while the Moon is waxing, which is the view from the northern hemisphere. From the southern hemisphere the lit side is mirrored left to right."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How far away is the Moon?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The distance is the centre of Earth to the centre of the Moon, from the Meeus series, usually good to a few kilometres. It is not a laser-ranging measurement. Light-time is that distance divided by the speed of light."
+      }
+    }
+  ]
+}
+    </script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "3D Solar System", "item": "https://www.3dsolarsystem.net/" },
+    { "@type": "ListItem", "position": 2, "name": "Moon phase", "item": "https://www.3dsolarsystem.net/moon-phase/" }
+  ]
+}
+    </script>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="/article.css">
+    <script src="/analytics.js"></script>
+</head>
+<body data-sky="moon">
+    <header class="site-header">
+        <a class="brand" href="/">3D Solar System</a>
+        <a href="/">Open the 3D explorer</a>
+        <a href="/moon.html">Walk on the Moon</a>
+        <a href="/distance/">Distances now</a>
+        <a href="/visible-tonight/">Visible tonight</a>
+        <a href="/moon-phase/" aria-current="page">Moon phase</a>
+        <a href="/size-comparison/">Size comparison</a>
+    </header>
+    <main>
+        <p class="eyebrow">Live · Moon</p>
+        <h1>Moon phase tonight</h1>
+        <p class="lead">The phase name, the lit fraction, the age, the distance and the next four principal phases. All of it is calculated in your browser from a published lunar series, not from a server and not from the artistic orbit in the 3D scene.</p>
+        <p><a class="cta" href="/moon.html">Walk on the Moon in 3D</a><a class="cta secondary" href="/?focus=Moon">See the Moon in orbit</a></p>
+        <p id="sky-clock" class="note">Computing the phase from your device’s clock…</p>
+        <div class="moon-layout">
+            <div>
+                <canvas id="moon-canvas" width="220" height="220" aria-hidden="true"></canvas>
+                <p id="moon-caption" class="muted">The drawing appears once JavaScript runs.</p>
+            </div>
+            <div>
+                <p id="moon-name" class="phase-name">…</p>
+                <dl id="moon-facts"></dl>
+            </div>
+        </div>
+        <noscript><p>The live phase needs JavaScript. It is calculated in your browser.</p></noscript>
+
+        <h2>Upcoming phases</h2>
+        <p>The next new moon, quarters and full moon in this model. Times are UTC.</p>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Phase</th><th>UTC</th></tr></thead>
+                <tbody id="phase-body"></tbody>
+            </table>
+        </div>
+
+        <h2>How this is computed</h2>
+        <p>The Moon’s ecliptic longitude, latitude and distance follow Jean Meeus, <em>Astronomical Algorithms</em>, chapter 47 (equinox of date, without nutation). The Sun’s longitude for the phase follows chapter 25, in the same frame. Illumination uses the angle at the Moon between the Sun and Earth. Principal phases are the moments that longitude difference hits 0°, 90°, 180° and 270°. Checked against published 2026 phase times, the instants usually land within a few minutes. That is good enough for a phase name and a calendar, and it is not a laser-ranging or Horizons product.</p>
+        <p>The drawing is a flat disc. Waxing light is on the right, as seen from the northern hemisphere. South of the equator, mirror it. For the surface itself, open <a href="/moon.html">the Moon expedition</a>. Earth’s distance to the Moon is also on the <a href="/distance/">distance page</a>, next to the planets. Mean planet sizes are on <a href="/size-comparison/">the size comparison</a>.</p>
+
+        <h2>Frequently asked questions</h2>
+        <h3>What is the Moon’s phase right now?</h3>
+        <p>The name, lit fraction, age since the last new moon, and distance are computed in your browser for the time shown at the top of the page.</p>
+        <h3>How is the lit fraction calculated?</h3>
+        <p>From the angle at the Moon between the Sun and Earth. The Moon’s place comes from Jean Meeus, <em>Astronomical Algorithms</em>, chapter 47, and the Sun’s longitude from chapter 25, so both are in the equinox-of-date frame. The lit fraction is (1 + cos i) / 2, where i is that phase angle.</p>
+        <h3>What is the age of the Moon?</h3>
+        <p>The time since the previous new moon in this model, when the Moon’s ecliptic longitude last matched the Sun’s.</p>
+        <h3>When is the next full moon?</h3>
+        <p>The calendar lists the next new moon, first quarter, full moon and last quarter in UTC. Against published almanac times, these instants usually fall within a few minutes. They are not an official almanac.</p>
+        <h3>Does the picture match the southern hemisphere?</h3>
+        <p>The drawing lights the right side while the Moon is waxing, which is the view from the northern hemisphere. From the southern hemisphere the lit side is mirrored left to right.</p>
+        <h3>How far away is the Moon?</h3>
+        <p>The distance is the centre of Earth to the centre of the Moon, from the Meeus series, usually good to a few kilometres. It is not a laser-ranging measurement. Light-time is that distance divided by the speed of light.</p>
+        <p class="sources">Method: Jean Meeus, <em>Astronomical Algorithms</em>, chapters 25 and 47. Phase names use ecliptic elongation: within 10° of 0° is New, 10–80° Waxing Crescent, 80–100° First Quarter, 100–170° Waxing Gibbous, 170–190° Full, and the waning half mirrors that.</p>
+    </main>
+    <footer class="site-footer">
+        <p>Explore a planet: <a href="/mercury.html">Mercury</a> · <a href="/venus.html">Venus</a> · <a href="/earth.html">Earth</a> · <a href="/mars.html">Mars</a> · <a href="/jupiter.html">Jupiter</a> · <a href="/saturn.html">Saturn</a> · <a href="/uranus.html">Uranus</a> · <a href="/neptune.html">Neptune</a></p>
+        <p>Sky and compare: <a href="/distance/">Distances now</a> · <a href="/visible-tonight/">Visible tonight</a> · <a href="/moon-phase/">Moon phase</a> · <a href="/gas-giants/">Gas giants</a> · <a href="/size-comparison/">Size comparison</a></p>
+        <p><a href="/moon.html">Moon expedition</a> · <a href="/">Solar System Simulator</a></p>
+        <p>Live figures are computed in your browser. They are approximate, not a telescope ephemeris. The 3D model is a separate artistic view.</p>
+    </footer>
+    <script src="/sky-ephemeris.js"></script>
+    <script src="/sky-pages.js"></script>
+</body>
+</html>

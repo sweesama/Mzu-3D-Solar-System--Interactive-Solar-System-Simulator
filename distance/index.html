@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>How Far Away Are the Planets Right Now? | 3D Solar System</title>
+    <meta name="description" content="Live centre-to-centre distances from Earth to the Sun, Moon and planets, plus light-time and whether each body is approaching. Computed in your browser.">
+    <meta name="author" content="3D Solar System">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="theme-color" content="#05070d">
+    <link rel="canonical" href="https://www.3dsolarsystem.net/distance/">
+    <meta property="og:title" content="How Far Away Are the Planets Right Now?">
+    <meta property="og:description" content="Live centre-to-centre distances from Earth to the Sun, Moon and planets, plus light-time and whether each body is approaching. Computed in your browser.">
+    <meta property="og:image" content="https://www.3dsolarsystem.net/og/home.jpg">
+    <meta property="og:url" content="https://www.3dsolarsystem.net/distance/">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="3D Solar System">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="How Far Away Are the Planets Right Now?">
+    <meta name="twitter:description" content="Live centre-to-centre distances from Earth to the Sun, Moon and planets, plus light-time and whether each body is approaching. Computed in your browser.">
+    <meta name="twitter:image" content="https://www.3dsolarsystem.net/og/home.jpg">
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How far is each planet from Earth right now?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The table is centre-to-centre distance at the time shown. The Sun and planets use JPL’s approximate Keplerian elements for 3000 BC–3000 AD, with Earth represented by the Earth–Moon barycentre. The Moon’s distance is from Earth’s centre, using a series from Jean Meeus, Astronomical Algorithms. These are not JPL Horizons values."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is light-time?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Light-time is the distance divided by the speed of light, 299,792.458 km/s. It is how long the light leaving that body takes to reach Earth. The positions themselves are not shifted by light-time."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does approaching or receding mean?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The page compares the distance now with the distance one hour later. Approaching means the centre-to-centre gap is shrinking. It is the rate of change of distance, not the planet’s speed along its orbit."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the next closest date?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The next time this model’s distance reaches a local minimum: perihelion for the Sun, perigee for the Moon, and the next close approach for each planet. Outer-planet dates are softer, because JPL’s nominal distance error for this element set is millions of kilometres."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why might these numbers differ from an almanac?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "JPL’s nominal distance error for this 3000 BC–3000 AD element set runs from about 1,000 km for Mercury to several million kilometres for the outer planets. The Earth–Moon barycentre also sits about 4,670 km from Earth’s centre. The 3D explorer does not use these positions."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I see the planets in 3D?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Open the 3D explorer or a planet’s own page. That view is artistic: its starting angles are not this live calculation."
+      }
+    }
+  ]
+}
+    </script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "3D Solar System", "item": "https://www.3dsolarsystem.net/" },
+    { "@type": "ListItem", "position": 2, "name": "Distances now", "item": "https://www.3dsolarsystem.net/distance/" }
+  ]
+}
+    </script>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon_io/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="/article.css">
+    <script src="/analytics.js"></script>
+</head>
+<body data-sky="distance">
+    <header class="site-header">
+        <a class="brand" href="/">3D Solar System</a>
+        <a href="/">Open the 3D explorer</a>
+        <a href="/space-explorer-guide.html">Guide</a>
+        <a href="/distance/" aria-current="page">Distances now</a>
+        <a href="/visible-tonight/">Visible tonight</a>
+        <a href="/moon-phase/">Moon phase</a>
+        <a href="/gas-giants/">Gas giants</a>
+        <a href="/size-comparison/">Size comparison</a>
+    </header>
+    <main>
+        <p class="eyebrow">Live · computed in your browser</p>
+        <h1>How far away are the planets right now?</h1>
+        <p class="lead">Centre-to-centre distances from Earth to the Sun, the Moon and the eight planets, with light-time and whether the gap is opening or closing. The arithmetic runs on this page. Nothing is fetched from a server.</p>
+        <p><a class="cta" href="/">Open the 3D explorer</a><a class="cta secondary" href="/visible-tonight/">Planets visible tonight</a></p>
+        <p id="sky-clock" class="note">Computing distances from your device’s clock…</p>
+        <div class="table-wrap">
+            <table class="distance-table">
+                <thead>
+                    <tr><th>Body</th><th>Distance from Earth</th><th>Light-time</th><th>Motion</th><th>Next closest</th></tr>
+                </thead>
+                <tbody id="distance-body"></tbody>
+            </table>
+        </div>
+        <noscript><p>These live figures need JavaScript. They are calculated in your browser from published orbital elements.</p></noscript>
+
+        <h2>How the numbers are computed</h2>
+        <p>The Sun and planets use the Keplerian elements and rates JPL published for approximate positions over 3000 BC–3000 AD (E. M. Standish and J. G. Williams). The tighter 1800–2050 set ends in 2050, so it is not used. Earth is the Earth–Moon barycentre in that table. That point lies about 4,670 km from Earth’s centre, toward the Moon, which is small beside a planetary distance and is already inside JPL’s stated error for the fit.</p>
+        <p>JPL’s nominal distance error for this element set, across that whole historical span, is about 1,000 km for Mercury, 8,000 km for Venus, 15,000 km for the Earth–Moon barycentre, 30,000 km for Mars, 1 million km for Jupiter, 4 million km for Saturn, 8 million km for Uranus and 4 million km for Neptune. A given night is often better than the worst case. It is still not a Horizons ephemeris, and it is not the <a href="/">3D explorer</a>, whose starting angles are artistic.</p>
+        <p>The Moon is separate. Its distance is Earth’s centre to the Moon’s centre, from the series in Jean Meeus, <em>Astronomical Algorithms</em>, chapter 47. Light-time is distance divided by 299,792.458 km/s, using the astronomical unit of 149,597,870.7 km. “Next closest” is the next local minimum of that distance: perihelion, perigee, or the next planetary close approach.</p>
+        <p>See also <a href="/moon-phase/">the Moon’s phase</a>, <a href="/planet-sizes-and-distances.html">mean sizes and distances</a>, and each planet in 3D: <a href="/mercury.html">Mercury</a>, <a href="/venus.html">Venus</a>, <a href="/earth.html">Earth</a>, <a href="/mars.html">Mars</a>, <a href="/jupiter.html">Jupiter</a>, <a href="/saturn.html">Saturn</a>, <a href="/uranus.html">Uranus</a>, <a href="/neptune.html">Neptune</a>.</p>
+
+        <h2>Frequently asked questions</h2>
+        <h3>How far is each planet from Earth right now?</h3>
+        <p>The table is centre-to-centre distance at the time shown. The Sun and planets use JPL’s approximate Keplerian elements for 3000 BC–3000 AD, with Earth represented by the Earth–Moon barycentre. The Moon’s distance is from Earth’s centre, using a series from Jean Meeus, <em>Astronomical Algorithms</em>. These are not JPL Horizons values.</p>
+        <h3>What is light-time?</h3>
+        <p>Light-time is the distance divided by the speed of light, 299,792.458 km/s. It is how long the light leaving that body takes to reach Earth. The positions themselves are not shifted by light-time.</p>
+        <h3>What does approaching or receding mean?</h3>
+        <p>The page compares the distance now with the distance one hour later. Approaching means the centre-to-centre gap is shrinking. It is the rate of change of distance, not the planet’s speed along its orbit.</p>
+        <h3>What is the next closest date?</h3>
+        <p>The next time this model’s distance reaches a local minimum: perihelion for the Sun, perigee for the Moon, and the next close approach for each planet. Outer-planet dates are softer, because JPL’s nominal distance error for this element set is millions of kilometres.</p>
+        <h3>Why might these numbers differ from an almanac?</h3>
+        <p>JPL’s nominal distance error for this 3000 BC–3000 AD element set runs from about 1,000 km for Mercury to several million kilometres for the outer planets. The Earth–Moon barycentre also sits about 4,670 km from Earth’s centre. The 3D explorer does not use these positions.</p>
+        <h3>Can I see the planets in 3D?</h3>
+        <p>Yes. Open the <a href="/">3D explorer</a> or a planet’s own page. That view is artistic: its starting angles are not this live calculation.</p>
+        <p class="sources">Sources: <a href="https://ssd.jpl.nasa.gov/planets/approx_pos.html" rel="noopener" target="_blank">JPL Approximate Positions of the Planets</a> (Standish and Williams; elements for 3000 BC–3000 AD and the stated nominal errors) · Jean Meeus, <em>Astronomical Algorithms</em>, chapter 47, for the Moon · <a href="https://nssdc.gsfc.nasa.gov/planetary/factsheet/" rel="noopener" target="_blank">NASA Planetary Fact Sheet</a> for the mean sizes linked from the scale page.</p>
+    </main>
+    <footer class="site-footer">
+        <p>Explore a planet: <a href="/mercury.html">Mercury</a> · <a href="/venus.html">Venus</a> · <a href="/earth.html">Earth</a> · <a href="/mars.html">Mars</a> · <a href="/jupiter.html">Jupiter</a> · <a href="/saturn.html">Saturn</a> · <a href="/uranus.html">Uranus</a> · <a href="/neptune.html">Neptune</a></p>
+        <p>Sky and compare: <a href="/distance/">Distances now</a> · <a href="/visible-tonight/">Visible tonight</a> · <a href="/moon-phase/">Moon phase</a> · <a href="/gas-giants/">Gas giants</a> · <a href="/size-comparison/">Size comparison</a></p>
+        <p><a href="/planet-sizes-and-distances.html">Sizes &amp; distances</a> · <a href="/gravity-sandbox.html">Gravity sandbox</a> · <a href="/">Solar System Simulator</a></p>
+        <p>Live figures are computed in your browser. They are approximate, not a telescope ephemeris. The 3D model is a separate artistic view.</p>
+    </footer>
+    <script src="/sky-ephemeris.js"></script>
+    <script src="/sky-pages.js"></script>
+</body>
+</html>
