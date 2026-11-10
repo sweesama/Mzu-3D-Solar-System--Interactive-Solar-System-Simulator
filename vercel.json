@@ -1,5 +1,17 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    { "source": "/distance", "destination": "/distance/index.html" },
+    { "source": "/distance/", "destination": "/distance/index.html" },
+    { "source": "/gas-giants", "destination": "/gas-giants/index.html" },
+    { "source": "/gas-giants/", "destination": "/gas-giants/index.html" },
+    { "source": "/visible-tonight", "destination": "/visible-tonight/index.html" },
+    { "source": "/visible-tonight/", "destination": "/visible-tonight/index.html" },
+    { "source": "/moon-phase", "destination": "/moon-phase/index.html" },
+    { "source": "/moon-phase/", "destination": "/moon-phase/index.html" },
+    { "source": "/size-comparison", "destination": "/size-comparison/index.html" },
+    { "source": "/size-comparison/", "destination": "/size-comparison/index.html" }
+  ],
   "headers": [
     {
       "source": "/(.*)",

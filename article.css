@@ -28,3 +28,42 @@ th { color: var(--accent); font-weight: 600; }
 .sandbox-toolbar button:hover { border-color: var(--accent); }
 #sandbox { display: block; width: 100%; height: auto; aspect-ratio: 5 / 3; border-radius: 8px; touch-action: none; cursor: crosshair; background: #070b14; }
 .sandbox-status { min-height: 1.4em; margin: 10px 0 0; color: var(--muted); font-size: 14px; }
+.site-header a[aria-current="page"] { color: var(--accent); text-decoration: none; }
+.muted { color: var(--muted); font-size: 13px; }
+.vis-card { margin: 0 0 14px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: #0b101a; }
+.vis-head { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; }
+.vis-head a { font-size: 20px; font-weight: 650; text-decoration: none; }
+.vis-card p { margin: 8px 0 0; }
+.pill { display: inline-block; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); font-size: 13px; color: #f0e5c6; }
+.pill-evening { border-color: rgba(255,202,75,0.7); background: rgba(255,202,75,0.13); }
+.pill-morning { border-color: rgba(143,208,220,0.7); background: rgba(143,208,220,0.12); }
+.pill-glare { border-color: rgba(255,255,255,0.2); color: var(--muted); }
+.moon-layout { display: flex; flex-wrap: wrap; gap: 18px 28px; align-items: center; margin: 8px 0 18px; }
+.moon-layout canvas { display: block; background: radial-gradient(circle at 50% 45%, #121826, #070b14 70%); border-radius: 16px; border: 1px solid var(--line); }
+.phase-name { margin: 0 0 8px; font-size: clamp(28px, 5vw, 40px); line-height: 1.15; }
+#moon-facts { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 0; }
+#moon-facts dt { color: var(--accent); }
+#moon-facts dd { margin: 0; }
+.pair-controls, .pair-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin: 8px 0 14px; }
+.pair-controls label { display: flex; flex-direction: column; gap: 4px; color: var(--muted); font-size: 14px; }
+.pair-controls select, .pair-actions button { min-height: 40px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: #0d1220; color: var(--text); font: inherit; }
+.pair-actions button { cursor: pointer; }
+.pair-actions button:hover, .pair-controls select:hover { border-color: var(--accent); }
+.pair-stage { display: flex; flex-wrap: wrap; gap: 18px 28px; align-items: end; min-height: 260px; margin: 8px 0; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: #070b14; }
+.planet-orb { margin: 0; text-align: center; }
+.planet-orb .disc { display: block; margin: 0 auto 8px; border-radius: 50%; box-shadow: inset -8px -10px 18px rgba(0,0,0,0.35); }
+.scale-row { display: grid; grid-template-columns: 92px 1fr auto; gap: 8px 10px; align-items: center; margin: 6px 0; }
+.scale-track { height: 14px; border-radius: 999px; background: #121826; overflow: hidden; }
+.scale-track span { display: block; height: 100%; border-radius: 999px; background: var(--accent); }
+.scale-row b { font-weight: 600; text-align: right; }
+.featured-pair { display: flex; flex-wrap: wrap; gap: 18px; align-items: end; margin: 10px 0 4px; }
+.featured-pair svg { display: block; }
+@media (max-width: 720px) {
+  .distance-table thead { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+  .distance-table, .distance-table tbody, .distance-table tr, .distance-table td { display: block; width: auto; white-space: normal; }
+  .distance-table tr { margin: 0 0 16px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+  .distance-table td { border: 0; padding: 2px 0; text-align: left; }
+  .distance-table td::before { content: attr(data-label); display: block; color: var(--accent); font-size: 12px; letter-spacing: 0.04em; }
+  .distance-table td:first-child::before { display: none; }
+  .distance-table td:first-child { font-size: 18px; }
+}

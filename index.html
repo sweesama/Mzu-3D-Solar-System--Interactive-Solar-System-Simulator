@@ -78,7 +78,7 @@
       "name": "Can I see planet positions on a specific date?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "No. The Speed control can run orbital motion faster, from one hour to one year of real periods per second, but you cannot set a calendar date. Starting positions are not taken from a live ephemeris, so this is not where the planets are tonight or on a past or future day. It is not a tool for finding a planet in the sky."
+        "text": "No. The Speed control can run orbital motion faster, from one hour to one year of real periods per second, but you cannot set a calendar date. Starting positions are not taken from a live ephemeris, so this 3D view is not where the planets are tonight or on a past or future day. Separate pages, computed in your browser, estimate centre-to-centre distances, the Moon’s phase, and whether the naked-eye planets are in the evening sky, the morning sky, or lost in the Sun’s glare. Those pages are not this 3D scene, and they are not telescope-grade."
       }
     },
     {
@@ -223,6 +223,11 @@
             <span class="nav-label sandbox-nav-label">Also in the browser</span>
             <div class="planet-links">
                 <a href="gravity-sandbox.html">Gravity sandbox</a>
+                <a href="distance/">Distances now</a>
+                <a href="visible-tonight/">Visible tonight</a>
+                <a href="moon-phase/">Moon phase</a>
+                <a href="gas-giants/">Gas giants</a>
+                <a href="size-comparison/">Size comparison</a>
             </div>
         </nav>
 
@@ -242,13 +247,22 @@
             </ul>
             <h2>How to use the 3D solar system</h2>
             <p>Drag to rotate the view, scroll or pinch to zoom, and click or tap a planet to focus on it. Press <kbd>G</kbd> to hide this guide and see the whole scene. The <strong>Speed</strong>, <strong>Scale</strong> and <strong>Quality</strong> menus are in the corner of the screen. Read the <a href="space-explorer-guide.html">guide to exploring space online</a> for the controls, scale modes and expeditions.</p>
+            <h2 id="sky-pages-title">Distances, tonight’s sky and sizes</h2>
+            <p>These pages run in your browser. They are separate from the 3D scene, which does not use a live ephemeris.</p>
+            <ul>
+                <li><a href="distance/">How far away are the planets right now?</a></li>
+                <li><a href="visible-tonight/">Planets visible tonight</a></li>
+                <li><a href="moon-phase/">Moon phase tonight</a></li>
+                <li><a href="gas-giants/">Jupiter, Saturn, Uranus and Neptune</a></li>
+                <li><a href="size-comparison/">Which planet is bigger?</a> The <a href="planet-sizes-and-distances.html">sizes and distances</a> page keeps the full scale-model tables.</li>
+            </ul>
             <h2 id="faq-title">Frequently asked questions</h2>
             <h3>What is a solar system simulator?</h3>
             <p>A solar system simulator is an interactive model of the Sun and planets that you can move through. This one is a free 3D solar system in the browser: orbit the camera, select a world, change scale and speed, follow a short tour, and open first-person expeditions. It is an artistic educational view, not a live ephemeris or a professional astronomy tool.</p>
             <h3>Is this Solar System Simulator free?</h3>
             <p>Yes. It runs online in your browser and is free. There is no download, no sign-up, no account and no plug-in. You need a current browser with WebGL, on a desktop, phone or tablet.</p>
             <h3>Can I see planet positions on a specific date?</h3>
-            <p>No. The Speed control can run orbital motion faster, from one hour to one year of real periods per second, but you cannot set a calendar date. Starting positions are not taken from a live ephemeris, so this is not where the planets are tonight or on a past or future day. It is not a tool for finding a planet in the sky.</p>
+            <p>No. The Speed control can run orbital motion faster, from one hour to one year of real periods per second, but you cannot set a calendar date. Starting positions are not taken from a live ephemeris, so this 3D view is not where the planets are tonight or on a past or future day. Separate pages, computed in your browser, estimate <a href="distance/">centre-to-centre distances</a>, the <a href="moon-phase/">Moon’s phase</a>, and whether the naked-eye planets are in the <a href="visible-tonight/">evening sky, the morning sky, or lost in the Sun’s glare</a>. Those pages are not this 3D scene, and they are not telescope-grade.</p>
             <h3>Is this 3D solar system to scale?</h3>
             <p>Not by default. Real distances are so large that the planets would be invisible dots, so sizes and distances are compressed for viewing. Open the <strong>Scale</strong> menu and choose <strong>Real distances</strong>, <strong>Real sizes</strong> or <strong>True scale</strong> to see the real proportions. The Speed menu switches motion to real orbital and rotation periods. The numbers are on the <a href="planet-sizes-and-distances.html">planet sizes and distances</a> page.</p>
             <h3>Does it work on phones and tablets?</h3>
