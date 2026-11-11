@@ -30,6 +30,14 @@ th { color: var(--accent); font-weight: 600; }
 .sandbox-status { min-height: 1.4em; margin: 10px 0 0; color: var(--muted); font-size: 14px; }
 .site-header a[aria-current="page"] { color: var(--accent); text-decoration: none; }
 .muted { color: var(--muted); font-size: 13px; }
+.body-index { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 18px; padding: 0; list-style: none; }
+.body-index a { display: inline-block; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; text-decoration: none; color: var(--text); }
+.body-index a[aria-current="page"] { color: #141006; background: var(--accent); border-color: var(--accent); }
+.distance-now { margin: 8px 0 18px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 12px; background: #0b101a; }
+.distance-figure { margin: 0; font-size: clamp(28px, 5vw, 40px); line-height: 1.15; font-weight: 650; }
+.distance-now dl { display: grid; grid-template-columns: minmax(9rem, 34%) 1fr; gap: 6px 14px; margin: 12px 0 0; }
+.distance-now dt { color: var(--accent); }
+.distance-now dd { margin: 0; }
 .vis-card { margin: 0 0 14px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: #0b101a; }
 .vis-head { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; }
 .vis-head a { font-size: 20px; font-weight: 650; text-decoration: none; }
