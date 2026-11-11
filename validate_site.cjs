@@ -719,6 +719,85 @@ if (!homeHtml.includes('Can I see planet positions on a specific date?')) errors
 if (!/href="gravity-sandbox\.html"/.test(homeHtml)) errors.push('index.html: missing Gravity Sandbox link');
 if (!/no download and no sign-up/i.test(homeHtml)) errors.push('index.html: missing free online statement');
 
+const distanceBodies = [
+  ['sun', 'Sun'],
+  ['moon', 'Moon'],
+  ['mercury', 'Mercury'],
+  ['venus', 'Venus'],
+  ['mars', 'Mars'],
+  ['jupiter', 'Jupiter'],
+  ['saturn', 'Saturn'],
+  ['uranus', 'Uranus'],
+  ['neptune', 'Neptune'],
+  ['pluto', 'Pluto']
+];
+const distanceHub = fs.readFileSync(path.join(root, 'distance', 'index.html'), 'utf8');
+for (const [slug, name] of distanceBodies) {
+  const file = `distance/${slug}/index.html`;
+  const html = fs.readFileSync(path.join(root, 'distance', slug, 'index.html'), 'utf8');
+  const canonical = `https://www.3dsolarsystem.net/distance/${slug}/`;
+  const title = capture(html, /<title>([\s\S]*?)<\/title>/i, 'title', file);
+  const description = capture(html, /<meta name="description" content="([^"]+)">/i, 'description', file);
+  const foundCanonical = capture(html, /<link rel="canonical" href="([^"]+)">/i, 'canonical', file);
+  if (titles.has(title)) errors.push(`${file}: duplicate title: ${title}`);
+  if (canonicals.has(foundCanonical)) errors.push(`${file}: duplicate canonical: ${foundCanonical}`);
+  titles.add(title);
+  canonicals.add(foundCanonical);
+  if (foundCanonical !== canonical) errors.push(`${file}: canonical must be ${canonical}`);
+  if (!foundCanonical.startsWith('https://www.3dsolarsystem.net/')) errors.push(`${file}: canonical must use the www host`);
+  if (capture(html, /<meta property="og:url" content="([^"]+)">/i, 'og:url', file) !== foundCanonical) {
+    errors.push(`${file}: og:url does not match canonical`);
+  }
+  if (description.length < 90 || description.length > 180) errors.push(`${file}: description length is ${description.length}`);
+  const heading = capture(html, /<h1(?:\s[^>]*)?>([\s\S]*?)<\/h1>/i, 'visible H1', file);
+  if (!new RegExp(name, 'i').test(heading)) errors.push(`${file}: H1 must name ${name}`);
+  if (!html.includes(`data-sky="body-distance"`) || !html.includes(`data-body="${name}"`)) {
+    errors.push(`${file}: missing live distance hooks`);
+  }
+  if (!html.includes('id="dist-km"') || !html.includes('id="dist-mi"') || !html.includes('id="dist-au"') || !html.includes('id="dist-light"')) {
+    errors.push(`${file}: missing km, miles, AU or light-travel readout`);
+  }
+  if (!html.includes('<script src="/sky-ephemeris.js"></script>') || !html.includes('<script src="/sky-pages.js"></script>')) {
+    errors.push(`${file}: must compute distance in the browser`);
+  }
+  if (!html.includes('href="/distance/"')) errors.push(`${file}: missing link back to the distance hub`);
+  if (!distanceHub.includes(`href="/distance/${slug}/"`)) errors.push(`distance/index.html: missing link to /distance/${slug}/`);
+  for (const [otherSlug] of distanceBodies) {
+    if (!html.includes(`href="/distance/${otherSlug}/"`)) errors.push(`${file}: missing sibling link /distance/${otherSlug}/`);
+  }
+  if (!html.includes('"@type": "FAQPage"')) errors.push(`${file}: missing FAQPage structured data`);
+  for (const [, id, body] of html.matchAll(/<script id="([^"]+)" type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+    try {
+      const data = JSON.parse(body);
+      if (id === 'faq-structured-data') {
+        const questions = data.mainEntity || [];
+        if (questions.length < 3) errors.push(`${file}: FAQPage needs at least 3 questions`);
+        for (const question of questions) {
+          if (!html.includes(`<h3>${question.name}</h3>`)) errors.push(`${file}: FAQ JSON-LD question not visible: ${question.name}`);
+        }
+      }
+    } catch (error) {
+      errors.push(`${file}: invalid JSON-LD in #${id} (${error.message})`);
+    }
+  }
+}
+
+const sky = require('./sky-ephemeris.js');
+const fixedJd = sky.julianDate(new Date('2026-11-11T00:00:00Z'));
+const marsFixed = sky.motion('Mars', fixedJd);
+const plutoFixed = sky.motion('Pluto', fixedJd);
+if (Math.abs(marsFixed.distKm / sky.AU_KM - 1.3494) > 0.0002) errors.push('sky ephemeris: Mars distance on 2026-11-11 drifted');
+if (Math.abs(plutoFixed.distKm / sky.AU_KM - 35.8917) > 0.002) errors.push('sky ephemeris: Pluto distance on 2026-11-11 drifted');
+if (sky.formatKm(marsFixed.distKm, 'Mars') !== '201.87 million km') errors.push('sky ephemeris: Mars kilometre formatting drifted');
+if (!/^[0-9,]+ miles$/.test(sky.formatMiles(sky.motion('Moon', fixedJd).distKm, 'Moon'))) errors.push('sky ephemeris: Moon miles formatting drifted');
+if (sky.formatMiles(plutoFixed.distKm, 'Pluto').indexOf('million miles') === -1) errors.push('sky ephemeris: Pluto miles formatting drifted');
+for (const [, name] of distanceBodies) {
+  const live = sky.motion(name, fixedJd);
+  if (!Number.isFinite(live.distKm) || live.distKm <= 0) errors.push(`sky ephemeris: ${name} distance is not finite`);
+  const next = sky.nextClosest(name, fixedJd);
+  if (!next || !Number.isFinite(next.distKm)) errors.push(`sky ephemeris: ${name} has no next closest approach`);
+}
+
 const sitemap = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
 for (const canonical of canonicals) {
   if (!sitemap.includes(`<loc>${canonical}</loc>`)) errors.push(`sitemap.xml: missing ${canonical}`);

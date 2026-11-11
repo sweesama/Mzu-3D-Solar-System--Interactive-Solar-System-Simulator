@@ -23,6 +23,7 @@
     var DEG = Math.PI / 180;
     var AU_KM = 149597870.7;
     var C_KMS = 299792.458;
+    var KM_PER_MILE = 1.609344;
     var J2000 = 2451545.0;
     var UNIX_JD = 2440587.5;
 
@@ -68,6 +69,15 @@
             el: [30.06952752, 0.00006447, 0.00895439, 0.00000818, 1.77005520, 0.00022400, 304.22289287, 218.46515314, 46.68158724, 0.01009938, 131.78635853, -0.00606302],
             extra: [-0.00041348, 0.68346318, -0.10162547, 7.67025000],
             rhoErrKm: 4000000
+        },
+        // Not part of the JPL 3000 BC–3000 AD set above. These are the J2000
+        // mean elements and centennial rates in the Explanatory Supplement
+        // to the Astronomical Almanac (1992), Table 5.8.1, a 250-year fit
+        // to DE200. Angular rates in that table are arcseconds per century.
+        Pluto: {
+            el: [39.48168677, -0.00076912, 0.24880766, 0.00006465, 17.14175, 11.07 / 3600, 238.92881, 522747.90 / 3600, 224.06676, -132.25 / 3600, 110.30347, -37.33 / 3600],
+            extra: null,
+            rhoErrKm: 2000000
         }
     };
 
@@ -227,7 +237,8 @@
         Jupiter: 450,
         Saturn: 420,
         Uranus: 400,
-        Neptune: 400
+        Neptune: 400,
+        Pluto: 400
     };
 
     function sinDeg(d) { return Math.sin(d * DEG); }
@@ -583,16 +594,39 @@
         return text.replace(',', '') + ' · ' + zone;
     }
 
+    function distanceStepKm(name) {
+        if (name === 'Moon') return 1;
+        var err = rhoErrorKm(name) || 10000;
+        if (err >= 1000000) return 1000000;
+        if (err >= 100000) return 100000;
+        return 10000;
+    }
+
+    function roundedKm(km, name) {
+        var step = distanceStepKm(name);
+        return Math.round(km / step) * step;
+    }
+
     function formatKm(km, name) {
         if (name === 'Moon') return Math.round(km).toLocaleString('en-US') + ' km';
-        var err = rhoErrorKm(name) || 10000;
-        var step = err >= 1000000 ? 1000000 : err >= 100000 ? 100000 : 10000;
-        var rounded = Math.round(km / step) * step;
+        var step = distanceStepKm(name);
+        var rounded = roundedKm(km, name);
         var digits = step >= 1000000 ? 0 : step >= 100000 ? 1 : 2;
         return (rounded / 1000000).toLocaleString('en-US', {
             minimumFractionDigits: digits,
             maximumFractionDigits: digits
         }) + ' million km';
+    }
+
+    function formatMiles(km, name) {
+        var miles = roundedKm(km, name) / KM_PER_MILE;
+        if (name === 'Moon') return Math.round(miles).toLocaleString('en-US') + ' miles';
+        var step = distanceStepKm(name);
+        var digits = step >= 1000000 ? 0 : step >= 100000 ? 1 : 2;
+        return (miles / 1000000).toLocaleString('en-US', {
+            minimumFractionDigits: digits,
+            maximumFractionDigits: digits
+        }) + ' million miles';
     }
 
     function formatAU(km) {
@@ -641,6 +675,7 @@
         formatUtc: formatUtc,
         formatLocal: formatLocal,
         formatKm: formatKm,
+        formatMiles: formatMiles,
         formatAU: formatAU,
         formatLight: formatLight,
         formatSpeed: formatSpeed

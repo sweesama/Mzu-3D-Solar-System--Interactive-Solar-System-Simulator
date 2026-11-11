@@ -14,8 +14,22 @@
         { name: 'Jupiter', href: '/jupiter.html', closest: 'Next closest' },
         { name: 'Saturn', href: '/saturn.html', closest: 'Next closest' },
         { name: 'Uranus', href: '/uranus.html', closest: 'Next closest' },
-        { name: 'Neptune', href: '/neptune.html', closest: 'Next closest' }
+        { name: 'Neptune', href: '/neptune.html', closest: 'Next closest' },
+        { name: 'Pluto', href: '/?focus=Pluto', closest: 'Next closest' }
     ];
+
+    var DISTANCE_PAGE = {
+        Sun: '/distance/sun/',
+        Moon: '/distance/moon/',
+        Mercury: '/distance/mercury/',
+        Venus: '/distance/venus/',
+        Mars: '/distance/mars/',
+        Jupiter: '/distance/jupiter/',
+        Saturn: '/distance/saturn/',
+        Uranus: '/distance/uranus/',
+        Neptune: '/distance/neptune/',
+        Pluto: '/distance/pluto/'
+    };
 
     var DIAMETERS = [
         { name: 'Mercury', km: 4879, earth: '0.38', color: '#9a9a9a', href: '/mercury.html' },
@@ -96,7 +110,11 @@
             var tr = document.createElement('tr');
             var nameCell = document.createElement('td');
             nameCell.setAttribute('data-label', 'Body');
-            nameCell.appendChild(anchor(item.href, item.name));
+            nameCell.appendChild(anchor(DISTANCE_PAGE[item.name] || item.href, item.name));
+            nameCell.appendChild(document.createElement('br'));
+            var viewLink = anchor(item.href, '3D view');
+            viewLink.className = 'muted';
+            nameCell.appendChild(viewLink);
             tr.appendChild(nameCell);
 
             var distCell = document.createElement('td');
@@ -105,7 +123,7 @@
             distCell.appendChild(document.createElement('br'));
             distCell.appendChild(el('span', 'muted', sky.formatAU(move.distKm)));
             distCell.appendChild(document.createElement('br'));
-            distCell.appendChild(el('span', 'muted', 'Nominal error ' + sky.errorPhrase(item.name)));
+            distCell.appendChild(el('span', 'muted', (item.name === 'Pluto' ? 'Approximate fit, allow ' : 'Nominal error ') + sky.errorPhrase(item.name)));
             tr.appendChild(distCell);
 
             var lightCell = el('td', null, sky.formatLight(move.lightSeconds));
@@ -345,6 +363,49 @@
         });
     }
 
+    function formatUtcSeconds(date) {
+        var text = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'UTC',
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hourCycle: 'h23'
+        }).format(date);
+        return text.replace(',', '') + ' UTC';
+    }
+
+    function renderBodyDistance(sky) {
+        var name = document.body.getAttribute('data-body');
+        var figure = document.getElementById('dist-km');
+        var miles = document.getElementById('dist-mi');
+        var au = document.getElementById('dist-au');
+        var light = document.getElementById('dist-light');
+        var motionEl = document.getElementById('dist-motion');
+        var nextEl = document.getElementById('dist-next');
+        var clock = document.getElementById('sky-clock');
+        if (!name || !figure || !miles || !au || !light || !motionEl || !clock) return;
+        var now = new Date();
+        var jd = sky.julianDate(now);
+        var move = sky.motion(name, jd);
+        figure.textContent = sky.formatKm(move.distKm, name);
+        miles.textContent = sky.formatMiles(move.distKm, name);
+        au.textContent = sky.formatAU(move.distKm);
+        light.textContent = sky.formatLight(move.lightSeconds);
+        motionEl.textContent = (move.approaching ? 'Approaching' : 'Receding') + ' · ' + sky.formatSpeed(move.kms);
+        if (nextEl) {
+            var next = sky.nextClosest(name, jd);
+            nextEl.textContent = next
+                ? sky.formatUtc(next.date) + ' · ' + sky.formatKm(next.distKm, name)
+                : 'No minimum in the search window';
+        }
+        clock.textContent = 'Updated in your browser for ' + formatUtcSeconds(now)
+            + '. Your device reads ' + sky.formatLocal(now)
+            + '. If that clock is wrong, these figures are wrong by the same amount.';
+    }
+
     function renderGiants(sky) {
         var slot = document.getElementById('giants-now');
         if (!slot) return;
@@ -372,6 +433,7 @@
         }
         if (!sky) return;
         if (kind === 'distance') renderDistance(sky);
+        else if (kind === 'body-distance') renderBodyDistance(sky);
         else if (kind === 'visible') renderVisible(sky);
         else if (kind === 'moon') renderMoon(sky);
         else if (kind === 'giants') renderGiants(sky);
@@ -381,6 +443,6 @@
         tick();
         var kind = pageKind();
         if (kind === 'sizes' || kind === 'giants') return;
-        window.setInterval(tick, 60000);
+        window.setInterval(tick, kind === 'body-distance' ? 1000 : 60000);
     });
 })();
