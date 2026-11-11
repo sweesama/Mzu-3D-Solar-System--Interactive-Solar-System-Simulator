@@ -101,6 +101,7 @@ Never hand-edit `mercury.html` … `neptune.html`: change `index.html` or the da
 - **`llms.txt`** summarises every page with key facts for AI search engines; keep it in step with page content.
 - **Analytics:** all 17 pages carry the same Google Analytics tag.
 - **sitemap.xml** lists all 17 pages with `lastmod` and their share image. Update `lastmod` when a page changes; the validator rejects future dates and missing images.
+- **IndexNow:** `8894b846bf144cbdb509ce481d85f7d9.txt` at the site root contains only that key. After a deploy, submit pages with `node scripts/indexnow.mjs --sitemap` (every `<loc>` in `sitemap.xml`; pass a path to use another file) or `node scripts/indexnow.mjs <url> [url...]`. The script POSTs to `https://api.indexnow.org/indexnow` and has no dependencies.
 - `validate_site.cjs` also fails if a page falls back to the logo as its share image, if an expedition loses its About article or planet link, or if analytics are missing.
 
 ## Main files
