@@ -526,7 +526,9 @@ self.onmessage = function(e) {
             if (!sunGlowObject) console.warn('[DEBUG] sunGlowObject not found on sun.');
             if (!sunLensflare) console.warn('[DEBUG] sunLensflare not found on sun.');
 
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.08);
+            // 夜面只有环境光。0.08 时背光的火星会暗成一颗看不出纹理的黑球；
+            // 略抬到 0.14，夜面仍明显暗于昼面，但表面颜色还留得住。地球夜灯是自发光，不受这点环境光盖掉。
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.14);
             scene.add(ambientLight);
 
             const totalPlanets = planetData.length;
@@ -3718,6 +3720,29 @@ self.onmessage = function(e) {
                     flyCameraToObject(tempObj, data, 1500);
         }
 
+        // 聚焦时如果顺着当前视线停在背光面，行星只剩环境光，看起来像没贴图。
+        // 保留视线里绕太阳的那一侧，把相位角收到约 60°（大约四分之三被照亮）。
+        // 已经在向阳侧时不改方向。太阳自己不偏。
+        const FOCUS_SUNLIT_DOT = 0.5;
+        function sunlitFocusOffset(worldPosition, preferredDirection, distance) {
+            const sunDir = worldPosition.clone().negate();
+            const preferred = preferredDirection.clone();
+            if (preferred.lengthSq() < 1e-6) preferred.set(0, 0.35, 1);
+            if (sunDir.lengthSq() < 1e-6) return preferred.normalize().multiplyScalar(distance);
+            sunDir.normalize();
+            preferred.normalize();
+            const facing = preferred.dot(sunDir);
+            if (facing >= FOCUS_SUNLIT_DOT) return preferred.multiplyScalar(distance);
+            const sideways = preferred.addScaledVector(sunDir, -facing);
+            if (sideways.lengthSq() < 1e-6) {
+                const up = Math.abs(sunDir.y) < 0.85 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0);
+                sideways.crossVectors(sunDir, up);
+            }
+            sideways.normalize();
+            const side = Math.sqrt(1 - FOCUS_SUNLIT_DOT * FOCUS_SUNLIT_DOT);
+            return sunDir.multiplyScalar(FOCUS_SUNLIT_DOT).addScaledVector(sideways, side).multiplyScalar(distance);
+        }
+
         // 镜头飞向某个天体并开始追踪（点击选择和导览共用）
         function flyCameraToObject(tempObj, data, duration = 1500) {
                     // Set tracked object for camera tracking
@@ -3753,9 +3778,10 @@ self.onmessage = function(e) {
                     // Transition camera using TWEEN
                     // 镜头飞行每一帧都追着天体的"实时位置"插值，而不是飞向预测的终点：
                     // 真实大小模式下镜头只离行星千分之几个单位，预测哪怕差 1% 都会让镜头停在很远的地方
-                    const offset = camera.position.clone().sub(controls.target).normalize();
-                    if (offset.length() < 0.1) offset.set(0, 0, 1);
-                    offset.multiplyScalar(distance);
+                    const preferredOffset = camera.position.clone().sub(controls.target);
+                    const offset = data.type === "Star"
+                        ? (preferredOffset.lengthSq() < 1e-4 ? new THREE.Vector3(0, 0, 1) : preferredOffset.normalize()).multiplyScalar(distance)
+                        : sunlitFocusOffset(targetPosition, preferredOffset, distance);
                     const startCamera = camera.position.clone();
                     const startTarget = controls.target.clone();
                     const liveTarget = new THREE.Vector3();
