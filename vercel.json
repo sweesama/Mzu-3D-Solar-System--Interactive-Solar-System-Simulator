@@ -30,7 +30,9 @@
     { "source": "/moon-phase", "destination": "/moon-phase/index.html" },
     { "source": "/moon-phase/", "destination": "/moon-phase/index.html" },
     { "source": "/size-comparison", "destination": "/size-comparison/index.html" },
-    { "source": "/size-comparison/", "destination": "/size-comparison/index.html" }
+    { "source": "/size-comparison/", "destination": "/size-comparison/index.html" },
+    { "source": "/planets-with-rings", "destination": "/planets-with-rings/index.html" },
+    { "source": "/planets-with-rings/", "destination": "/planets-with-rings/index.html" }
   ],
   "headers": [
     {
